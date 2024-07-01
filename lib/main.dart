@@ -1,8 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:lumotareas/screens/home_screen.dart';
+import 'package:lumotareas/viewmodels/home_viewmodel.dart';
+import 'package:lumotareas/services/firestore_service.dart';
 
-void main() {
-  runApp(const MyApp());
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'package:logger/logger.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  var logger = Logger(
+    printer: PrettyPrinter(
+      methodCount: 0,
+      errorMethodCount: 5,
+      lineLength: 50,
+      colors: true,
+      printEmojis: true,
+      printTime: true,
+    ),
+  );
+
+  logger.i('Firebase inicializado');
+
+  // Bloque try-catch para manejar excepciones y registrarlas con el logger
+  try {
+    runApp(const MyApp());
+  } catch (error, stackTrace) {
+    logger.e('Error al ejecutar la aplicación',
+        error: error, stackTrace: stackTrace);
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -83,15 +114,21 @@ class MyApp extends StatelessWidget {
       ),
     );
 
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData.light(),
-      darkTheme: darkTheme,
-      themeMode: ThemeMode.dark,
-      initialRoute: '/',
-      routes: {
-        '/': (context) => HomeScreen(),
-      },
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => HomeViewModel()),
+        Provider(create: (_) => FirestoreService()),
+      ],
+      child: MaterialApp(
+        title: 'Lumotareas',
+        theme: ThemeData.light(),
+        darkTheme: darkTheme,
+        themeMode: ThemeMode.dark,
+        initialRoute: '/',
+        routes: {
+          '/': (context) => const HomeScreen(),
+        },
+      ),
     );
   }
 }

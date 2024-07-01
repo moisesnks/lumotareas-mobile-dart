@@ -1,4 +1,4 @@
-package com.example.lumotareas
+package com.lumonidy.lumotareas
 
 import io.flutter.embedding.android.FlutterActivity
 
