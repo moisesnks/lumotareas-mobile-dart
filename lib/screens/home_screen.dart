@@ -5,6 +5,7 @@ import 'package:lumotareas/widgets/welcome_title.dart';
 import 'package:lumotareas/widgets/input_field.dart';
 import 'package:lumotareas/viewmodels/home_viewmodel.dart';
 import 'package:lumotareas/screens/login_screen.dart';
+import 'package:lumotareas/extensions/text_styles.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -36,41 +37,54 @@ class HomeScreenState extends State<HomeScreen> {
         FocusScope.of(context).unfocus(); // Close keyboard if open
       },
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const SizedBox(height: 50),
-            const Text(
-              'Para comenzar,',
-              style: TextStyle(
-                fontFamily: 'Lexend',
-                fontWeight: FontWeight.w600,
-                fontSize: 20,
-                color: Color(0xFFFFFFFF),
-                height: .5,
+            Padding(
+              padding: const EdgeInsets.only(
+                top: 20,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Para comenzar,',
+                    style: TextStyle(
+                      fontFamily: 'Lexend',
+                      fontWeight: FontWeight.w600,
+                      fontSize: 20,
+                      color: Color(0xFFFFFFFF),
+                      height: .5,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  InputField(
+                    key: const Key('orgField'),
+                    controller: viewModel.orgController,
+                    labelText: 'Ingresa el nombre de tu organización',
+                    hintText: 'Escribe el nombre aquí',
+                    keyboardType: TextInputType.text,
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 20),
-            InputField(
-              key: const Key('orgField'),
-              controller: viewModel.orgController,
-              labelText: 'Ingresa el nombre de tu organización',
-              hintText: 'Escribe el nombre aquí',
-              keyboardType: TextInputType.text,
-            ),
-            const SizedBox(height: 20),
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (_) => LoginScreen()));
-                },
-                child: const Text(
-                  'Ya tengo cuenta en Lumotareas',
-                  style: TextStyle(color: Colors.white),
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (_) => LoginScreen()));
+              },
+              child: Text(
+                'Ya tengo cuenta en Lumotareas',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w300,
+                ).underlined(
+                  distance: 2, // Distancia entre el texto y el subrayado
+                  thickness: 1, // Grosor del subrayado
                 ),
+                textAlign: TextAlign.center,
               ),
             ),
           ],
@@ -105,7 +119,7 @@ class HomeScreenState extends State<HomeScreen> {
               Expanded(
                 child: Container(
                   margin:
-                      const EdgeInsets.only(left: 20, right: 20, bottom: 200),
+                      const EdgeInsets.only(left: 20, right: 20, bottom: 160),
                   child: SafeArea(
                     child: renderBody(context),
                   ),

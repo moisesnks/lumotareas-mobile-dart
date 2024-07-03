@@ -32,11 +32,13 @@ class LoginViewModel extends ChangeNotifier {
       Usuario? user = await _userService.signInWithGoogle();
       if (user != null) {
         _currentUser = user;
-        _logger.d('Inicio de sesión exitoso con Google: ${user.email}');
-        setMessage('Inicio de sesión exitoso con Google');
+        notifyListeners();
+        _logger.d(
+            'Inicio de sesión exitoso con correo y contraseña: ${user.email}');
+        setMessage('Inicio de sesión exitoso con correo y contraseña');
         // Navegar a '/main' y reemplazar todas las rutas anteriores
         if (context.mounted) {
-          Navigator.pushReplacementNamed(context, '/main');
+          Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);
         }
       } else {
         _logger.w('Inicio de sesión fallido con Google');
@@ -57,12 +59,13 @@ class LoginViewModel extends ChangeNotifier {
           await _userService.signInWithEmailAndPassword(email, password);
       if (user != null) {
         _currentUser = user;
+        notifyListeners();
         _logger.d(
             'Inicio de sesión exitoso con correo y contraseña: ${user.email}');
         setMessage('Inicio de sesión exitoso con correo y contraseña');
         // Navegar a '/main' y reemplazar todas las rutas anteriores
         if (context.mounted) {
-          Navigator.pushReplacementNamed(context, '/main');
+          Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);
         }
       } else {
         _logger.w('Inicio de sesión fallido con correo y contraseña');
@@ -75,12 +78,16 @@ class LoginViewModel extends ChangeNotifier {
   }
 
   // Método para cerrar sesión
-  Future<void> signOut() async {
+  Future<void> signOut(BuildContext context) async {
     try {
       await _userService.signOut();
       _currentUser = null;
       _logger.d('Sesión cerrada correctamente');
       setMessage('Sesión cerrada correctamente');
+      // navegar a '/login' y reemplazar todas las rutas anteriores
+      if (context.mounted) {
+        Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+      }
       notifyListeners();
     } catch (e) {
       _logger.e('Error al cerrar sesión: $e');
