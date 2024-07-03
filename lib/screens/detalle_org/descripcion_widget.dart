@@ -68,7 +68,7 @@ class DescriptionQuote extends StatelessWidget {
                 overflow: TextOverflow
                     .ellipsis, // Puntos suspensivos al final del texto
                 style: const TextStyle(
-                  fontSize: 18,
+                  fontSize: 14,
                   color: Colors.white,
                   fontWeight: FontWeight.w300,
                 ),

@@ -22,7 +22,7 @@ class MiembrosField extends StatelessWidget {
             child: Text(
               'Miembros',
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 14,
                 color: Colors.white,
               ),
             ),
@@ -36,7 +36,7 @@ class MiembrosField extends StatelessWidget {
             child: Text(
               '$miembros',
               style: const TextStyle(
-                fontSize: 18,
+                fontSize: 14,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),

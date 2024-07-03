@@ -5,6 +5,7 @@ import 'package:logger/logger.dart';
 
 class AuthButtons extends StatelessWidget {
   final bool vacantes;
+  final String orgName;
   final List<dynamic> formulario;
   final Logger _logger = Logger(); // Inicializar el logger
 
@@ -12,6 +13,7 @@ class AuthButtons extends StatelessWidget {
     super.key,
     required this.vacantes,
     required this.formulario,
+    required this.orgName,
   });
 
   @override
@@ -28,7 +30,7 @@ class AuthButtons extends StatelessWidget {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () {
-                Navigator.pushReplacement(
+                Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => LoginScreen(),
@@ -45,7 +47,7 @@ class AuthButtons extends StatelessWidget {
                 'Iniciar Sesión',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 16.0,
+                  fontSize: 14.0,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -61,8 +63,8 @@ class AuthButtons extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              FormularioScreen(formulario: formulario),
+                          builder: (context) => FormularioScreen(
+                              formulario: formulario, orgName: orgName),
                         ),
                       );
                     }
@@ -79,7 +81,7 @@ class AuthButtons extends StatelessWidget {
                     : 'Esta organización no recibe solicitudes',
                 style: TextStyle(
                   color: vacantes ? Colors.white : Colors.grey[400],
-                  fontSize: 16.0,
+                  fontSize: 14.0,
                   fontWeight: FontWeight.bold,
                 ),
               ),

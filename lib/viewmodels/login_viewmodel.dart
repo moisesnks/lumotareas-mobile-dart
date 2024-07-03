@@ -1,7 +1,7 @@
-import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 import 'package:lumotareas/models/user.dart';
 import 'package:lumotareas/services/user_service.dart';
+import 'package:flutter/material.dart'; // Importante para usar Navigator
 
 class LoginViewModel extends ChangeNotifier {
   final UserService _userService = UserService();
@@ -26,31 +26,18 @@ class LoginViewModel extends ChangeNotifier {
     return message;
   }
 
-  // Método para registrar un usuario con Google SignIn
-  Future<void> registerUserWithGoogle() async {
-    try {
-      Usuario? newUser = await _userService.registerUserWithGoogle();
-      if (newUser != null) {
-        _currentUser = newUser;
-        _logger
-            .d('Usuario registrado correctamente con Google: ${newUser.email}');
-        notifyListeners();
-      } else {
-        _logger.e('Error al registrar usuario con Google');
-      }
-    } catch (e) {
-      _logger.e('Error en registerUserWithGoogle: $e');
-    }
-  }
-
   // Método para iniciar sesión con Google SignIn
-  Future<void> signInWithGoogle() async {
+  Future<void> signInWithGoogle(BuildContext context) async {
     try {
       Usuario? user = await _userService.signInWithGoogle();
       if (user != null) {
         _currentUser = user;
         _logger.d('Inicio de sesión exitoso con Google: ${user.email}');
         setMessage('Inicio de sesión exitoso con Google');
+        // Navegar a '/main' y reemplazar todas las rutas anteriores
+        if (context.mounted) {
+          Navigator.pushReplacementNamed(context, '/main');
+        }
       } else {
         _logger.w('Inicio de sesión fallido con Google');
         setMessage(
@@ -63,7 +50,8 @@ class LoginViewModel extends ChangeNotifier {
   }
 
   // Método para iniciar sesión con email y contraseña
-  Future<void> signInWithEmailAndPassword(String email, String password) async {
+  Future<void> signInWithEmailAndPassword(
+      BuildContext context, String email, String password) async {
     try {
       Usuario? user =
           await _userService.signInWithEmailAndPassword(email, password);
@@ -72,6 +60,10 @@ class LoginViewModel extends ChangeNotifier {
         _logger.d(
             'Inicio de sesión exitoso con correo y contraseña: ${user.email}');
         setMessage('Inicio de sesión exitoso con correo y contraseña');
+        // Navegar a '/main' y reemplazar todas las rutas anteriores
+        if (context.mounted) {
+          Navigator.pushReplacementNamed(context, '/main');
+        }
       } else {
         _logger.w('Inicio de sesión fallido con correo y contraseña');
         setMessage('Inicio de sesión fallido con correo y contraseña');

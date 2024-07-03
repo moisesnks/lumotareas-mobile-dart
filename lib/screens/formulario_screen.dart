@@ -1,18 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:lumotareas/widgets/header.dart';
-import 'package:lumotareas/screens/register_screen.dart'; // Importa la pantalla de registro
+import 'package:lumotareas/screens/register_screen.dart';
 
-class FormularioScreen extends StatelessWidget {
+class FormularioScreen extends StatefulWidget {
   final List<dynamic> formulario;
-  final Logger _logger = Logger(); // Instanciar Logger
+  final String orgName;
 
-  FormularioScreen({super.key, required this.formulario});
+  const FormularioScreen(
+      {super.key, required this.formulario, required this.orgName});
+
+  @override
+  FormularioScreenState createState() => FormularioScreenState();
+}
+
+class FormularioScreenState extends State<FormularioScreen> {
+  final Logger _logger = Logger();
+  final Map<String, String> _respuestas = {};
+
+  @override
+  void initState() {
+    super.initState();
+    for (var element in widget.formulario) {
+      if (element is Map<dynamic, dynamic>) {
+        for (var key in element.keys) {
+          _respuestas[key] = '';
+        }
+      }
+    }
+  }
+
+  bool _allQuestionsAnswered() {
+    return _respuestas.values.every((respuesta) => respuesta.isNotEmpty);
+  }
 
   Widget _buildFormularioWidgets() {
     return Column(
       children: [
-        for (var element in formulario)
+        for (var element in widget.formulario)
           if (element is Map<dynamic, dynamic>) _buildColumnForMap(element),
       ],
     );
@@ -20,29 +45,55 @@ class FormularioScreen extends StatelessWidget {
 
   Widget _buildColumnForMap(Map<dynamic, dynamic> element) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         for (var key in element.keys)
-          TextFormField(
-            decoration: InputDecoration(
-              labelText: element[key].toString(),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: TextFormField(
+              decoration: InputDecoration(
+                labelText: element[key].toString(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  _respuestas[key] = value;
+                });
+              },
             ),
           ),
-        const SizedBox(height: 16),
       ],
     );
   }
 
+  void _showSnackbar(BuildContext context) {
+    const snackBar = SnackBar(
+      content: Text('Debe rellenar todas las preguntas'),
+      backgroundColor: Colors.red,
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
   @override
   Widget build(BuildContext context) {
-    _logger.d('Datos recibidos en FormularioScreen: formulario=$formulario');
+    _logger.d(
+        'Datos recibidos en FormularioScreen: formulario=${widget.formulario}');
+    _logger.d('Respuestas actuales: $_respuestas');
 
     return Scaffold(
       body: SafeArea(
         child: Container(
-          constraints: const BoxConstraints.expand(), // Ocupa toda la pantalla
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.blueGrey),
-          ),
+          constraints: const BoxConstraints.expand(),
           child: Column(
             children: [
               const Header(),
@@ -62,12 +113,20 @@ class FormularioScreen extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => RegisterScreen()),
-          );
-        },
+        onPressed: _allQuestionsAnswered()
+            ? () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => RegisterScreen(
+                        respuestas: _respuestas, orgName: widget.orgName),
+                  ),
+                );
+              }
+            : () {
+                _showSnackbar(context);
+              },
+        backgroundColor: _allQuestionsAnswered() ? Colors.blue : Colors.grey,
         child: const Icon(Icons.arrow_forward),
       ),
     );

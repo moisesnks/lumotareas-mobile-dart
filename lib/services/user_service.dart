@@ -9,6 +9,11 @@ class UserService {
   final FirestoreService _firestoreService = FirestoreService();
   final Logger _logger = Logger();
 
+  // currentUser
+  Usuario? _currentUser;
+
+  Usuario? get currentUser => _currentUser;
+
   // Método para iniciar sesión con Google SignIn
   Future<Usuario?> signInWithGoogle() async {
     try {
@@ -79,8 +84,101 @@ class UserService {
     }
   }
 
-  // Método para registrar un usuario con correo y contraseña (en Auth) y Firestore a través de un formulario, en él viene
-  //
+  // Método
+  // Registrar la referencia de la solicitud en el usuario, para eso
+  // el usuario tiene un campo (array) que se llama solicitudes el cual con el servicio
+  // de firestore se usará el método addToArray para agregar la referencia de la solicitud
+  // a ese array
+  Future<bool> addSolicitudToUser(String uid, String solicitudId) async {
+    try {
+      // Obtener usuario actual
+      Usuario? user = await getUserByUid(uid);
+
+      if (user != null) {
+        // Verificar si la solicitud ya existe en las solicitudes del usuario
+        if (user.solicitudes!.contains(solicitudId)) {
+          _logger.w('La solicitud ya existe en las solicitudes del usuario');
+          return true;
+        } else {
+          // Agregar la nueva solicitud
+          user.solicitudes!.add(solicitudId);
+
+          // Actualizar los datos del usuario en Firestore
+          await updateUserData(user);
+
+          _logger
+              .d('Solicitud agregada al usuario correctamente: $solicitudId');
+          return true;
+        }
+      } else {
+        _logger.w('No se encontró al usuario con UID: $uid');
+        return false;
+      }
+    } catch (e) {
+      _logger.e('Error al agregar solicitud al usuario: $e');
+      return false;
+    }
+  }
+
+  Future<Usuario?> registerUserWithEmailAndPassword(
+      Map<String, dynamic> formData) async {
+    // logger a lo que llegó en el formulario
+    _logger.d('Datos del formulario desde user_service: $formData');
+    try {
+      // Extraer datos del formulario
+      String email = formData['email']!;
+      _logger.d('Extracción correcta: $email');
+      String fullName = formData['fullName']!;
+      _logger.d('Extracción correcta: $fullName');
+      String birthdate = formData['birthDate']!;
+      _logger.d('Extracción correcta: $birthdate');
+      String password = formData['password']!;
+      _logger.d('Extracción correcta: $password');
+      String orgName = formData['orgName']!;
+      _logger.d('Extracción correcta: $orgName');
+
+      // logger a lo que llegó en el formulario
+      _logger.d(
+          'Extracción correcta de todos los datos del formulario: $formData');
+
+      User? firebaseUser =
+          await _authService.signUpWithEmailPassword(email, password, fullName);
+
+      if (firebaseUser != null) {
+        // Crear instancia de Usuario con datos del formulario
+        Usuario newUser = Usuario(
+          uid: firebaseUser.uid,
+          nombre: fullName,
+          email: email,
+          birthdate: birthdate,
+          organizaciones: [orgName],
+        );
+
+        // Convertir el objeto Usuario a un mapa para almacenarlo en Firestore
+        Map<String, dynamic> userData = newUser.toMap();
+
+        // Añadir documento de usuario a Firestore usando FirestoreService
+        Map<String, dynamic> result =
+            await _firestoreService.addDocument('users', newUser.uid, userData);
+
+        if (result['success'] == true) {
+          _logger.d(
+              'Usuario registrado correctamente con correo y contraseña: $email');
+          return newUser;
+        } else {
+          _logger.e(
+              'Error al añadir usuario a Firestore después de registrar con correo y contraseña');
+          return null;
+        }
+      } else {
+        _logger.w('Inicio de sesión fallido con correo y contraseña');
+        return null;
+      }
+    } catch (e) {
+      _logger.e('Error al registrar usuario con correo y contraseña: $e');
+      return null;
+    }
+  }
 
   // Método para registrar un usuario utilizando Google SignIn
   Future<Usuario?> registerUserWithGoogle() async {
@@ -94,10 +192,7 @@ class UserService {
           uid: firebaseUser.uid,
           nombre: firebaseUser.displayName ?? '',
           email: firebaseUser.email ?? '',
-          password: '', // No almacenamos la contraseña en el modelo Usuario
-          birthdate:
-              '', // Puedes definir la fecha de nacimiento aquí si es necesario
-          formulario: null,
+          birthdate: '',
           organizaciones: [],
         );
 
@@ -124,6 +219,20 @@ class UserService {
     } catch (e) {
       _logger.e('Error al registrar usuario con Google: $e');
       return null;
+    }
+  }
+
+  Future<bool> checkIfUserExists(String uid) async {
+    try {
+      // Obtener documento de usuario de Firestore usando FirestoreService
+      Map<String, dynamic> result =
+          await _firestoreService.getDocument('users', uid);
+
+      // Verificar si se encontró el usuario
+      return result['found'] ?? false;
+    } catch (e) {
+      _logger.e('Error al verificar si el usuario existe: $e');
+      return false;
     }
   }
 

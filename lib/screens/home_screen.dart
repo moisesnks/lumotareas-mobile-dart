@@ -4,6 +4,7 @@ import 'package:lumotareas/widgets/arrow_circle.dart';
 import 'package:lumotareas/widgets/welcome_title.dart';
 import 'package:lumotareas/widgets/input_field.dart';
 import 'package:lumotareas/viewmodels/home_viewmodel.dart';
+import 'package:lumotareas/screens/login_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -57,6 +58,20 @@ class HomeScreenState extends State<HomeScreen> {
               labelText: 'Ingresa el nombre de tu organización',
               hintText: 'Escribe el nombre aquí',
               keyboardType: TextInputType.text,
+            ),
+            const SizedBox(height: 20),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => LoginScreen()));
+                },
+                child: const Text(
+                  'Ya tengo cuenta en Lumotareas',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
             ),
           ],
         ),

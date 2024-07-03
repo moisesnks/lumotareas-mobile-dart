@@ -25,4 +25,15 @@ class Organization {
       descripcion: map['descripcion'] ?? '',
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'nombre': nombre,
+      'miembros': miembros,
+      'owner': owner,
+      'vacantes': vacantes,
+      'formulario': formulario,
+      'descripcion': descripcion,
+    };
+  }
 }

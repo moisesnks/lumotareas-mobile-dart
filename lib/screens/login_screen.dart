@@ -89,6 +89,7 @@ class LoginScreen extends StatelessWidget {
                                     _logger.d(
                                         'Iniciando sesión...\n Correo: ${_emailController.text}\n Contraseña: ${_passwordController.text}');
                                     viewModel.signInWithEmailAndPassword(
+                                        context,
                                         _emailController.text,
                                         _passwordController.text);
                                   },
@@ -105,7 +106,7 @@ class LoginScreen extends StatelessWidget {
                                 ElevatedButton.icon(
                                   onPressed: () {
                                     _logger.d('Iniciando sesión con Google...');
-                                    viewModel.signInWithGoogle();
+                                    viewModel.signInWithGoogle(context);
                                   },
                                   style: ElevatedButton.styleFrom(
                                     padding: const EdgeInsets.symmetric(

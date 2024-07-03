@@ -6,13 +6,21 @@ class FirestoreService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<Map<String, dynamic>> addDocument(String collectionName,
-      String documentId, Map<String, dynamic> data) async {
+      String? documentId, Map<String, dynamic> data) async {
     try {
-      await _firestore.collection(collectionName).doc(documentId).set(data);
-      _logger.d('Documento añadido a $collectionName con ID: $documentId');
+      DocumentReference docRef;
+
+      if (documentId != null) {
+        docRef = _firestore.collection(collectionName).doc(documentId);
+        await docRef.set(data);
+      } else {
+        docRef = await _firestore.collection(collectionName).add(data);
+      }
+
+      _logger.d('Documento añadido a $collectionName con ID: ${docRef.id}');
       return {
         'success': true,
-        'documentId': documentId,
+        'documentId': docRef.id,
         'message': 'Documento añadido correctamente a $collectionName',
       };
     } catch (e) {
@@ -83,6 +91,31 @@ class FirestoreService {
       return {
         'error': true,
         'message': 'Hubo un error al eliminar documento de $collectionName',
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> addToArray(String collectionName,
+      String documentId, String arrayFieldName, dynamic elementToAdd) async {
+    try {
+      await _firestore.collection(collectionName).doc(documentId).update({
+        arrayFieldName: FieldValue.arrayUnion([elementToAdd]),
+      });
+
+      _logger.d(
+          'Elemento añadido a $arrayFieldName en documento $documentId de $collectionName');
+      return {
+        'success': true,
+        'message':
+            'Elemento añadido correctamente a $arrayFieldName en $collectionName',
+      };
+    } catch (e) {
+      _logger.e(
+          'Error al añadir elemento a $arrayFieldName en documento $documentId de $collectionName: $e');
+      return {
+        'error': true,
+        'message':
+            'Hubo un error al añadir elemento a $arrayFieldName en $collectionName',
       };
     }
   }

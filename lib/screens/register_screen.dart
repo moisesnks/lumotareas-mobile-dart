@@ -3,11 +3,18 @@ import 'package:lumotareas/widgets/org_formulario.dart';
 import 'package:lumotareas/widgets/checkbox_widget.dart';
 import 'package:lumotareas/widgets/header.dart';
 import 'package:logger/logger.dart';
+import 'package:lumotareas/services/user_service.dart';
+import 'package:lumotareas/services/organization_service.dart';
 
 class RegisterScreen extends StatefulWidget {
   final Logger _logger = Logger();
+  final Map<String, String> respuestas;
+  final String orgName;
 
-  RegisterScreen({super.key});
+  final UserService _userService = UserService();
+  final OrganizationService _organizationService = OrganizationService();
+
+  RegisterScreen({super.key, required this.respuestas, required this.orgName});
 
   @override
   RegisterScreenState createState() => RegisterScreenState();
@@ -66,7 +73,7 @@ class RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  void _submitForm() {
+  void _submitForm(BuildContext context) async {
     if (_canSubmit()) {
       String email = _emailController.text.trim();
       String fullName = _fullNameController.text.trim();
@@ -75,18 +82,91 @@ class RegisterScreenState extends State<RegisterScreen> {
       String year = _yearController.text.trim();
       String birthDate = '$day/$month/$year';
 
-      // Aquí puedes realizar la lógica para enviar el formulario
-      widget._logger.d(
-          'Formulario de registro enviado: { email: $email, fullName: $fullName, birthDate: $birthDate }');
+      Map<String, dynamic> formData = {
+        'email': email,
+        'fullName': fullName,
+        'birthDate': birthDate,
+        'password': _passwordController.text.trim(),
+        'formulario': widget.respuestas,
+        'orgName': widget.orgName,
+      };
 
-      // Por ejemplo, llamar al servicio para enviar los datos
-      // apiService.sendRegistrationForm({
-      //   'email': email,
-      //   'fullName': fullName,
-      //   'birthDate': birthDate,
-      // });
+      widget._logger.d('Datos del formulario: $formData');
 
-      // Puedes realizar otras acciones necesarias después de enviar el formulario
+      // Intenta  registrar al usuario
+      var newUser =
+          await widget._userService.registerUserWithEmailAndPassword(formData);
+      if (newUser != null) {
+        widget._logger.d('Usuario registrado correctamente: ${newUser.email}');
+        // Mostrar un mensaje de éxito
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Usuario registrado correctamente'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+        // Enviar la solicitud de registro a la organización
+        var result = await widget._organizationService
+            .registerSolicitud(widget.orgName, widget.respuestas, newUser.uid);
+        if (result['success']) {
+          widget._logger.d('Solicitud registrada correctamente');
+          // Mostrar un mensaje de éxito
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                    'Solicitud registrada correctamente en la organización'),
+                backgroundColor: Colors.green,
+              ),
+            );
+          }
+          // Registrar la referencia de la solicitud en el usuario, para eso
+          // el usuario tiene un campo (array) que se llama solicitudes el cual con el servicio
+          // de firestore se usará el método addToArray para agregar la referencia de la solicitud
+          // a ese array
+          var ref = result['ref'];
+          bool userUpdate =
+              await widget._userService.addSolicitudToUser(newUser.uid, ref);
+
+          if (userUpdate) {
+            widget._logger.d('Referencia de solicitud agregada al usuario');
+            if (context.mounted) {
+              // Redirigir al usuario a la pantalla de inicio
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                '/main',
+                (route) => false,
+              );
+            }
+          } else {
+            widget._logger
+                .e('Error al agregar referencia de solicitud al usuario');
+          }
+        } else {
+          widget._logger.e('Error al registrar solicitud');
+          // Mostrar un mensaje de error
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Error al registrar solicitud'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        }
+      } else {
+        widget._logger.e('Error al registrar usuario');
+        // Mostrar un mensaje de error
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Error al registrar usuario'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
     }
   }
 
@@ -147,7 +227,8 @@ class RegisterScreenState extends State<RegisterScreen> {
                               ? () {
                                   widget._logger
                                       .d('Registrar cuenta presionado');
-                                  _submitForm(); // Llama al método para enviar el formulario
+                                  _submitForm(
+                                      context); // Llama al método para enviar el formulario
                                 }
                               : null, // Deshabilita el botón si no se pueden enviar los datos
                           style: ButtonStyle(

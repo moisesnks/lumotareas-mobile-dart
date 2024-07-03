@@ -2,19 +2,17 @@ class Usuario {
   final String uid;
   final String nombre;
   final String email;
-  final String password;
   final String birthdate;
-  final Map<String, String>? formulario;
   final List<String>? organizaciones;
+  final List<dynamic>? solicitudes;
 
   Usuario({
     required this.uid,
     required this.nombre,
     required this.email,
-    required this.password,
     required this.birthdate,
-    this.formulario,
     this.organizaciones,
+    this.solicitudes,
   });
 
   // Método para convertir un mapa en una instancia de Usuario
@@ -23,13 +21,12 @@ class Usuario {
       uid: uid,
       nombre: map['nombre'],
       email: map['email'],
-      password: map['password'],
       birthdate: map['birthdate'],
-      formulario: map['formulario'] != null
-          ? Map<String, String>.from(map['formulario'])
-          : null,
       organizaciones: map['organizaciones'] != null
           ? List<String>.from(map['organizaciones'])
+          : [],
+      solicitudes: map['solicitudes'] != null
+          ? List<dynamic>.from(map['solicitudes'])
           : [],
     );
   }
@@ -40,10 +37,9 @@ class Usuario {
       'uid': uid,
       'nombre': nombre,
       'email': email,
-      'password': password,
       'birthdate': birthdate,
-      'formulario': formulario,
       'organizaciones': organizaciones,
+      'solicitudes': solicitudes,
     };
   }
 }

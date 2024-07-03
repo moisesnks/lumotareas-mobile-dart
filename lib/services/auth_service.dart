@@ -1,14 +1,38 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:logger/logger.dart';
-import 'firestore_service.dart'; // Importar FirestoreService
+import 'package:lumotareas/services/firestore_service.dart';
+import 'dart:async';
 
 class AuthService {
+  final FirestoreService _firestoreService = FirestoreService();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final Logger _logger = Logger();
-  final FirestoreService _firestoreService =
-      FirestoreService(); // Instancia de FirestoreService
+
+  Future<User?> signUpWithEmailPassword(
+      String email, String password, String name) async {
+    try {
+      final UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      // Actualizar el nombre del usuario y darle foto con ui-avatar
+      await userCredential.user!.updateDisplayName(name);
+      await userCredential.user!
+          .updatePhotoURL('https://ui-avatars.com/api/?name=$name');
+
+      final User? user = userCredential.user;
+
+      _logger.d('Registro exitoso. Usuario: ${user?.email}');
+      return user;
+    } catch (e) {
+      _logger.e('Error al registrar con correo y contraseña: $e');
+      return null;
+    }
+  }
 
   Future<User?> signInWithEmailPassword(String email, String password) async {
     try {
@@ -94,16 +118,6 @@ class AuthService {
     return null; // Retornar null si ocurre algún error
   }
 
-  Future<bool> checkIfUserExists(String uid) async {
-    try {
-      final result = await _firestoreService.getDocument('users', uid);
-      return result['found'] ?? false;
-    } catch (e) {
-      _logger.e('Error al verificar si el usuario existe: $e');
-      return false;
-    }
-  }
-
   Future<void> signOut() async {
     try {
       await _googleSignIn.signOut();
@@ -126,5 +140,11 @@ class AuthService {
     } catch (e) {
       _logger.e('Error al eliminar usuario: $e');
     }
+  }
+
+  Future<bool> checkIfUserExists(String uid) async {
+    // busca en la base de datos si el usuario existe
+    final result = await _firestoreService.getDocument('users', uid);
+    return result['found'];
   }
 }

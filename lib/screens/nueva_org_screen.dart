@@ -5,11 +5,14 @@ import 'package:lumotareas/widgets/header.dart';
 import 'package:logger/logger.dart';
 import 'package:lumotareas/screens/login_screen.dart';
 import 'package:lumotareas/extensions/text_styles.dart';
-import 'package:lumotareas/screens/creando_org.dart';
+import 'package:lumotareas/screens/loading_creando_org.dart';
+import 'package:lumotareas/screens/creando_org_screen.dart';
+import 'package:lumotareas/services/user_service.dart';
 
 class NuevaOrgScreen extends StatefulWidget {
   final Logger _logger = Logger();
   final String orgName;
+  final UserService userService = UserService();
 
   NuevaOrgScreen({super.key, required this.orgName});
 
@@ -207,17 +210,25 @@ class NuevaOrgScreenState extends State<NuevaOrgScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => LoadingScreen(),
+        builder: (context) => const LoadingScreen(),
       ),
     );
 
-    // Retraso simulado de 2 segundos antes de volver atrás
-    Future.delayed(const Duration(days: 1), () {
-      // Verificar si el contexto es válido antes de intentar pop
-      if (mounted) {
-        Navigator.pop(context);
-      }
-    });
+    // Registrar usuario y organización
+    widget.userService.registerUserWithEmailAndPassword(formData);
+
+    // Mostrar mensaje de éxito
+    widget._logger.d('Usuario y organización registrados correctamente');
+
+    // Redirigir a la pantalla de creación de organización
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CreandoOrgScreen(
+            orgName: widget.orgName,
+            ownerUID: widget.userService.currentUser!.uid),
+      ),
+    );
   }
 
   @override

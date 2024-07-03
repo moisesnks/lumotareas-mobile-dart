@@ -3,7 +3,7 @@ import 'package:logger/logger.dart';
 import 'package:lumotareas/services/organization_service.dart'; // Importa el servicio de organización
 import 'package:lumotareas/screens/detalle_org_screen.dart';
 import 'package:lumotareas/screens/nueva_org_screen.dart';
-import 'package:lumotareas/screens/buscando_org.dart';
+import 'package:lumotareas/screens/loading_buscando_org.dart';
 
 class HomeViewModel extends ChangeNotifier {
   final TextEditingController orgController = TextEditingController();
@@ -32,12 +32,7 @@ class HomeViewModel extends ChangeNotifier {
         // Consultar organización utilizando OrganizationService
         var result = await _organizationService.getOrganization(orgName);
 
-        // Retirar la pantalla de búsqueda antes de navegar a la siguiente pantalla
-        if (context.mounted) {
-          Navigator.pop(context);
-        }
-
-        if (result['found']) {
+        if (result['success']) {
           // Organización encontrada, navegar a la pantalla de detalles
           if (context.mounted) {
             Navigator.push(

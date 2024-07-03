@@ -37,10 +37,11 @@ class DetalleOrgScreen extends StatelessWidget {
                 },
               ),
               const Padding(
-                padding: EdgeInsets.all(16.0),
+                padding: EdgeInsets.only(top: 20),
                 child: Text(
                   'Su búsqueda ha coincido con:',
-                  style: TextStyle(fontSize: 24, color: Colors.white),
+                  style: TextStyle(fontSize: 16, color: Colors.white),
+                  textAlign: TextAlign.center,
                 ),
               ),
               Padding(
@@ -70,7 +71,8 @@ class DetalleOrgScreen extends StatelessWidget {
                     const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10),
                 child: AuthButtons(
                     vacantes: organization.vacantes,
-                    formulario: organization.formulario),
+                    formulario: organization.formulario,
+                    orgName: orgName),
               ),
             ],
           ),
