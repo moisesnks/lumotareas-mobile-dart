@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:lumotareas/screens/home_screen.dart';
 import 'package:lumotareas/viewmodels/home_viewmodel.dart';
-import 'package:lumotareas/services/firestore_service.dart';
+import 'package:lumotareas/viewmodels/login_viewmodel.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -117,7 +117,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => HomeViewModel()),
-        Provider(create: (_) => FirestoreService()),
+        ChangeNotifierProvider(create: (_) => LoginViewModel()),
       ],
       child: MaterialApp(
         title: 'Lumotareas',

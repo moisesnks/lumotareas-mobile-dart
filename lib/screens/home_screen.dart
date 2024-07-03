@@ -29,31 +29,37 @@ class HomeScreenState extends State<HomeScreen> {
 
   Widget renderBody(BuildContext context) {
     final viewModel = Provider.of<HomeViewModel>(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 50),
-          const Text(
-            'Para comenzar,',
-            style: TextStyle(
-              fontFamily: 'Lexend',
-              fontWeight: FontWeight.w600,
-              fontSize: 20,
-              color: Color(0xFFFFFFFF),
-              height: .5,
+    return GestureDetector(
+      onTap: () {
+        // Handle tap anywhere on the screen
+        FocusScope.of(context).unfocus(); // Close keyboard if open
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 50),
+            const Text(
+              'Para comenzar,',
+              style: TextStyle(
+                fontFamily: 'Lexend',
+                fontWeight: FontWeight.w600,
+                fontSize: 20,
+                color: Color(0xFFFFFFFF),
+                height: .5,
+              ),
             ),
-          ),
-          const SizedBox(height: 20),
-          InputField(
-            key: const Key('orgField'),
-            controller: viewModel.orgController,
-            labelText: 'Ingresa el nombre de tu organización',
-            hintText: 'Escribe el nombre aquí',
-            keyboardType: TextInputType.text,
-          ),
-        ],
+            const SizedBox(height: 20),
+            InputField(
+              key: const Key('orgField'),
+              controller: viewModel.orgController,
+              labelText: 'Ingresa el nombre de tu organización',
+              hintText: 'Escribe el nombre aquí',
+              keyboardType: TextInputType.text,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -85,7 +91,9 @@ class HomeScreenState extends State<HomeScreen> {
                 child: Container(
                   margin:
                       const EdgeInsets.only(left: 20, right: 20, bottom: 200),
-                  child: renderBody(context),
+                  child: SafeArea(
+                    child: renderBody(context),
+                  ),
                 ),
               ),
             ],

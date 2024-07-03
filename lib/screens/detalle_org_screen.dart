@@ -1,26 +1,79 @@
 import 'package:flutter/material.dart';
+import 'package:lumotareas/widgets/header.dart';
+import 'package:logger/logger.dart';
+import 'package:lumotareas/models/organization.dart'; // Importa el modelo de Organization
+import './detalle_org/descripcion_widget.dart';
+import './detalle_org/miembros_widget.dart';
+import './detalle_org/owner_widget.dart';
+import './detalle_org/auth_widget.dart';
 
 class DetalleOrgScreen extends StatelessWidget {
   final String orgName;
+  final Organization
+      organization; // Cambiado a Organization en lugar de Map<String, dynamic>
+  final Logger _logger = Logger(); // Instancia del Logger
 
-  const DetalleOrgScreen({super.key, required this.orgName});
+  DetalleOrgScreen(
+      {super.key, required this.orgName, required this.organization});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Detalles de $orgName'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'Detalles de la organización $orgName',
-              style: const TextStyle(fontSize: 24),
-            ),
-            // Aquí puedes agregar más widgets para mostrar detalles adicionales
-          ],
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/new_org.png'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: <Widget>[
+              // Aquí van los demás widgets de tu pantalla
+              Header(
+                onTap: () {
+                  _logger.d('Tapped on header'); // Logging onTap event
+                  // Additional logic can be added here
+                },
+              ),
+              const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text(
+                  'Su búsqueda ha coincido con:',
+                  style: TextStyle(fontSize: 24, color: Colors.white),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 16, right: 16, bottom: 20),
+                child: Text(
+                  orgName,
+                  style: const TextStyle(
+                    fontSize: 40,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Lexend',
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Column(
+                  children: [
+                    DescriptionQuote(descripcion: organization.descripcion),
+                    MiembrosField(miembros: organization.miembros),
+                    OwnerField(owner: organization.owner),
+                  ],
+                ),
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10),
+                child: AuthButtons(
+                    vacantes: organization.vacantes,
+                    formulario: organization.formulario),
+              ),
+            ],
+          ),
         ),
       ),
     );

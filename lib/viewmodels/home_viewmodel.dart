@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import 'package:lumotareas/services/firestore_service.dart';
+import 'package:lumotareas/services/organization_service.dart'; // Importa el servicio de organización
 import 'package:lumotareas/screens/detalle_org_screen.dart';
 import 'package:lumotareas/screens/nueva_org_screen.dart';
 import 'package:lumotareas/screens/buscando_org.dart';
@@ -8,8 +8,8 @@ import 'package:lumotareas/screens/buscando_org.dart';
 class HomeViewModel extends ChangeNotifier {
   final TextEditingController orgController = TextEditingController();
   final Logger _logger = Logger();
-  final FirestoreService _firestoreService =
-      FirestoreService(); // Instancia del servicio Firestore
+  final OrganizationService _organizationService =
+      OrganizationService(); // Instancia del servicio de organización
 
   void handleArrowTap(BuildContext context) async {
     String orgName = orgController.text.trim();
@@ -24,13 +24,13 @@ class HomeViewModel extends ChangeNotifier {
       );
 
       // Un delay para simular una búsqueda en Firestore
-      await Future.delayed(const Duration(milliseconds: 3500));
+      await Future.delayed(const Duration(milliseconds: 1000));
 
       try {
         _logger.i('Buscando la organización $orgName...');
 
-        // Consultar organización en Firestore
-        var result = await _firestoreService.searchOrg(orgName);
+        // Consultar organización utilizando OrganizationService
+        var result = await _organizationService.getOrganization(orgName);
 
         // Retirar la pantalla de búsqueda antes de navegar a la siguiente pantalla
         if (context.mounted) {
@@ -43,7 +43,8 @@ class HomeViewModel extends ChangeNotifier {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => DetalleOrgScreen(orgName: orgName),
+                builder: (context) => DetalleOrgScreen(
+                    orgName: orgName, organization: result['organization']),
               ),
             );
           }

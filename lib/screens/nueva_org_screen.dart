@@ -3,7 +3,9 @@ import 'package:lumotareas/widgets/org_formulario.dart';
 import 'package:lumotareas/widgets/checkbox_widget.dart';
 import 'package:lumotareas/widgets/header.dart';
 import 'package:logger/logger.dart';
+import 'package:lumotareas/screens/login_screen.dart';
 import 'package:lumotareas/extensions/text_styles.dart';
+import 'package:lumotareas/screens/creando_org.dart';
 
 class NuevaOrgScreen extends StatefulWidget {
   final Logger _logger = Logger();
@@ -21,6 +23,9 @@ class NuevaOrgScreenState extends State<NuevaOrgScreen> {
   final TextEditingController _dayController = TextEditingController();
   final TextEditingController _monthController = TextEditingController();
   final TextEditingController _yearController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   bool _canSubmit() {
     return _emailController.text.isNotEmpty &&
@@ -28,10 +33,129 @@ class NuevaOrgScreenState extends State<NuevaOrgScreen> {
         _dayController.text.isNotEmpty &&
         _monthController.text.isNotEmpty &&
         _yearController.text.isNotEmpty &&
+        _passwordController.text.isNotEmpty &&
+        _confirmPasswordController.text.isNotEmpty &&
         _isChecked;
   }
 
   bool _isChecked = false;
+
+  final List<String> _errors = [];
+
+  bool _validateEmail(String email) {
+    final RegExp emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+
+    if (email.isEmpty) {
+      _errors.add('El email es requerido');
+      return false;
+    } else if (!emailRegex.hasMatch(email)) {
+      _errors.add('El formato del email es inválido');
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  bool _validateFullName(String fullName) {
+    if (fullName.isEmpty) {
+      _errors.add('El nombre completo es requerido');
+      return false;
+    } else if (fullName
+        .contains(RegExp(r'[0-9!@#<>?":_`~;[\]\\|=+)(*&^%$£/{}-]'))) {
+      _errors.add(
+          'El nombre completo no puede contener caracteres especiales o números');
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  bool _validateBirthDate(String day, String month, String year) {
+    if (day.isEmpty || month.isEmpty || year.isEmpty) {
+      _errors.add('La fecha de nacimiento es requerida');
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  bool _validatePassword(String password) {
+    if (password.isEmpty) {
+      _errors.add('La contraseña es requerida');
+      return false;
+    } else if (password.length < 8) {
+      _errors.add('La contraseña debe tener al menos 8 caracteres');
+      return false;
+    } else if (!password.contains(RegExp(r'[0-9]'))) {
+      _errors.add('La contraseña debe contener al menos un número');
+      return false;
+    } else if (!password.contains(RegExp(r'[A-Z]'))) {
+      _errors.add('La contraseña debe contener al menos una letra mayúscula');
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  bool _validateConfirmPassword(String password, String confirmPassword) {
+    if (password != confirmPassword) {
+      _errors.add('Las contraseñas no coinciden');
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  void validateForm() {
+    _errors.clear();
+
+    _validateEmail(_emailController.text.trim());
+    _validateFullName(_fullNameController.text.trim());
+    _validateBirthDate(
+      _dayController.text.trim(),
+      _monthController.text.trim(),
+      _yearController.text.trim(),
+    );
+    _validatePassword(_passwordController.text.trim());
+    _validateConfirmPassword(
+      _passwordController.text.trim(),
+      _confirmPasswordController.text.trim(),
+    );
+
+    if (_errors.isNotEmpty) {
+      widget._logger.d('Errores en el formulario: $_errors');
+      showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return Container(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                const Text(
+                  'Corrige los siguientes errores:',
+                  style: TextStyle(fontSize: 18),
+                ),
+                const SizedBox(height: 10),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: _errors.map((error) {
+                    return Text(
+                      error,
+                      style: const TextStyle(color: Colors.red),
+                    );
+                  }).toList(),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    } else {
+      widget._logger.d('Formulario validado correctamente');
+      submitForm();
+    }
+  }
 
   @override
   void dispose() {
@@ -40,6 +164,8 @@ class NuevaOrgScreenState extends State<NuevaOrgScreen> {
     _dayController.dispose();
     _monthController.dispose();
     _yearController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -65,28 +191,33 @@ class NuevaOrgScreenState extends State<NuevaOrgScreen> {
     );
   }
 
-  void _submitForm() {
-    if (_canSubmit()) {
-      String email = _emailController.text.trim();
-      String fullName = _fullNameController.text.trim();
-      String day = _dayController.text.trim();
-      String month = _monthController.text.trim();
-      String year = _yearController.text.trim();
-      String birthDate = '$day/$month/$year';
+  void submitForm() {
+    Map<String, dynamic> formData = {
+      'email': _emailController.text.trim(),
+      'fullName': _fullNameController.text.trim(),
+      'birthdate':
+          '${_dayController.text.trim()}/${_monthController.text.trim()}/${_yearController.text.trim()}',
+      'password': _passwordController.text.trim(),
+      'orgName': widget.orgName,
+    };
 
-      // Aquí puedes realizar la lógica para enviar el formulario
-      widget._logger.d(
-          'Formulario enviado: { email: $email, fullName: $fullName, birthDate: $birthDate }');
+    widget._logger.d('Formulario enviado: $formData');
 
-      // Por ejemplo, llamar al servicio para enviar los datos
-      // apiService.sendFormData({
-      //   'email': email,
-      //   'fullName': fullName,
-      //   'birthDate': birthDate,
-      // });
+    // Mostrar pantalla de carga
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => LoadingScreen(),
+      ),
+    );
 
-      // Puedes realizar otras acciones necesarias después de enviar el formulario
-    }
+    // Retraso simulado de 2 segundos antes de volver atrás
+    Future.delayed(const Duration(days: 1), () {
+      // Verificar si el contexto es válido antes de intentar pop
+      if (mounted) {
+        Navigator.pop(context);
+      }
+    });
   }
 
   @override
@@ -120,15 +251,15 @@ class NuevaOrgScreenState extends State<NuevaOrgScreen> {
                         const SizedBox(height: 20),
                         renderTitle(),
                         renderSubtitle(),
-                        const SizedBox(height: 20),
                         OrgFormulario(
                           emailController: _emailController,
                           fullNameController: _fullNameController,
                           dayController: _dayController,
                           monthController: _monthController,
                           yearController: _yearController,
+                          passwordController: _passwordController,
+                          confirmPasswordController: _confirmPasswordController,
                         ),
-                        const SizedBox(height: 20),
                         CheckboxWidget(
                           onChanged: (isChecked) {
                             setState(() {
@@ -136,18 +267,16 @@ class NuevaOrgScreenState extends State<NuevaOrgScreen> {
                             });
                             widget._logger
                                 .d('Checkbox seleccionado: $isChecked');
-                            // Aquí puedes manejar el estado del checkbox
                           },
                         ),
-                        const SizedBox(height: 20),
                         ElevatedButton(
                           onPressed: _canSubmit()
                               ? () {
                                   widget._logger.d(
                                       'Registrar organización y cuenta presionado');
-                                  _submitForm(); // Llama al método para enviar el formulario
+                                  validateForm(); // Llama al método para validar y mostrar el modal si hay errores
                                 }
-                              : null, // Deshabilita el botón si no se pueden enviar los datos
+                              : null,
                           style: ButtonStyle(
                             shape: MaterialStateProperty.all<
                                 RoundedRectangleBorder>(
@@ -167,28 +296,34 @@ class NuevaOrgScreenState extends State<NuevaOrgScreen> {
                           child: const Text(
                               'Registrar mi organización y mi cuenta'),
                         ),
-                        const SizedBox(height: 20),
-                        TextButton(
-                          onPressed: () {
-                            widget._logger
-                                .d('Botón "Ya tengo cuenta..." presionado');
-                            // Lógica para el enlace "Ya tengo cuenta..."
-                          },
-                          child: Text(
-                            'Ya tengo cuenta en Lumotareas pero quiero crear una nueva organización',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w300,
-                            ).underlined(
-                              distance:
-                                  2, // Distancia entre el texto y el subrayado
-                              thickness: 1, // Grosor del subrayado
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
                       ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Center(
+                    child: TextButton(
+                      onPressed: () {
+                        widget._logger
+                            .d('Botón "Ya tengo cuenta..." presionado');
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => LoginScreen(),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        'Ya tengo cuenta en Lumotareas pero quiero crear una nueva organización',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w300,
+                        ).underlined(
+                          distance:
+                              2, // Distancia entre el texto y el subrayado
+                          thickness: 1, // Grosor del subrayado
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                   ),
                 ],
