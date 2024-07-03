@@ -6,6 +6,7 @@ import 'package:lumotareas/widgets/input_field.dart';
 import 'package:lumotareas/viewmodels/home_viewmodel.dart';
 import 'package:lumotareas/screens/login_screen.dart';
 import 'package:lumotareas/extensions/text_styles.dart';
+import 'package:lumotareas/services/preferences_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,15 +19,94 @@ class HomeScreenState extends State<HomeScreen> {
   final ImageProvider _welcomeImage =
       const AssetImage('assets/images/welcome.png');
 
-  @override
-  void initState() {
-    super.initState();
+  Future<bool> checkRedirect() async {
+    bool redirectToLogin = await PreferenceService.getRedirectToLogin();
+    return redirectToLogin;
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    precacheImage(_welcomeImage, context);
+  Widget build(BuildContext context) {
+    return FutureBuilder<bool>(
+      future: checkRedirect(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        } else if (snapshot.hasError) {
+          return Scaffold(
+            body: Center(
+              child: Text('Error: ${snapshot.error}'),
+            ),
+          );
+        } else {
+          bool shouldRedirect = snapshot.data ?? false;
+          if (shouldRedirect) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const LoginScreen()),
+              );
+            });
+            // Retornar un contenedor vacío mientras se redirige
+            return Scaffold(
+              body: Container(),
+            );
+          } else {
+            // Mostrar la pantalla principal
+            return Scaffold(
+              resizeToAvoidBottomInset: false,
+              body: Stack(
+                fit: StackFit.expand,
+                children: [
+                  // Fondo de bienvenida estático
+                  Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: _welcomeImage,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  // Contenido principal
+                  Column(
+                    children: [
+                      Container(
+                        margin:
+                            const EdgeInsets.only(top: 80, left: 20, right: 20),
+                        child: renderTitle(),
+                      ),
+                      Expanded(
+                        child: Container(
+                          margin: const EdgeInsets.only(
+                              left: 20, right: 20, bottom: 160),
+                          child: SafeArea(
+                            child: renderBody(context),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Positioned(
+                    bottom: 20,
+                    right: 20,
+                    child: Consumer<HomeViewModel>(
+                      builder: (context, viewModel, child) {
+                        return ArrowCircleWidget(
+                          onTap: () => viewModel.handleArrowTap(context),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+        }
+      },
+    );
   }
 
   Widget renderBody(BuildContext context) {
@@ -73,7 +153,9 @@ class HomeScreenState extends State<HomeScreen> {
             TextButton(
               onPressed: () {
                 Navigator.push(
-                    context, MaterialPageRoute(builder: (_) => LoginScreen()));
+                  context,
+                  MaterialPageRoute(builder: (_) => const LoginScreen()),
+                );
               },
               child: Text(
                 'Ya tengo cuenta en Lumotareas',
@@ -89,56 +171,6 @@ class HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          // Fondo de bienvenida estático
-          Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: _welcomeImage,
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          // Contenido principal
-          Column(
-            children: [
-              Container(
-                margin: const EdgeInsets.only(top: 80, left: 20, right: 20),
-                child: renderTitle(),
-              ),
-              Expanded(
-                child: Container(
-                  margin:
-                      const EdgeInsets.only(left: 20, right: 20, bottom: 160),
-                  child: SafeArea(
-                    child: renderBody(context),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Positioned(
-            bottom: 20,
-            right: 20,
-            child: Consumer<HomeViewModel>(
-              builder: (context, viewModel, child) {
-                return ArrowCircleWidget(
-                  onTap: () => viewModel.handleArrowTap(context),
-                );
-              },
-            ),
-          ),
-        ],
       ),
     );
   }

@@ -67,16 +67,21 @@ class AuthService {
         final User? user = userCredential.user;
 
         if (user != null) {
+          // Verificar si el usuario ya existe
           final userExists = await checkIfUserExists(user.uid);
+
           if (userExists) {
             _logger.d(
                 'Inicio de sesión exitoso con Google. Usuario: ${user.email}');
             return user;
           } else {
-            _logger
-                .w('Usuario no existe, no se puede iniciar sesión con Google');
-            await deleteUser();
-            return null;
+            _logger.w('Usuario no existe, vinculando cuenta de Google.');
+
+            // Vincular la cuenta de Google con la cuenta existente
+            await user.linkWithCredential(credential);
+
+            _logger.d('Cuenta de Google vinculada exitosamente.');
+            return user;
           }
         } else {
           _logger.w(

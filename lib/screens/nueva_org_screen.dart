@@ -319,7 +319,7 @@ class NuevaOrgScreenState extends State<NuevaOrgScreen> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => LoginScreen(),
+                            builder: (context) => const LoginScreen(),
                           ),
                         );
                       },

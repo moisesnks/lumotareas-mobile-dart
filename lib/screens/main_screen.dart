@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:lumotareas/viewmodels/login_viewmodel.dart';
 import 'package:provider/provider.dart';
+import 'package:lumotareas/services/preferences_service.dart';
 
 class MainScreen extends StatefulWidget {
-  MainScreen({super.key});
+  const MainScreen({super.key});
 
   @override
   MainScreenState createState() => MainScreenState();
@@ -12,11 +13,20 @@ class MainScreen extends StatefulWidget {
 
 class MainScreenState extends State<MainScreen> {
   DateTime? currentBackPressTime;
+  bool redirectToLogin = false;
 
   @override
   void initState() {
     super.initState();
     BackButtonInterceptor.add(myInterceptor);
+    loadRedirectToLogin();
+  }
+
+  Future<void> loadRedirectToLogin() async {
+    final value = await PreferenceService.getRedirectToLogin();
+    setState(() {
+      redirectToLogin = value;
+    });
   }
 
   @override
@@ -47,10 +57,10 @@ class MainScreenState extends State<MainScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Main Screen'),
+        title: const Text('Main Screen'),
         actions: [
           IconButton(
-            icon: Icon(Icons.exit_to_app),
+            icon: const Icon(Icons.exit_to_app),
             onPressed: () {
               loginViewModel.signOut(context);
             },
@@ -66,11 +76,21 @@ class MainScreenState extends State<MainScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text('Bienvenido, ${currentUser.email}'),
-                  // Aquí colocarías el contenido adicional para usuarios autenticados
+                  const SizedBox(height: 20),
+                  SwitchListTile(
+                    title: const Text('Redirigir a Login'),
+                    value: redirectToLogin,
+                    onChanged: (value) async {
+                      setState(() {
+                        redirectToLogin = value;
+                      });
+                      await PreferenceService.setRedirectToLogin(value);
+                    },
+                  ),
                 ],
               );
             } else {
-              return CircularProgressIndicator();
+              return const CircularProgressIndicator();
             }
           },
         ),

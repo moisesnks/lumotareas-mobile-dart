@@ -128,8 +128,7 @@ class MyApp extends StatelessWidget {
         initialRoute: '/',
         routes: {
           '/': (context) => const HomeScreen(),
-          // construir un home falso para probar la navegación
-          '/main': (context) => MainScreen(),
+          '/main': (context) => const MainScreen(),
         },
       ),
     );

@@ -2,15 +2,56 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lumotareas/viewmodels/login_viewmodel.dart';
 import 'package:lumotareas/widgets/welcome_title.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
+  @override
+  LoginScreenState createState() => LoginScreenState();
+}
+
+class LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final Logger _logger = Logger();
+  late SharedPreferences _prefs;
+  bool _obscurePassword = true; // Estado inicial para ocultar la contraseña
+  bool _rememberCredentials =
+      false; // Estado inicial para recordar las credenciales
 
-  LoginScreen({super.key});
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedCredentials();
+  }
+
+  // Método para cargar los valores guardados en SharedPreferences
+  void _loadSavedCredentials() async {
+    _prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _emailController.text = _prefs.getString('savedEmail') ?? '';
+      _passwordController.text = _prefs.getString('savedPassword') ?? '';
+      _rememberCredentials = _prefs.getBool('rememberCredentials') ?? false;
+    });
+  }
+
+  // Método para guardar el último correo y contraseña usados en SharedPreferences
+  void _saveCredentials(String email, String password) {
+    _prefs.setString('savedEmail', email);
+    if (_rememberCredentials) {
+      _prefs.setString('savedPassword', password);
+    } else {
+      _prefs.remove('savedPassword');
+    }
+  }
+
+  // Método para guardar el estado del checkbox en SharedPreferences
+  void _saveRememberCredentials(bool value) {
+    _prefs.setBool('rememberCredentials', value);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +68,12 @@ class LoginScreen extends StatelessWidget {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text(message)),
                     );
+                    if (message.contains('Inicio de sesión fallido')) {
+                      setState(() {
+                        _rememberCredentials = false;
+                      });
+                      _saveRememberCredentials(false); // Guardar estado actual
+                    }
                   }
                 });
 
@@ -52,6 +99,8 @@ class LoginScreen extends StatelessWidget {
                           const SizedBox(height: 20),
                           TextField(
                             controller: _emailController,
+                            onChanged: (value) => _saveCredentials(
+                                value, _passwordController.text),
                             decoration: InputDecoration(
                               labelText: 'Correo Electrónico',
                               border: OutlineInputBorder(
@@ -66,6 +115,8 @@ class LoginScreen extends StatelessWidget {
                           const SizedBox(height: 12),
                           TextField(
                             controller: _passwordController,
+                            onChanged: (value) =>
+                                _saveCredentials(_emailController.text, value),
                             decoration: InputDecoration(
                               labelText: 'Contraseña',
                               border: OutlineInputBorder(
@@ -75,10 +126,39 @@ class LoginScreen extends StatelessWidget {
                                 horizontal: 16,
                                 vertical: 12,
                               ),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscurePassword
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscurePassword = !_obscurePassword;
+                                  });
+                                },
+                              ),
                             ),
-                            obscureText: true,
+                            obscureText: _obscurePassword,
                           ),
-                          const SizedBox(height: 36),
+                          Row(
+                            children: [
+                              Checkbox(
+                                value: _rememberCredentials,
+                                onChanged: (value) {
+                                  if (value != null) {
+                                    setState(() {
+                                      _rememberCredentials = value;
+                                    });
+                                    _saveRememberCredentials(
+                                        value); // Guardar estado
+                                  }
+                                },
+                              ),
+                              const Text('Recordar credenciales'),
+                            ],
+                          ),
+                          const SizedBox(height: 24),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [

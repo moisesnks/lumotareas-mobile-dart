@@ -26,6 +26,11 @@ class HomeViewModel extends ChangeNotifier {
       // Un delay para simular una búsqueda en Firestore
       await Future.delayed(const Duration(milliseconds: 1000));
 
+      // Pop de la pantalla de búsqueda
+      if (context.mounted) {
+        Navigator.pop(context);
+      }
+
       try {
         _logger.i('Buscando la organización $orgName...');
 
