@@ -94,4 +94,26 @@ class LoginViewModel extends ChangeNotifier {
       setMessage('Error al cerrar sesión');
     }
   }
+
+  Future<Usuario?> registerUserWithEmailAndPassword(
+      Map<String, dynamic> formData) async {
+    _logger.d('Datos del formulario desde LoginViewModel: $formData');
+    try {
+      Usuario? user =
+          await _userService.registerUserWithEmailAndPassword(formData);
+      if (user != null) {
+        _currentUser = user;
+        notifyListeners();
+        _logger.d(
+            'Usuario registrado correctamente con correo y contraseña: ${user.email}');
+        return user;
+      } else {
+        _logger.w('Registro de usuario fallido con correo y contraseña');
+        return null;
+      }
+    } catch (e) {
+      _logger.e('Error al registrar usuario con correo y contraseña: $e');
+      return null;
+    }
+  }
 }

@@ -62,7 +62,7 @@ class DetalleOrgScreen extends StatelessWidget {
                   children: [
                     DescriptionQuote(descripcion: organization.descripcion),
                     MiembrosField(miembros: organization.miembros),
-                    OwnerField(owner: organization.owner),
+                    OwnerField(owner: organization.owner.nombre),
                   ],
                 ),
               ),

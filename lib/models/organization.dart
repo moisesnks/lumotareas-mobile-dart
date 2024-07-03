@@ -1,7 +1,31 @@
+class Owner {
+  final String nombre;
+  final String uid;
+
+  Owner({
+    required this.nombre,
+    required this.uid,
+  });
+
+  factory Owner.fromMap(Map<String, String> map) {
+    return Owner(
+      nombre: map['nombre'] ?? '',
+      uid: map['uid'] ?? '',
+    );
+  }
+
+  Map<String, String> toMap() {
+    return {
+      'nombre': nombre,
+      'uid': uid,
+    };
+  }
+}
+
 class Organization {
   final String nombre;
   final int miembros;
-  final String owner;
+  final Owner owner;
   final bool vacantes;
   final List<dynamic> formulario;
   final String descripcion;
@@ -19,7 +43,7 @@ class Organization {
     return Organization(
       nombre: map['nombre'] ?? '',
       miembros: map['miembros'] ?? 0,
-      owner: map['owner'] ?? '',
+      owner: Owner.fromMap(Map<String, String>.from(map['owner'] ?? {})),
       vacantes: map['vacantes'] ?? false,
       formulario: map['formulario'] ?? [],
       descripcion: map['descripcion'] ?? '',
@@ -30,7 +54,7 @@ class Organization {
     return {
       'nombre': nombre,
       'miembros': miembros,
-      'owner': owner,
+      'owner': owner.toMap(),
       'vacantes': vacantes,
       'formulario': formulario,
       'descripcion': descripcion,

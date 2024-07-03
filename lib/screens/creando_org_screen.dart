@@ -128,7 +128,8 @@ class CreandoOrgScreenState extends State<CreandoOrgScreen> {
     // Crear objeto Organization con los datos del formulario y los parámetros recibidos
     Organization newOrg = Organization(
       nombre: _preguntas[0]['controller'].text,
-      owner: widget.ownerUID,
+      owner:
+          Owner(nombre: _preguntas[0]['controller'].text, uid: widget.ownerUID),
       descripcion: _preguntas[1]['controller'].text,
       vacantes: _vacantes,
       miembros: 0,
@@ -151,8 +152,11 @@ class CreandoOrgScreenState extends State<CreandoOrgScreen> {
                 onPressed: () {
                   Navigator.of(dialogContext).pop();
                   if (result['success']) {
-                    Navigator.of(context).pop();
-                    // Navegar a otra pantalla o realizar otra acción después de crear la organización
+                    // Navegar a la pantalla de inicio que es '/main'
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                      '/main',
+                      (route) => false,
+                    );
                   }
                 },
                 child: const Text('OK'),

@@ -19,6 +19,7 @@ class UserService {
     try {
       // Iniciar sesión con Google usando AuthService
       User? firebaseUser = await _authService.signInWithGoogle();
+      // Busca el uid del usuario en la base de datos
 
       if (firebaseUser != null) {
         // Obtener información de usuario por UID

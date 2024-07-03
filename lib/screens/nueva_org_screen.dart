@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:lumotareas/screens/creando_org_screen.dart';
 import 'package:lumotareas/widgets/org_formulario.dart';
+import 'package:provider/provider.dart';
+import 'package:lumotareas/viewmodels/login_viewmodel.dart';
 import 'package:lumotareas/widgets/checkbox_widget.dart';
 import 'package:lumotareas/widgets/header.dart';
 import 'package:logger/logger.dart';
 import 'package:lumotareas/screens/login_screen.dart';
 import 'package:lumotareas/extensions/text_styles.dart';
 import 'package:lumotareas/screens/loading_creando_org.dart';
-import 'package:lumotareas/screens/creando_org_screen.dart';
+import 'package:lumotareas/models/user.dart';
 import 'package:lumotareas/services/user_service.dart';
 
 class NuevaOrgScreen extends StatefulWidget {
@@ -156,7 +159,7 @@ class NuevaOrgScreenState extends State<NuevaOrgScreen> {
       );
     } else {
       widget._logger.d('Formulario validado correctamente');
-      submitForm();
+      submitForm(context);
     }
   }
 
@@ -194,17 +197,19 @@ class NuevaOrgScreenState extends State<NuevaOrgScreen> {
     );
   }
 
-  void submitForm() {
+  void submitForm(BuildContext context) async {
     Map<String, dynamic> formData = {
       'email': _emailController.text.trim(),
       'fullName': _fullNameController.text.trim(),
-      'birthdate':
+      'birthDate':
           '${_dayController.text.trim()}/${_monthController.text.trim()}/${_yearController.text.trim()}',
       'password': _passwordController.text.trim(),
       'orgName': widget.orgName,
     };
 
     widget._logger.d('Formulario enviado: $formData');
+
+    final loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
 
     // Mostrar pantalla de carga
     Navigator.push(
@@ -214,21 +219,46 @@ class NuevaOrgScreenState extends State<NuevaOrgScreen> {
       ),
     );
 
-    // Registrar usuario y organización
-    widget.userService.registerUserWithEmailAndPassword(formData);
+// Registrar usuario y organización
+    Usuario? newUser =
+        await loginViewModel.registerUserWithEmailAndPassword(formData);
 
-    // Mostrar mensaje de éxito
-    widget._logger.d('Usuario y organización registrados correctamente');
-
-    // Redirigir a la pantalla de creación de organización
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => CreandoOrgScreen(
-            orgName: widget.orgName,
-            ownerUID: widget.userService.currentUser!.uid),
-      ),
-    );
+    if (newUser != null) {
+      widget._logger.d('Usuario registrado correctamente: ${newUser.uid}');
+      if (context.mounted) {
+        Navigator.pushReplacement(context, MaterialPageRoute(
+          builder: (context) {
+            return CreandoOrgScreen(
+                orgName: widget.orgName, ownerUID: newUser.uid);
+          },
+        ));
+      }
+    } else {
+      if (context.mounted) {
+        Navigator.pop(context);
+      }
+      widget._logger.e('Error al registrar usuario');
+      if (context.mounted) {
+        showDialog(
+          context: context,
+          builder: (BuildContext dialogContext) {
+            return AlertDialog(
+              title: const Text('Error'),
+              content: const Text(
+                  'Hubo un error al registrar tu cuenta. Por favor, intenta de nuevo.'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(dialogContext).pop();
+                  },
+                  child: const Text('Aceptar'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    }
   }
 
   @override
