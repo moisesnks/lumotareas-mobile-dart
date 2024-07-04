@@ -122,9 +122,11 @@ class UserService {
   }
 
   Future<Usuario?> registerUserWithEmailAndPassword(
-      Map<String, dynamic> formData) async {
+    Map<String, dynamic> formData,
+  ) async {
     // logger a lo que llegó en el formulario
     _logger.d('Datos del formulario desde user_service: $formData');
+
     try {
       // Extraer datos del formulario
       String email = formData['email']!;
@@ -135,7 +137,7 @@ class UserService {
       _logger.d('Extracción correcta: $birthdate');
       String password = formData['password']!;
       _logger.d('Extracción correcta: $password');
-      String orgName = formData['orgName']!;
+      String orgName = formData['orgName'] ?? '';
       _logger.d('Extracción correcta: $orgName');
       bool? isOwner = formData['isOwner'];
 
@@ -148,16 +150,29 @@ class UserService {
 
       if (firebaseUser != null) {
         // Crear instancia de Usuario con datos del formulario
-        Usuario newUser = Usuario(
-          uid: firebaseUser.uid,
-          nombre: fullName,
-          email: email,
-          birthdate: birthdate,
-          organizaciones: [
-            OrganizacionInterna(
-                nombre: orgName, id: orgName, isOwner: isOwner ?? false)
-          ],
-        );
+        Usuario newUser;
+        if (orgName.isNotEmpty) {
+          newUser = Usuario(
+            uid: firebaseUser.uid,
+            nombre: fullName,
+            email: email,
+            birthdate: birthdate,
+            organizaciones: [
+              OrganizacionInterna(
+                nombre: orgName,
+                id: orgName,
+                isOwner: isOwner ?? false,
+              ),
+            ],
+          );
+        } else {
+          newUser = Usuario(
+            uid: firebaseUser.uid,
+            nombre: fullName,
+            email: email,
+            birthdate: birthdate,
+          );
+        }
 
         // Convertir el objeto Usuario a un mapa para almacenarlo en Firestore
         Map<String, dynamic> userData = newUser.toMap();

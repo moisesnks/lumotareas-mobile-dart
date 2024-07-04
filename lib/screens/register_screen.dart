@@ -7,6 +7,7 @@ import 'package:lumotareas/services/user_service.dart';
 import 'package:lumotareas/services/organization_service.dart';
 import 'package:lumotareas/viewmodels/login_viewmodel.dart';
 import 'package:provider/provider.dart';
+import 'package:lumotareas/models/user.dart';
 
 class RegisterScreen extends StatefulWidget {
   final Logger _logger = Logger();
@@ -90,84 +91,67 @@ class RegisterScreenState extends State<RegisterScreen> {
         'birthDate': birthDate,
         'password': _passwordController.text.trim(),
         'formulario': widget.respuestas,
-        'orgName': widget.orgName,
       };
 
       widget._logger.d('Datos del formulario: $formData');
       final loginViewModel =
           Provider.of<LoginViewModel>(context, listen: false);
 
-      // Intenta  registrar al usuario
-      var newUser =
+// Registrar usuario y organización
+      Usuario? newUser =
           await loginViewModel.registerUserWithEmailAndPassword(formData);
+
       if (newUser != null) {
-        widget._logger.d('Usuario registrado correctamente: ${newUser.email}');
-        // Mostrar un mensaje de éxito
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Usuario registrado correctamente'),
-              backgroundColor: Colors.green,
-            ),
-          );
-        }
-        // Enviar la solicitud de registro a la organización
+        widget._logger.d('Usuario registrado correctamente: ${newUser.uid}');
+
         var result = await widget._organizationService
             .registerSolicitud(widget.orgName, widget.respuestas, newUser.uid);
-        if (result['success']) {
-          widget._logger.d('Solicitud registrada correctamente');
-          // Mostrar un mensaje de éxito
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(
-                    'Solicitud registrada correctamente en la organización'),
-                backgroundColor: Colors.green,
-              ),
-            );
-          }
-          // Registrar la referencia de la solicitud en el usuario, para eso
-          // el usuario tiene un campo (array) que se llama solicitudes el cual con el servicio
-          // de firestore se usará el método addToArray para agregar la referencia de la solicitud
-          // a ese array
-          var ref = result['ref'];
-          bool userUpdate =
-              await widget._userService.addSolicitudToUser(newUser.uid, ref);
+        widget._logger.d('Solicitud de organización creada: ${result['ref']}');
 
-          if (userUpdate) {
-            widget._logger.d('Referencia de solicitud agregada al usuario');
-            if (context.mounted) {
-              // Redirigir al usuario a la pantalla de inicio
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                '/main',
-                (route) => false,
-              );
-            }
-          } else {
-            widget._logger
-                .e('Error al agregar referencia de solicitud al usuario');
+        // Registrar la referencia de la solicitud en el usuario, para eso
+        // el usuario tiene un campo (array) que se llama solicitudes el cual con el servicio
+        // de firestore se usará el método addToArray para agregar la referencia de la solicitud
+        // a ese array
+        var ref = result['ref'];
+        bool userUpdate =
+            await widget._userService.addSolicitudToUser(newUser.uid, ref);
+
+        if (userUpdate) {
+          widget._logger.d('Referencia de solicitud agregada al usuario');
+          if (context.mounted) {
+            // Redirigir al usuario a la pantalla de inicio
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              '/main',
+              (route) => false,
+            );
           }
         } else {
-          widget._logger.e('Error al registrar solicitud');
-          // Mostrar un mensaje de error
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Error al registrar solicitud'),
-                backgroundColor: Colors.red,
-              ),
-            );
-          }
+          widget._logger
+              .e('Error al agregar referencia de solicitud al usuario');
         }
       } else {
-        widget._logger.e('Error al registrar usuario');
-        // Mostrar un mensaje de error
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Error al registrar usuario'),
-              backgroundColor: Colors.red,
-            ),
+          Navigator.pop(context);
+        }
+        widget._logger.e('Error al registrar usuario');
+        if (context.mounted) {
+          showDialog(
+            context: context,
+            builder: (BuildContext dialogContext) {
+              return AlertDialog(
+                title: const Text('Error'),
+                content: const Text(
+                    'Hubo un error al registrar tu cuenta. Por favor, intenta de nuevo.'),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(dialogContext).pop();
+                    },
+                    child: const Text('Aceptar'),
+                  ),
+                ],
+              );
+            },
           );
         }
       }

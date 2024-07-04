@@ -10,12 +10,10 @@ import 'package:lumotareas/screens/login_screen.dart';
 import 'package:lumotareas/extensions/text_styles.dart';
 import 'package:lumotareas/screens/loading_creando_org.dart';
 import 'package:lumotareas/models/user.dart';
-import 'package:lumotareas/services/user_service.dart';
 
 class NuevaOrgScreen extends StatefulWidget {
   final Logger _logger = Logger();
   final String orgName;
-  final UserService userService = UserService();
 
   NuevaOrgScreen({super.key, required this.orgName});
 
