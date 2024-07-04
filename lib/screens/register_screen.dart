@@ -5,6 +5,8 @@ import 'package:lumotareas/widgets/header.dart';
 import 'package:logger/logger.dart';
 import 'package:lumotareas/services/user_service.dart';
 import 'package:lumotareas/services/organization_service.dart';
+import 'package:lumotareas/viewmodels/login_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 class RegisterScreen extends StatefulWidget {
   final Logger _logger = Logger();
@@ -92,10 +94,12 @@ class RegisterScreenState extends State<RegisterScreen> {
       };
 
       widget._logger.d('Datos del formulario: $formData');
+      final loginViewModel =
+          Provider.of<LoginViewModel>(context, listen: false);
 
       // Intenta  registrar al usuario
       var newUser =
-          await widget._userService.registerUserWithEmailAndPassword(formData);
+          await loginViewModel.registerUserWithEmailAndPassword(formData);
       if (newUser != null) {
         widget._logger.d('Usuario registrado correctamente: ${newUser.email}');
         // Mostrar un mensaje de éxito

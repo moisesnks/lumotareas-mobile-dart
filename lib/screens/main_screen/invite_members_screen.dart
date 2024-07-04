@@ -194,18 +194,29 @@ class InviteMembersScreenState extends State<InviteMembersScreen> {
                             child: SizedBox(
                               height:
                                   200, // Puedes ajustar esta altura según sea necesario
-                              child: ListView.builder(
-                                itemCount: _emails.length,
-                                itemBuilder: (context, index) {
-                                  return ListTile(
-                                    title: Text(_emails[index]),
-                                    trailing: IconButton(
-                                      icon: const Icon(Icons.clear),
-                                      onPressed: () =>
-                                          _removeEmail(_emails[index]),
-                                    ),
-                                  );
-                                },
+                              child: Scrollbar(
+                                thumbVisibility:
+                                    true, // Hace que la barra de desplazamiento sea visible mientras se desplaza
+                                child: SingleChildScrollView(
+                                  child: Wrap(
+                                    spacing:
+                                        8.0, // Espacio horizontal entre los chips
+                                    runSpacing:
+                                        4.0, // Espacio vertical entre las filas de chips
+                                    children: _emails.map((email) {
+                                      return Chip(
+                                        label: Text(email),
+                                        backgroundColor:
+                                            Color.fromARGB(255, 100, 102, 168),
+                                        labelStyle:
+                                            TextStyle(color: Colors.white),
+                                        deleteIcon: Icon(Icons.clear,
+                                            color: Colors.white),
+                                        onDeleted: () => _removeEmail(email),
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
                               ),
                             ),
                           ),

@@ -137,6 +137,7 @@ class UserService {
       _logger.d('Extracción correcta: $password');
       String orgName = formData['orgName']!;
       _logger.d('Extracción correcta: $orgName');
+      bool? isOwner = formData['isOwner'];
 
       // logger a lo que llegó en el formulario
       _logger.d(
@@ -153,7 +154,8 @@ class UserService {
           email: email,
           birthdate: birthdate,
           organizaciones: [
-            OrganizacionInterna(nombre: orgName, id: orgName, isOwner: true)
+            OrganizacionInterna(
+                nombre: orgName, id: orgName, isOwner: isOwner ?? false)
           ],
         );
 

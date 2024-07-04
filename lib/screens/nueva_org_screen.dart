@@ -205,6 +205,7 @@ class NuevaOrgScreenState extends State<NuevaOrgScreen> {
           '${_dayController.text.trim()}/${_monthController.text.trim()}/${_yearController.text.trim()}',
       'password': _passwordController.text.trim(),
       'orgName': widget.orgName,
+      'isOwner': true,
     };
 
     widget._logger.d('Formulario enviado: $formData');
