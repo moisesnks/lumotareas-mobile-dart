@@ -206,11 +206,11 @@ class InviteMembersScreenState extends State<InviteMembersScreen> {
                                     children: _emails.map((email) {
                                       return Chip(
                                         label: Text(email),
-                                        backgroundColor:
-                                            Color.fromARGB(255, 100, 102, 168),
-                                        labelStyle:
-                                            TextStyle(color: Colors.white),
-                                        deleteIcon: Icon(Icons.clear,
+                                        backgroundColor: const Color.fromARGB(
+                                            255, 100, 102, 168),
+                                        labelStyle: const TextStyle(
+                                            color: Colors.white),
+                                        deleteIcon: const Icon(Icons.clear,
                                             color: Colors.white),
                                         onDeleted: () => _removeEmail(email),
                                       );

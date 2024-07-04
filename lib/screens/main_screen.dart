@@ -89,24 +89,23 @@ class MainScreenState extends State<MainScreen> {
     );
   }
 
-  Widget _renderBody(Usuario currentUser, Organization organization) {
-    if (organization.miembros > 0) {
-      // Mostrar lista de miembros
-      return ListView.builder(
-        itemCount: organization.miembros,
-        itemBuilder: (context, index) {
-          // Aquí construyes cada elemento de la lista de miembros
-          return ListTile(
-            title: Text('Miembro ${index + 1}'),
-          );
-        },
-      );
-    } else {
-      // Mostrar mensaje de que no hay miembros
-      return const Center(
-        child: Text('Su organización no tiene miembros'),
-      );
-    }
+  RichText _renderNoMembers() {
+    return RichText(
+      text: const TextSpan(
+        style: TextStyle(
+            fontSize: 16.0,
+            fontFamily: 'Manrope',
+            fontWeight: FontWeight.w300,
+            color: Colors.white),
+        children: <TextSpan>[
+          TextSpan(text: 'Aún no hay miembros en su organización, si '),
+          TextSpan(
+              text: 'desea agregarlos',
+              style: TextStyle(fontWeight: FontWeight.bold)),
+          TextSpan(text: ', puede hacerlo enviándoles una invitación.'),
+        ],
+      ),
+    );
   }
 
   Widget _buildOrganizationBody(
@@ -124,28 +123,10 @@ class MainScreenState extends State<MainScreen> {
           }
           if (snapshot.hasData) {
             final Organization organization = snapshot.data!['organization'];
+            _logger.i('Organización actual: $organization');
             return organization.miembros > 0
                 ? _renderMembersList(organization)
-                : RichText(
-                    text: const TextSpan(
-                      style: TextStyle(
-                          fontSize: 16.0,
-                          fontFamily: 'Manrope',
-                          fontWeight: FontWeight.w300,
-                          color: Colors.white),
-                      children: <TextSpan>[
-                        TextSpan(
-                            text:
-                                'Aún no hay miembros en su organización, si '),
-                        TextSpan(
-                            text: 'desea agregarlos',
-                            style: TextStyle(fontWeight: FontWeight.bold)),
-                        TextSpan(
-                            text:
-                                ', puede hacerlo enviándoles una invitación.'),
-                      ],
-                    ),
-                  );
+                : _renderNoMembers();
           } else {
             return const Text('Error: No se pudo obtener la organización');
           }
@@ -177,58 +158,65 @@ class MainScreenState extends State<MainScreen> {
               fit: BoxFit.cover,
             ),
           ),
-          child: Center(
-            child: Consumer<LoginViewModel>(
-              builder: (context, loginViewModel, child) {
-                final currentUser = loginViewModel.currentUser;
-                if (currentUser != null) {
-                  if (currentOrganizationId != null) {
-                    _logger.i('Usuario actual: $currentUser');
-                    _setDefaultOrganization(loginViewModel);
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Header(
-                          title: currentOrganizationId ?? 'LumoTareas',
-                          onLogoTap: () {
-                            _logger.i('Logo tapped!');
-                          },
-                          onSuffixTap: () {
-                            _showBottomSheet(context);
-                          },
-                          suffixIcon:
-                              const Icon(Icons.settings, color: Colors.white),
-                        ),
-                        Expanded(
-                          child: Container(
-                            width: MediaQuery.of(context).size.width,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 40),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _buildTitle(currentUser),
-                                const SizedBox(height: 20),
-                                _buildOrganizationBody(
-                                    loginViewModel, currentUser),
-                              ],
-                            ),
+          child: Consumer<LoginViewModel>(
+            builder: (context, loginViewModel, child) {
+              final currentUser = loginViewModel.currentUser;
+              if (currentUser != null) {
+                if (currentOrganizationId != null) {
+                  _logger.i('Usuario actual: $currentUser');
+                  _setDefaultOrganization(loginViewModel);
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Header(
+                        title: currentOrganizationId ?? 'LumoTareas',
+                        onLogoTap: () {
+                          _logger.i('Logo tapped!');
+                        },
+                        onSuffixTap: () {
+                          _showBottomSheet(context);
+                        },
+                        suffixIcon:
+                            const Icon(Icons.settings, color: Colors.white),
+                      ),
+                      Expanded(
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 40),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildTitle(currentUser),
+                              const SizedBox(height: 20),
+                              currentUser.organizaciones == null ||
+                                      currentUser.organizaciones!.isEmpty
+                                  ? const Text('No hay organizaciones')
+                                  : _buildOrganizationBody(
+                                      loginViewModel, currentUser),
+                            ],
                           ),
                         ),
-                      ],
-                    );
-                  } else {
-                    return const CircularProgressIndicator();
-                  }
+                      ),
+                    ],
+                  );
                 } else {
-                  return const CircularProgressIndicator();
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
                 }
-              },
-            ),
+              } else {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+            },
           ),
         ),
-        floatingActionButton: FloatingButtonMenu(),
+        floatingActionButton: FloatingButtonMenu(
+          currentUser: context.read<LoginViewModel>().currentUser!,
+        ),
       ),
     );
   }

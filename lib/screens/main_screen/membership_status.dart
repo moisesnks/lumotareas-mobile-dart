@@ -13,6 +13,9 @@ class MembershipStatusWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (user.organizaciones == null || user.organizaciones!.isEmpty) {
+      return const SizedBox();
+    }
     bool isOwner = user.isOwnerOfOrganization(organizationId);
     String orgName = user.organizaciones
             ?.firstWhere((org) => org.id == organizationId)
