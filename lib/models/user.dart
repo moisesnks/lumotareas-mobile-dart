@@ -79,6 +79,30 @@ class Usuario {
     };
   }
 
+  // Método para obtener todos las IDs de las organizaciones donde el usuario es dueño
+  List<String> getOwnerOrganizationIds() {
+    return organizaciones
+            ?.where((org) => org.isOwner)
+            .map((org) => org.id)
+            .toList() ??
+        [];
+  }
+
+  // Método para obtener todos las IDs de las organizaciones donde el usuario es miembro
+  List<String> getMemberOrganizationIds() {
+    return organizaciones
+            ?.where((org) => !org.isOwner)
+            .map((org) => org.id)
+            .toList() ??
+        [];
+  }
+
+  bool isOwnerOfOrganization(String organizationId) {
+    return organizaciones
+            ?.any((org) => org.id == organizationId && org.isOwner) ??
+        false;
+  }
+
   @override
   String toString() {
     return 'Usuario{uid: $uid, nombre: $nombre, email: $email, birthdate: $birthdate, organizaciones: $organizaciones, solicitudes: $solicitudes}';

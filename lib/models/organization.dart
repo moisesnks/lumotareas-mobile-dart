@@ -20,6 +20,11 @@ class Owner {
       'uid': uid,
     };
   }
+
+  @override
+  String toString() {
+    return nombre;
+  }
 }
 
 class Organization {
@@ -59,5 +64,10 @@ class Organization {
       'formulario': formulario,
       'descripcion': descripcion,
     };
+  }
+
+  @override
+  String toString() {
+    return 'Organization: $nombre\nOwner: $owner\nMiembros: $miembros\nVacantes: $vacantes\nFormulario: $formulario\nDescripción: $descripcion';
   }
 }

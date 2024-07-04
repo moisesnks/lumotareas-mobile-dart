@@ -24,22 +24,10 @@ class CreandoOrgScreenState extends State<CreandoOrgScreen> {
 
   final List<Map<String, dynamic>> _preguntas = [
     {
-      'titulo': 'Nombre de la organización',
-      'controller': TextEditingController(),
-      'validator': (value) {
-        if (value == null || value.isEmpty) {
-          return 'Por favor ingresa el nombre de la organización';
-        }
-        return null;
-      },
-      'field': 'nombre',
-    },
-    {
       'titulo': 'Descripción',
       'controller': TextEditingController(),
       'validator': (value) {
-        // Puedes agregar validaciones adicionales si es necesario
-        return null;
+        return null; // Puedes agregar validaciones adicionales si es necesario
       },
       'field': 'descripcion',
     },
@@ -91,9 +79,15 @@ class CreandoOrgScreenState extends State<CreandoOrgScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               Text(
-                _preguntas[_currentPage]['titulo'],
+                'Creando la organización: ${widget.orgName}',
                 style:
                     const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                _preguntas[_currentPage]['titulo'],
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
               if (_preguntas[_currentPage]['field'] == 'vacantes')
@@ -127,10 +121,9 @@ class CreandoOrgScreenState extends State<CreandoOrgScreen> {
   Future<void> _crearOrganizacion(BuildContext context) async {
     // Crear objeto Organization con los datos del formulario y los parámetros recibidos
     Organization newOrg = Organization(
-      nombre: _preguntas[0]['controller'].text,
-      owner:
-          Owner(nombre: _preguntas[0]['controller'].text, uid: widget.ownerUID),
-      descripcion: _preguntas[1]['controller'].text,
+      nombre: widget.orgName,
+      owner: Owner(nombre: widget.orgName, uid: widget.ownerUID),
+      descripcion: _preguntas[0]['controller'].text,
       vacantes: _vacantes,
       miembros: 0,
       formulario: [],

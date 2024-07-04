@@ -2,11 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 class Header extends StatelessWidget {
+  final String title;
   final VoidCallback? onLogoTap;
   final VoidCallback? onSuffixTap;
   final Widget? suffixIcon;
 
-  const Header({super.key, this.onLogoTap, this.onSuffixTap, this.suffixIcon});
+  const Header({
+    super.key,
+    required this.title,
+    this.onLogoTap,
+    this.onSuffixTap,
+    this.suffixIcon,
+  });
 
   Widget renderLogo() {
     return GestureDetector(
@@ -28,18 +35,35 @@ class Header extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          renderLogo(),
+          Column(
+            children: [
+              renderLogo(),
+              const SizedBox(height: 4),
+              const Text('Lumotareas',
+                  style: TextStyle(
+                      color: Colors.white, fontSize: 12, fontFamily: 'Lexend')),
+            ],
+          ),
           const SizedBox(width: 8),
-          const Expanded(
+          Expanded(
             child: Align(
-              alignment: Alignment.center,
-              child: Text(
-                'Lumotareas',
-                style: TextStyle(
-                  fontFamily: 'Lexend',
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+              child: Container(
+                decoration: const BoxDecoration(),
+                width: MediaQuery.of(context).size.width * .6,
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontFamily: 'Lexend',
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                 ),
               ),
             ),

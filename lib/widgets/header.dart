@@ -3,8 +3,9 @@ import 'package:flutter_svg/svg.dart';
 
 class Header extends StatelessWidget {
   final VoidCallback? onTap;
+  final bool isPopeable;
 
-  const Header({super.key, this.onTap});
+  const Header({super.key, this.onTap, this.isPopeable = false});
 
   Widget renderLogo() {
     return GestureDetector(
@@ -42,6 +43,16 @@ class Header extends StatelessWidget {
               ),
             ),
           ),
+          if (isPopeable)
+            GestureDetector(
+              onTap: () {
+                Navigator.of(context).pop();
+              },
+              child: const Icon(
+                Icons.close,
+                color: Colors.white,
+              ),
+            ),
         ],
       ),
     );

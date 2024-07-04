@@ -153,7 +153,7 @@ class UserService {
           email: email,
           birthdate: birthdate,
           organizaciones: [
-            OrganizacionInterna(nombre: orgName, id: 'orgName', isOwner: true)
+            OrganizacionInterna(nombre: orgName, id: orgName, isOwner: true)
           ],
         );
 

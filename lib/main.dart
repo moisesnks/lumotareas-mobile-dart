@@ -27,8 +27,6 @@ void main() async {
   );
 
   logger.i('Firebase inicializado');
-
-  // Bloque try-catch para manejar excepciones y registrarlas con el logger
   try {
     runApp(const MyApp());
   } catch (error, stackTrace) {
@@ -128,7 +126,7 @@ class MyApp extends StatelessWidget {
         initialRoute: '/',
         routes: {
           '/': (context) => const HomeScreen(),
-          '/main': (context) => MainScreen(),
+          '/main': (context) => const MainScreen(),
         },
       ),
     );
