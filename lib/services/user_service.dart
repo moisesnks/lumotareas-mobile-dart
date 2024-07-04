@@ -152,7 +152,9 @@ class UserService {
           nombre: fullName,
           email: email,
           birthdate: birthdate,
-          organizaciones: [orgName],
+          organizaciones: [
+            OrganizacionInterna(nombre: orgName, id: 'orgName', isOwner: true)
+          ],
         );
 
         // Convertir el objeto Usuario a un mapa para almacenarlo en Firestore
@@ -286,38 +288,6 @@ class UserService {
       return true;
     } catch (e) {
       _logger.e('Error al eliminar usuario para UID: $uid, error: $e');
-      return false;
-    }
-  }
-
-  // Método para agregar una organización a las existentes del usuario
-  Future<bool> addOrganizationToUser(String uid, String organizationId) async {
-    try {
-      // Obtener usuario actual
-      Usuario? user = await getUserByUid(uid);
-
-      if (user != null) {
-        // Verificar si la organización ya existe en las organizaciones del usuario
-        if (user.organizaciones!.contains(organizationId)) {
-          // La organización ya existe, no es necesario hacer cambios
-          return true;
-        } else {
-          // Agregar la nueva organización
-          user.organizaciones!.add(organizationId);
-
-          // Actualizar los datos del usuario en Firestore
-          await updateUserData(user);
-
-          _logger.d(
-              'Organización agregada al usuario correctamente: $organizationId');
-          return true;
-        }
-      } else {
-        _logger.w('No se encontró al usuario con UID: $uid');
-        return false;
-      }
-    } catch (e) {
-      _logger.e('Error al agregar organización al usuario: $e');
       return false;
     }
   }

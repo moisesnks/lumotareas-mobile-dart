@@ -1,9 +1,42 @@
+class OrganizacionInterna {
+  final String nombre;
+  final String id;
+  final bool isOwner;
+
+  OrganizacionInterna({
+    required this.nombre,
+    required this.id,
+    this.isOwner = false,
+  });
+
+  factory OrganizacionInterna.fromMap(Map<String, dynamic> map) {
+    return OrganizacionInterna(
+      nombre: map['nombre'] ?? '',
+      id: map['id'] ?? '',
+      isOwner: map['isOwner'] ?? false,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'nombre': nombre,
+      'id': id,
+      'isOwner': isOwner,
+    };
+  }
+
+  @override
+  String toString() {
+    return 'OrganizacionInterna{nombre: $nombre, id: $id, isOwner: $isOwner}';
+  }
+}
+
 class Usuario {
   final String uid;
   final String nombre;
   final String email;
   final String birthdate;
-  final List<String>? organizaciones;
+  final List<OrganizacionInterna>? organizaciones;
   final List<dynamic>? solicitudes;
 
   Usuario({
@@ -23,7 +56,10 @@ class Usuario {
       email: map['email'],
       birthdate: map['birthdate'],
       organizaciones: map['organizaciones'] != null
-          ? List<String>.from(map['organizaciones'])
+          ? List<OrganizacionInterna>.from(
+              map['organizaciones'].map((org) =>
+                  OrganizacionInterna.fromMap(Map<String, dynamic>.from(org))),
+            )
           : [],
       solicitudes: map['solicitudes'] != null
           ? List<dynamic>.from(map['solicitudes'])
@@ -38,8 +74,13 @@ class Usuario {
       'nombre': nombre,
       'email': email,
       'birthdate': birthdate,
-      'organizaciones': organizaciones,
+      'organizaciones': organizaciones?.map((org) => org.toMap()).toList(),
       'solicitudes': solicitudes,
     };
+  }
+
+  @override
+  String toString() {
+    return 'Usuario{uid: $uid, nombre: $nombre, email: $email, birthdate: $birthdate, organizaciones: $organizaciones, solicitudes: $solicitudes}';
   }
 }

@@ -4,6 +4,37 @@ import 'package:lumotareas/services/firestore_service.dart';
 class OrganizationService {
   final FirestoreService _firestoreService = FirestoreService();
 
+  Future<Map<String, dynamic>> isOwner(String orgName, String uid) async {
+    try {
+      final result = await getOrganization(orgName);
+
+      if (result['success']) {
+        Organization organization = result['organization'];
+        if (organization.owner.uid == uid) {
+          return {
+            'success': true,
+            'message': 'El usuario es el owner de la organización',
+          };
+        } else {
+          return {
+            'success': false,
+            'message': 'El usuario no es el owner de la organización',
+          };
+        }
+      } else {
+        return {
+          'success': false,
+          'message': result['message'],
+        };
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Error al verificar si el usuario es el owner: $e',
+      };
+    }
+  }
+
   Future<Map<String, dynamic>> registerSolicitud(
       String orgName, Map<String, dynamic> solicitud, String uid) async {
     // Crear un mapa con los datos de la solicitud

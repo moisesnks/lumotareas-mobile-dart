@@ -3,9 +3,12 @@ import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:lumotareas/viewmodels/login_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:lumotareas/services/preferences_service.dart';
+import 'package:lumotareas/widgets/header2.dart';
+import 'package:logger/logger.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+  MainScreen({super.key});
+  final _logger = Logger();
 
   @override
   MainScreenState createState() => MainScreenState();
@@ -51,48 +54,71 @@ class MainScreenState extends State<MainScreen> {
     return false; // Devuelve falso para permitir el manejo predeterminado del evento de botón de retroceso
   }
 
+  void _showBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                title: const Text('Cerrar sesión'),
+                onTap: () async {
+                  await context.read<LoginViewModel>().signOut(context);
+                },
+                trailing: const Icon(Icons.exit_to_app),
+              ),
+              SwitchListTile(
+                title: const Text('Redirigir a Login'),
+                value: redirectToLogin,
+                onChanged: (value) async {
+                  setState(() {
+                    redirectToLogin = value;
+                  });
+                  await PreferenceService.setRedirectToLogin(value);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final loginViewModel = Provider.of<LoginViewModel>(context);
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Main Screen'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.exit_to_app),
-            onPressed: () {
-              loginViewModel.signOut(context);
+    return SafeArea(
+      child: Scaffold(
+        body: Center(
+          child: Consumer<LoginViewModel>(
+            builder: (context, loginViewModel, child) {
+              final currentUser = loginViewModel.currentUser;
+              if (currentUser != null) {
+                widget._logger.i('Usuario actual: $currentUser');
+                return Column(
+                  children: [
+                    Header(
+                      onLogoTap: () {
+                        widget._logger.i('Logo tapped!');
+                      },
+                      onSuffixTap: () {
+                        _showBottomSheet(context);
+                      },
+                      suffixIcon:
+                          const Icon(Icons.settings, color: Colors.white),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Bienvenido $currentUser',
+                    ),
+                  ],
+                );
+              } else {
+                return const CircularProgressIndicator();
+              }
             },
           ),
-        ],
-      ),
-      body: Center(
-        child: Consumer<LoginViewModel>(
-          builder: (context, loginViewModel, child) {
-            final currentUser = loginViewModel.currentUser;
-            if (currentUser != null) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Bienvenido, ${currentUser.email}'),
-                  const SizedBox(height: 20),
-                  SwitchListTile(
-                    title: const Text('Redirigir a Login'),
-                    value: redirectToLogin,
-                    onChanged: (value) async {
-                      setState(() {
-                        redirectToLogin = value;
-                      });
-                      await PreferenceService.setRedirectToLogin(value);
-                    },
-                  ),
-                ],
-              );
-            } else {
-              return const CircularProgressIndicator();
-            }
-          },
         ),
       ),
     );
