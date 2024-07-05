@@ -3,9 +3,15 @@ import 'package:flutter_svg/svg.dart';
 
 class Header extends StatelessWidget {
   final VoidCallback? onTap;
-  final bool isPopeable;
+  final bool isPoppable;
+  final String title;
 
-  const Header({super.key, this.onTap, this.isPopeable = false});
+  const Header({
+    super.key,
+    this.onTap,
+    this.isPoppable = false,
+    this.title = 'Lumotareas',
+  });
 
   Widget renderLogo() {
     return GestureDetector(
@@ -29,12 +35,12 @@ class Header extends StatelessWidget {
         children: [
           renderLogo(),
           const SizedBox(width: 8),
-          const Expanded(
+          Expanded(
             child: Align(
               alignment: Alignment.center,
               child: Text(
-                'Lumotareas',
-                style: TextStyle(
+                title,
+                style: const TextStyle(
                   fontFamily: 'Lexend',
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -43,7 +49,7 @@ class Header extends StatelessWidget {
               ),
             ),
           ),
-          if (isPopeable)
+          if (isPoppable)
             GestureDetector(
               onTap: () {
                 Navigator.of(context).pop();

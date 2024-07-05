@@ -13,14 +13,28 @@ class MembershipStatusWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (user.organizaciones == null || user.organizaciones!.isEmpty) {
-      return const SizedBox();
+    if (user.organizaciones == null ||
+        user.organizaciones!.isEmpty ||
+        organizationId.isEmpty) {
+      return const Chip(
+        label: Text(
+          'No org',
+          style: TextStyle(
+            fontFamily: 'Lexend',
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        avatar: Icon(
+          Icons.warning,
+          color: Colors.white,
+          size: 18,
+        ),
+        backgroundColor: Colors.red,
+      );
     }
+
     bool isOwner = user.isOwnerOfOrganization(organizationId);
-    String orgName = user.organizaciones
-            ?.firstWhere((org) => org.id == organizationId)
-            .nombre ??
-        '';
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -28,7 +42,9 @@ class MembershipStatusWidget extends StatelessWidget {
           // Versión compacta para pantallas pequeñas
           return Chip(
             label: Text(
-              isOwner ? 'Dueño de $orgName' : 'Miembro de $orgName',
+              isOwner
+                  ? 'Dueño de $organizationId'
+                  : 'Miembro de $organizationId',
               style: const TextStyle(
                 fontFamily: 'Lexend',
                 fontSize: 14,

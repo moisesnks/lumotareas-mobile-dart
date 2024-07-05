@@ -51,7 +51,7 @@ class InviteMembersScreenState extends State<InviteMembersScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Header(
-                isPopeable: true,
+                isPoppable: true,
               ),
               Container(
                 padding: const EdgeInsets.all(20.0),
