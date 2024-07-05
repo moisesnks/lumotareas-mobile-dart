@@ -253,9 +253,7 @@ class MainScreenState extends State<MainScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => SettingsScreen(
-                              initialRedirectValue: redirectToLogin,
-                            ),
+                            builder: (context) => const SettingsScreen(),
                           ),
                         );
                       },
