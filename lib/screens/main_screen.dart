@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lumotareas/screens/main_screen/home_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:logger/logger.dart';
 import 'package:lumotareas/viewmodels/login_viewmodel.dart';
@@ -287,114 +288,78 @@ class MainScreenState extends State<MainScreen> {
     );
   }
 
-  Widget renderHomeBody(LoginViewModel loginViewModel, Usuario currentUser) {
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildTitle(currentUser),
-                    currentUser.organizaciones == null ||
-                            currentUser.organizaciones!.isEmpty
-                        ? _buildNoOrganizations(currentUser.solicitudes ?? [])
-                        : _buildOrganizationBody(
-                            loginViewModel,
-                            currentUser,
-                          ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: Container(
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/images/alone.png'),
-              fit: BoxFit.cover,
-            ),
-          ),
-          child: Consumer<LoginViewModel>(
-            builder: (context, loginViewModel, child) {
-              final currentUser = loginViewModel.currentUser;
-              if (currentUser != null) {
-                _setDefaultOrganization(currentUser);
-                Widget bodyWidget;
-                String title = 'LumoTareas';
+        body: Consumer<LoginViewModel>(
+          builder: (context, loginViewModel, child) {
+            final currentUser = loginViewModel.currentUser;
+            if (currentUser != null) {
+              _setDefaultOrganization(currentUser);
+              Widget bodyWidget;
+              String title = 'LumoTareas';
 
-                switch (_selectedIndex) {
-                  case 0:
-                    bodyWidget = renderHomeBody(loginViewModel, currentUser);
-                    title = currentOrganizationId.isNotEmpty
-                        ? currentOrganizationId
-                        : 'LumoTareas';
-                    break;
-                  case 1:
-                    bodyWidget = const Center(
-                      child: Text('DescubrirPage'),
-                    );
-                    title = 'DescubrirPage';
-                    break;
-                  case 2:
-                    bodyWidget = const ProfileScreen();
-                    title = 'Perfil';
-                    break;
-                  default:
-                    bodyWidget = renderHomeBody(loginViewModel, currentUser);
-                    title = currentOrganizationId.isNotEmpty
-                        ? currentOrganizationId
-                        : 'LumoTareas';
-                }
-
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Header(
-                      title: title,
-                      onLogoTap: () {
-                        _logger.i('Logo tapped!');
-                      },
-                      suffixIcon: const Icon(Icons.settings),
-                      onSuffixTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const SettingsScreen(),
-                          ),
-                        );
-                      },
-                    ),
-                    Expanded(
-                      child: SizedBox(
-                        width: MediaQuery.of(context).size.width,
-                        child: bodyWidget,
-                      ),
-                    ),
-                  ],
-                );
-              } else {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
+              switch (_selectedIndex) {
+                case 0:
+                  bodyWidget = HomeBody(
+                      currentOrganizationId: currentOrganizationId,
+                      loginViewModel: loginViewModel);
+                  title = currentOrganizationId.isNotEmpty
+                      ? currentOrganizationId
+                      : 'LumoTareas';
+                  break;
+                case 1:
+                  bodyWidget = const Center(
+                    child: Text('DescubrirPage'),
+                  );
+                  title = 'DescubrirPage';
+                  break;
+                case 2:
+                  bodyWidget = const ProfileScreen();
+                  title = 'Perfil';
+                  break;
+                default:
+                  bodyWidget = HomeBody(
+                      currentOrganizationId: currentOrganizationId,
+                      loginViewModel: loginViewModel);
+                  title = currentOrganizationId.isNotEmpty
+                      ? currentOrganizationId
+                      : 'LumoTareas';
               }
-            },
-          ),
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Header(
+                    title: title,
+                    onLogoTap: () {
+                      _logger.i('Logo tapped!');
+                    },
+                    suffixIcon: const Icon(Icons.settings),
+                    onSuffixTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SettingsScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  Expanded(
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      child: bodyWidget,
+                    ),
+                  ),
+                ],
+              );
+            } else {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          },
         ),
         floatingActionButton: FloatingButtonMenu(
           currentUser: context.read<LoginViewModel>().currentUser!,
