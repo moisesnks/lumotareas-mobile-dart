@@ -16,8 +16,8 @@ class FloatingButtonMenu extends StatelessWidget {
       {
         'label': 'Agregar tarea',
         'icon': Icons.task,
-        'requiredRole': TaskRole
-            .member, // Puede ser visto por un miembro de la organización
+        'requiredRole':
+            TaskRole.any, // Visible para cualquier miembro de la organización
       },
       {
         'label': 'Crear proyecto',
@@ -29,65 +29,74 @@ class FloatingButtonMenu extends StatelessWidget {
         'icon': Icons.person_add,
         'screen': InviteMembersScreen(),
         'requiredRole': TaskRole.owner, // Solo visible para dueños
-      },
+      }
+    ];
+
+    List<Map<String, dynamic>> noOrganizationTasks = [
+      {
+        'label': 'Crear organización',
+        'icon': Icons.group,
+        // Esta tarea es visible solo si el usuario no tiene ninguna organización
+      }
     ];
 
     List<SpeedDialChild> children = [];
 
-    // Determinar si el usuario es dueño de alguna organización
-    bool isOwnerOfAnyOrganization =
-        currentUser.getOwnerOrganizationIds().isNotEmpty;
-
-    // Determinar si el usuario es miembro de alguna organización
-    bool isMemberOfAnyOrganization =
+    // Determinar si el usuario es dueño o miembro de alguna organización
+    bool hasOrganization = currentUser.getOwnerOrganizationIds().isNotEmpty ||
         currentUser.getMemberOrganizationIds().isNotEmpty;
 
-    // Construir elementos del menú flotante
-    for (var task in tasks) {
-      TaskRole requiredRole = task['requiredRole'] ?? TaskRole.none;
+    // Construir elementos del menú flotante para usuarios con organización
+    if (hasOrganization) {
+      for (var task in tasks) {
+        TaskRole requiredRole = task['requiredRole'];
 
-      // Verificar si el usuario tiene permiso para ver esta tarea
-      switch (requiredRole) {
-        case TaskRole.any:
-          children.add(_buildSpeedDialChild(
-            context: context,
-            label: task['label'],
-            icon: task['icon'],
-            screen: task['screen'],
-          ));
-          break;
-        case TaskRole.owner:
-          if (isOwnerOfAnyOrganization) {
+        // Verificar si el usuario tiene permiso para ver esta tarea
+        switch (requiredRole) {
+          case TaskRole.any:
             children.add(_buildSpeedDialChild(
               context: context,
               label: task['label'],
               icon: task['icon'],
               screen: task['screen'],
             ));
-          }
-          break;
-        case TaskRole.member:
-          if (isMemberOfAnyOrganization) {
-            children.add(_buildSpeedDialChild(
-              context: context,
-              label: task['label'],
-              icon: task['icon'],
-              screen: task['screen'],
-            ));
-          }
-          break;
-        case TaskRole.none:
-          // No se requiere ningún rol específico para esta tarea
-          children.add(_buildSpeedDialChild(
-            context: context,
-            label: task['label'],
-            icon: task['icon'],
-            screen: task['screen'],
-          ));
-          break;
+            break;
+          case TaskRole.owner:
+            if (currentUser.getOwnerOrganizationIds().isNotEmpty) {
+              children.add(_buildSpeedDialChild(
+                context: context,
+                label: task['label'],
+                icon: task['icon'],
+                screen: task['screen'],
+              ));
+            }
+            break;
+          case TaskRole.member:
+            if (currentUser.getMemberOrganizationIds().isNotEmpty) {
+              children.add(_buildSpeedDialChild(
+                context: context,
+                label: task['label'],
+                icon: task['icon'],
+                screen: task['screen'],
+              ));
+            }
+            break;
+        }
+
+        _logger.i('Se agregó "${task['label']}" al menú flotante.');
       }
+    } else {
+      // Construir elementos del menú flotante para usuarios sin organización
+      for (var task in noOrganizationTasks) {
+        children.add(_buildSpeedDialChild(
+          context: context,
+          label: task['label'],
+          icon: task['icon'],
+          screen: task['screen'],
+        ));
 
-      _logger.i('Se agregó "${task['label']}" al menú flotante.');
+        _logger.i('Se agregó "${task['label']}" al menú flotante.');
+      }
     }
 
     return SpeedDial(
@@ -131,6 +140,5 @@ class FloatingButtonMenu extends StatelessWidget {
 enum TaskRole {
   owner, // Solo visible para dueños
   member, // Solo visible para miembros
-  any, // Puede ser visto por cualquier usuario
-  none, // No se requiere ningún rol específico
+  any, // Puede ser visto por cualquier usuario en una organización
 }
