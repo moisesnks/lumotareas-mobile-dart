@@ -79,7 +79,7 @@ class HomeBody extends StatelessWidget {
           AsyncSnapshot<Map<String, dynamic>> snapshot,
         ) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
+            return const SizedBox(height: 10);
           }
           if (snapshot.hasError) {
             return Text('Error: ${snapshot.error.toString()}');

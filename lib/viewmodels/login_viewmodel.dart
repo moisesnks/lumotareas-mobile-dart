@@ -63,6 +63,9 @@ class LoginViewModel extends ChangeNotifier {
         _logger.w('Inicio de sesión fallido con Google');
         setMessage(
             'Inicio de sesión fallido con Google, usuario no encontrado');
+        if (context.mounted) {
+          Navigator.pop(context);
+        }
       }
     } catch (e) {
       _logger.e('Error al iniciar sesión con Google: $e');
