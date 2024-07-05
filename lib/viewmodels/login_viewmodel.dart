@@ -28,6 +28,25 @@ class LoginViewModel extends ChangeNotifier {
 
   // Método para iniciar sesión con Google SignIn
   Future<void> signInWithGoogle(BuildContext context) async {
+    // Pushea una ventana de carga
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return const Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 10),
+              Text('Iniciando sesión con Google...'),
+            ],
+          ),
+        ),
+      );
+    }));
+
+    // 500ms de retraso para mostrar la ventana de carga
+    await Future.delayed(const Duration(milliseconds: 500));
     try {
       Usuario? user = await _userService.signInWithGoogle();
       if (user != null) {
@@ -55,6 +74,26 @@ class LoginViewModel extends ChangeNotifier {
   Future<void> signInWithEmailAndPassword(
       BuildContext context, String email, String password) async {
     try {
+      // Pushea una ventana de carga
+      Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return const Scaffold(
+          body: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 10),
+                Text('Iniciando sesión...'),
+              ],
+            ),
+          ),
+        );
+      }));
+
+      // 500ms de retraso para mostrar la ventana de carga
+      await Future.delayed(const Duration(milliseconds: 500));
+
       Usuario? user =
           await _userService.signInWithEmailAndPassword(email, password);
       if (user != null) {
@@ -79,6 +118,25 @@ class LoginViewModel extends ChangeNotifier {
 
   // Método para cerrar sesión
   Future<void> signOut(BuildContext context) async {
+    // Pushea una ventana de carga
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return const Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 10),
+              Text('Cerrando sesión...'),
+            ],
+          ),
+        ),
+      );
+    }));
+
+    // 500ms de retraso para mostrar la ventana de carga
+    await Future.delayed(const Duration(milliseconds: 500));
     try {
       await _userService.signOut();
       _currentUser = null;
@@ -98,6 +156,8 @@ class LoginViewModel extends ChangeNotifier {
   Future<Usuario?> registerUserWithEmailAndPassword(
       Map<String, dynamic> formData) async {
     _logger.d('Datos del formulario desde LoginViewModel: $formData');
+
+    // TODO: revisar logica aquí
     try {
       Usuario? user =
           await _userService.registerUserWithEmailAndPassword(formData);

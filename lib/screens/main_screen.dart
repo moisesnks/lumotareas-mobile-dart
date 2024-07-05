@@ -11,6 +11,7 @@ import 'package:lumotareas/models/organization.dart';
 import 'package:lumotareas/models/user.dart';
 import 'main_screen/floating_button.dart';
 import 'main_screen/profile_screen.dart';
+import 'main_screen/bottom_navigation_bar.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -170,6 +171,122 @@ class MainScreenState extends State<MainScreen> {
     });
   }
 
+  Widget buildSolicitudesContainer(int count, VoidCallback onPressed) {
+    String mensaje;
+    if (count == 1) {
+      mensaje = 'Solicitud pendiente';
+    } else {
+      mensaje = 'Solicitudes pendientes';
+    }
+
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        padding: const EdgeInsets.all(12.0),
+        backgroundColor: Colors.blue,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 24.0,
+            height: 24.0,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(4.0),
+            ),
+            child: Text(
+              '$count',
+              style: const TextStyle(
+                fontSize: 14.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.blue,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8.0),
+          const Icon(
+            Icons.mail,
+            size: 16.0,
+            color: Colors.white,
+          ),
+          const SizedBox(width: 8.0),
+          Text(
+            mensaje,
+            style: const TextStyle(
+              fontSize: 12.0,
+              fontFamily: 'Manrope',
+              fontWeight: FontWeight.w300,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(width: 8.0),
+          const Icon(
+            Icons.arrow_forward_ios,
+            size: 16.0,
+            color: Colors.white,
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Función para construir la lista de solicitudes
+  Widget buildSolicitudesList(List<dynamic> solicitudes) {
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: solicitudes.length,
+      itemBuilder: (context, index) {
+        String solicitudId = solicitudes[index];
+        // Construye el UI para mostrar cada solicitudId
+        return ListTile(
+          title:
+              Text(solicitudId), // Muestra el identificador de la solicitudId
+          // Agrega más detalles según sea necesario
+        );
+      },
+    );
+  }
+
+// Función principal para el widget _buildNoOrganizations
+  Widget _buildNoOrganizations(List<dynamic> solicitudes) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Actualmente, no estás afiliado a ninguna organización. Puedes crear tu propia organización o explorar otras existentes para enviar solicitudes de afiliación.',
+          style: TextStyle(
+            fontSize: 12.0,
+            fontFamily: 'Manrope',
+            fontWeight: FontWeight.w300,
+            color: Colors.white,
+          ),
+        ),
+        const SizedBox(
+            height: 16), // Espacio entre el texto y el siguiente contenido
+        if (solicitudes.isNotEmpty)
+          buildSolicitudesContainer(solicitudes.length, () {
+            _logger.i('Mostrar solicitudes');
+          }), // Mostrar el contenedor con el número de solicitudes
+        if (solicitudes.isEmpty)
+          const Text(
+            'No tienes solicitudes pendientes',
+            style: TextStyle(
+              fontSize: 12.0,
+              fontFamily: 'Manrope',
+              fontWeight: FontWeight.w300,
+              color: Colors.white,
+            ),
+          ),
+      ],
+    );
+  }
+
   Widget renderHomeBody(LoginViewModel loginViewModel, Usuario currentUser) {
     return SafeArea(
       child: Padding(
@@ -185,10 +302,9 @@ class MainScreenState extends State<MainScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildTitle(currentUser),
-                    const SizedBox(height: 20),
                     currentUser.organizaciones == null ||
                             currentUser.organizaciones!.isEmpty
-                        ? const Text('No hay organizaciones')
+                        ? _buildNoOrganizations(currentUser.solicitudes ?? [])
                         : _buildOrganizationBody(
                             loginViewModel,
                             currentUser,
@@ -230,6 +346,12 @@ class MainScreenState extends State<MainScreen> {
                         : 'LumoTareas';
                     break;
                   case 1:
+                    bodyWidget = const Center(
+                      child: Text('DescubrirPage'),
+                    );
+                    title = 'DescubrirPage';
+                    break;
+                  case 2:
                     bodyWidget = const ProfileScreen();
                     title = 'Perfil';
                     break;
@@ -277,21 +399,11 @@ class MainScreenState extends State<MainScreen> {
         floatingActionButton: FloatingButtonMenu(
           currentUser: context.read<LoginViewModel>().currentUser!,
         ),
-        bottomNavigationBar: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Inicio',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'Perfil',
-            ),
-          ],
+        bottomNavigationBar: CustomBottomNavigationBar(
           currentIndex: _selectedIndex,
-          selectedItemColor: Colors.blue,
           onTap: _onItemTapped,
         ),
+        // Otros parámetros de configuración del BottomNavigationBar
       ),
     );
   }

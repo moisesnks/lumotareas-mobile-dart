@@ -22,8 +22,6 @@ class LoginScreenState extends State<LoginScreen> {
   bool _rememberCredentials =
       false; // Estado inicial para recordar las credenciales
 
-  final _isLoading = false;
-
   @override
   void initState() {
     super.initState();
@@ -78,10 +76,6 @@ class LoginScreenState extends State<LoginScreen> {
                     }
                   }
                 });
-
-                if (_isLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                }
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [

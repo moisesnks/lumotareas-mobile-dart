@@ -51,7 +51,7 @@ class DescriptionQuote extends StatelessWidget {
               top: 0,
               left: 0,
               child: Text(
-                '“',
+                '”',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
