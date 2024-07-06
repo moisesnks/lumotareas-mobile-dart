@@ -34,6 +34,7 @@ class Organization {
   final bool vacantes;
   final List<dynamic> formulario;
   final String descripcion;
+  final String imageUrl;
 
   Organization({
     required this.nombre,
@@ -42,6 +43,7 @@ class Organization {
     required this.vacantes,
     required this.formulario,
     required this.descripcion,
+    this.imageUrl = 'assets/organization_logo.png',
   });
 
   factory Organization.fromMap(Map<String, dynamic> map) {
@@ -52,6 +54,7 @@ class Organization {
       vacantes: map['vacantes'] ?? false,
       formulario: map['formulario'] ?? [],
       descripcion: map['descripcion'] ?? '',
+      imageUrl: map['imageUrl'] ?? 'assets/organization_logo.png',
     );
   }
 
@@ -63,11 +66,12 @@ class Organization {
       'vacantes': vacantes,
       'formulario': formulario,
       'descripcion': descripcion,
+      'imageUrl': imageUrl,
     };
   }
 
   @override
   String toString() {
-    return 'Organization: $nombre\nOwner: $owner\nMiembros: $miembros\nVacantes: $vacantes\nFormulario: $formulario\nDescripción: $descripcion';
+    return 'Organization: $nombre\nOwner: $owner\nMiembros: $miembros\nVacantes: $vacantes\nFormulario: $formulario\nDescripción: $descripcion \n Imagen: $imageUrl';
   }
 }
