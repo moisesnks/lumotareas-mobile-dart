@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 
-class CustomBottomNavigationBar extends StatelessWidget {
+class BottomNavBar extends StatelessWidget {
   final int currentIndex;
   final Function(int) onTap;
+  final List<Map<String, dynamic>> items;
 
-  const CustomBottomNavigationBar({
+  const BottomNavBar({
     super.key,
     required this.currentIndex,
     required this.onTap,
+    required this.items,
   });
 
   @override
@@ -18,11 +20,12 @@ class CustomBottomNavigationBar extends StatelessWidget {
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: <Widget>[
-          _buildNavItem(Icons.home, 0, 'Inicio'),
-          _buildNavItem(Icons.search, 1, 'Buscar'),
-          _buildNavItem(Icons.person, 2, 'Perfil'),
-        ],
+        children: items
+            .asMap()
+            .entries
+            .map((entry) => _buildNavItem(
+                entry.value['icon'], entry.key, entry.value['label']))
+            .toList(),
       ),
     );
   }

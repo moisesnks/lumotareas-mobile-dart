@@ -112,6 +112,9 @@ class LoginViewModel extends ChangeNotifier {
       } else {
         _logger.w('Inicio de sesión fallido con correo y contraseña');
         setMessage('Inicio de sesión fallido con correo y contraseña');
+        if (context.mounted) {
+          Navigator.pop(context);
+        }
       }
     } catch (e) {
       _logger.e('Error al iniciar sesión con correo y contraseña: $e');
@@ -160,7 +163,6 @@ class LoginViewModel extends ChangeNotifier {
       Map<String, dynamic> formData) async {
     _logger.d('Datos del formulario desde LoginViewModel: $formData');
 
-    // TODO: revisar logica aquí
     try {
       Usuario? user =
           await _userService.registerUserWithEmailAndPassword(formData);

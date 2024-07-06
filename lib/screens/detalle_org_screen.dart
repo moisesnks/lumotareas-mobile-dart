@@ -29,7 +29,6 @@ class DetalleOrgScreen extends StatelessWidget {
         child: SafeArea(
           child: Column(
             children: <Widget>[
-              // Aquí van los demás widgets de tu pantalla
               Header(
                 onTap: () {
                   _logger.d('Tapped on header'); // Logging onTap event

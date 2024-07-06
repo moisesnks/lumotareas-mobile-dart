@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:lumotareas/viewmodels/login_viewmodel.dart';
 import 'package:lumotareas/services/preferences_service.dart';
 
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+class ProfileBody extends StatelessWidget {
+  const ProfileBody({super.key});
 
   @override
   Widget build(BuildContext context) {

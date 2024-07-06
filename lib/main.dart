@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:lumotareas/screens/home_screen.dart';
-import 'package:lumotareas/screens/main_screen.dart';
+import 'package:lumotareas/screens/main_screen/main_screen.dart';
 import 'package:lumotareas/viewmodels/home_viewmodel.dart';
 import 'package:lumotareas/viewmodels/login_viewmodel.dart';
 

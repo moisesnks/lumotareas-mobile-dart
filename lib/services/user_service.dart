@@ -3,10 +3,12 @@ import 'package:logger/logger.dart';
 import 'auth_service.dart';
 import 'firestore_service.dart';
 import 'package:lumotareas/models/user.dart';
+import 'package:lumotareas/services/organization_service.dart';
 
 class UserService {
   final AuthService _authService = AuthService();
   final FirestoreService _firestoreService = FirestoreService();
+  final OrganizationService _organizationService = OrganizationService();
   final Logger _logger = Logger();
 
   // currentUser
@@ -130,16 +132,12 @@ class UserService {
     try {
       // Extraer datos del formulario
       String email = formData['email']!;
-      _logger.d('Extracción correcta: $email');
       String fullName = formData['fullName']!;
-      _logger.d('Extracción correcta: $fullName');
       String birthdate = formData['birthDate']!;
-      _logger.d('Extracción correcta: $birthdate');
       String password = formData['password']!;
-      _logger.d('Extracción correcta: $password');
       String orgName = formData['orgName'] ?? '';
-      _logger.d('Extracción correcta: $orgName');
       bool? isOwner = formData['isOwner'];
+      Map<String, dynamic>? formulario = formData['formulario'];
 
       // logger a lo que llegó en el formulario
       _logger.d(
@@ -148,7 +146,18 @@ class UserService {
       User? firebaseUser =
           await _authService.signUpWithEmailPassword(email, password, fullName);
 
+      String solicitudId = '';
       if (firebaseUser != null) {
+        // Enviar la solicitud a la organización
+        if (formulario != null) {
+          var result = await _organizationService.registerSolicitud(
+            orgName,
+            formulario,
+            firebaseUser.uid,
+          );
+          _logger.d('Solicitud de organización creada: ${result['ref']}');
+          solicitudId = result['ref'];
+        }
         // Crear instancia de Usuario con datos del formulario
         Usuario newUser;
         if (orgName.isNotEmpty) {
@@ -184,7 +193,15 @@ class UserService {
         if (result['success'] == true) {
           _logger.d(
               'Usuario registrado correctamente con correo y contraseña: $email');
-          return newUser;
+          // Agregar la solicitud al usuario
+          bool success = await addSolicitudToUser(newUser.uid, solicitudId);
+          if (success) {
+            return newUser;
+          } else {
+            _logger.e(
+                'Error al agregar referencia de solicitud al usuario: $email');
+            return null;
+          }
         } else {
           _logger.e(
               'Error al añadir usuario a Firestore después de registrar con correo y contraseña');

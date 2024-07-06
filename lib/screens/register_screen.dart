@@ -3,8 +3,6 @@ import 'package:lumotareas/widgets/org_formulario.dart';
 import 'package:lumotareas/widgets/checkbox_widget.dart';
 import 'package:lumotareas/widgets/header.dart';
 import 'package:logger/logger.dart';
-import 'package:lumotareas/services/user_service.dart';
-import 'package:lumotareas/services/organization_service.dart';
 import 'package:lumotareas/viewmodels/login_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:lumotareas/models/user.dart';
@@ -13,9 +11,6 @@ class RegisterScreen extends StatefulWidget {
   final Logger _logger = Logger();
   final Map<String, String> respuestas;
   final String orgName;
-
-  final UserService _userService = UserService();
-  final OrganizationService _organizationService = OrganizationService();
 
   RegisterScreen({super.key, required this.respuestas, required this.orgName});
 
@@ -101,59 +96,63 @@ class RegisterScreenState extends State<RegisterScreen> {
       Usuario? newUser =
           await loginViewModel.registerUserWithEmailAndPassword(formData);
 
+      // Pushear ventana de carga
+      if (context.mounted) {
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return const Scaffold(
+            body: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 10),
+                  Text('Registrando cuenta...'),
+                ],
+              ),
+            ),
+          );
+        }));
+      }
       if (newUser != null) {
         widget._logger.d('Usuario registrado correctamente: ${newUser.uid}');
-
-        var result = await widget._organizationService
-            .registerSolicitud(widget.orgName, widget.respuestas, newUser.uid);
-        widget._logger.d('Solicitud de organización creada: ${result['ref']}');
-
-        // Registrar la referencia de la solicitud en el usuario, para eso
-        // el usuario tiene un campo (array) que se llama solicitudes el cual con el servicio
-        // de firestore se usará el método addToArray para agregar la referencia de la solicitud
-        // a ese array
-        var ref = result['ref'];
-        bool userUpdate =
-            await widget._userService.addSolicitudToUser(newUser.uid, ref);
-
-        if (userUpdate) {
-          widget._logger.d('Referencia de solicitud agregada al usuario');
-          if (context.mounted) {
-            // Redirigir al usuario a la pantalla de inicio
-            Navigator.of(context).pushNamedAndRemoveUntil(
-              '/main',
-              (route) => false,
-            );
-          }
-        } else {
-          widget._logger
-              .e('Error al agregar referencia de solicitud al usuario');
+        if (context.mounted) {
+          // Redirigir al usuario a la pantalla de inicio
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            '/main',
+            (route) => false,
+          );
         }
       } else {
+        widget._logger.e('Error al agregar referencia de solicitud al usuario');
         if (context.mounted) {
           Navigator.pop(context);
         }
-        widget._logger.e('Error al registrar usuario');
-        if (context.mounted) {
-          showDialog(
-            context: context,
-            builder: (BuildContext dialogContext) {
-              return AlertDialog(
-                title: const Text('Error'),
-                content: const Text(
-                    'Hubo un error al registrar tu cuenta. Por favor, intenta de nuevo.'),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(dialogContext).pop();
-                    },
-                    child: const Text('Aceptar'),
-                  ),
-                ],
-              );
-            },
-          );
-        }
+      }
+    } else {
+      if (context.mounted) {
+        Navigator.pop(context);
+      }
+      widget._logger.e('Error al registrar usuario');
+      if (context.mounted) {
+        showDialog(
+          context: context,
+          builder: (BuildContext dialogContext) {
+            return AlertDialog(
+              title: const Text('Error'),
+              content: const Text(
+                  'Hubo un error al registrar tu cuenta. Por favor, intenta de nuevo.'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(dialogContext).pop();
+                  },
+                  child: const Text('Aceptar'),
+                ),
+              ],
+            );
+          },
+        );
       }
     }
   }
