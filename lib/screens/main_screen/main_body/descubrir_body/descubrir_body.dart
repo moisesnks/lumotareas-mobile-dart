@@ -41,6 +41,10 @@ class DescubrirBody extends StatelessWidget {
                 reverse: false,
                 enlargeCenterPage: true,
                 scrollDirection: Axis.horizontal,
+                autoPlay: true,
+                autoPlayInterval: const Duration(seconds: 10),
+                autoPlayAnimationDuration: const Duration(milliseconds: 800),
+                autoPlayCurve: Curves.fastOutSlowIn,
               ),
               itemBuilder: (BuildContext context, int index, int realIndex) {
                 return OrganizacionCard(
@@ -59,7 +63,7 @@ class DescubrirBody extends StatelessWidget {
             child: CarouselSlider.builder(
               itemCount: publicacionesRecientes.length,
               options: CarouselOptions(
-                height: 360,
+                height: 370,
                 viewportFraction: 0.9,
                 initialPage: 0,
                 enableInfiniteScroll: true,
@@ -67,6 +71,9 @@ class DescubrirBody extends StatelessWidget {
                 autoPlayCurve: Curves.fastOutSlowIn,
                 enlargeCenterPage: true,
                 scrollDirection: Axis.horizontal,
+                autoPlay: true,
+                autoPlayInterval: const Duration(seconds: 15),
+                autoPlayAnimationDuration: const Duration(milliseconds: 800),
               ),
               itemBuilder: (BuildContext context, int index, int realIndex) {
                 return PublicacionCard(

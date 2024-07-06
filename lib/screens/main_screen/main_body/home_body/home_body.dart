@@ -127,7 +127,6 @@ class HomeBody extends StatelessWidget {
       child: Contenedor(
         padding: const EdgeInsets.all(16),
         direction: Axis.vertical,
-        color: const Color(0xFF1A1A1A),
         mainAxisSize: MainAxisSize.max,
         children: [
           _buildTitle(context, currentUser),

@@ -97,7 +97,7 @@ class MainScreenState extends State<MainScreen> {
             ? currentOrganizationId
             : 'LumoTareas';
       case 1:
-        return 'DescubrirPage';
+        return 'Descubrir';
       case 2:
         return 'Perfil';
       default:
