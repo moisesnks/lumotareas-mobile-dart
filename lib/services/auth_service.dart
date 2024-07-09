@@ -75,13 +75,13 @@ class AuthService {
                 'Inicio de sesión exitoso con Google. Usuario: ${user.email}');
 
             // Verificar si el proveedor de Google ya está vinculado
-            if (!userCredential.additionalUserInfo!.isNewUser) {
-              _logger.d(
-                  'Cuenta de Google ya vinculada. No es necesario hacer nada.');
-            } else {
-              // Vincular la cuenta de Google con la cuenta existente
+            if (userCredential.additionalUserInfo!.isNewUser) {
+              // Nuevo usuario creado con Google, vincular la cuenta
               await user.linkWithCredential(credential);
               _logger.d('Cuenta de Google vinculada exitosamente.');
+            } else {
+              _logger.d(
+                  'Cuenta de Google ya vinculada. No es necesario hacer nada.');
             }
 
             return user;
