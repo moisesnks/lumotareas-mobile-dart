@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:lumotareas/models/organization.dart';
 import 'package:lumotareas/services/organization_service.dart';
 
+// TODO: ojo con esta integración, no se si es la mejor forma de hacerlo
+// revisar el page-to-page que tiene welcome_screen/formulario
+// formulario_screen y pregunta_page
+
 class CreandoOrgScreen extends StatefulWidget {
   final String orgName;
   final String ownerUID;

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lumotareas/widgets/welcome_title.dart';
 
+// TODO: arreglarlo para que se parezca a los demás loading
 class LoadingScreen extends StatelessWidget {
   const LoadingScreen({super.key});
 

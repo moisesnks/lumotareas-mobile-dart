@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lumotareas/screens/creando_org_screen.dart';
+import 'package:lumotareas/screens/welcome_screen/nueva_org/creando_org_screen.dart';
 import 'package:lumotareas/widgets/org_formulario.dart';
 import 'package:provider/provider.dart';
 import 'package:lumotareas/viewmodels/login_viewmodel.dart';
@@ -8,7 +8,7 @@ import 'package:lumotareas/widgets/header.dart';
 import 'package:logger/logger.dart';
 import 'package:lumotareas/screens/login_screen.dart';
 import 'package:lumotareas/extensions/text_styles.dart';
-import 'package:lumotareas/screens/loading_creando_org.dart';
+import 'package:lumotareas/screens/welcome_screen/nueva_org/loading_creando.dart';
 import 'package:lumotareas/models/user.dart';
 
 class NuevaOrgScreen extends StatefulWidget {

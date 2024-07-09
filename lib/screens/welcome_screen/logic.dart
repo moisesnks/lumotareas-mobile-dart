@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import './loading_screen.dart'; // pantalla de carga
+import 'loading_buscando.dart'; // pantalla de carga
 import 'detalle_org/detalle_org_screen.dart'; // pantalla de detalles
 import 'nueva_org/nueva_org_screen.dart'; // pantalla de nueva organización
 import 'package:logger/logger.dart'; // logger
