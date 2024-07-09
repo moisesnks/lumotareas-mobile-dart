@@ -76,7 +76,6 @@ Widget renderLogo() {
 Widget renderTitle() {
   return Row(
     children: [
-      const SizedBox(width: 15),
       Expanded(
         flex: 7,
         child: renderColumnTitle(),
@@ -92,7 +91,6 @@ Widget renderTitle() {
 Widget renderTitle2() {
   return Row(
     children: [
-      const SizedBox(width: 15),
       Expanded(
         flex: 7,
         child: renderColumnTitle2(),
