@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:lumotareas/screens/home_screen.dart';
+import 'package:lumotareas/screens/welcome_screen/welcome_screen.dart';
 import 'package:lumotareas/screens/main_screen/main_screen.dart';
-import 'package:lumotareas/viewmodels/home_viewmodel.dart';
 import 'package:lumotareas/viewmodels/login_viewmodel.dart';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -115,7 +114,6 @@ class MyApp extends StatelessWidget {
 
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => HomeViewModel()),
         ChangeNotifierProvider(create: (_) => LoginViewModel()),
       ],
       child: MaterialApp(
@@ -125,7 +123,7 @@ class MyApp extends StatelessWidget {
         themeMode: ThemeMode.dark,
         initialRoute: '/',
         routes: {
-          '/': (context) => const HomeScreen(),
+          '/': (context) => const WelcomeScreen(),
           '/main': (context) => const MainScreen(),
         },
       ),

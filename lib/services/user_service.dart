@@ -137,6 +137,7 @@ class UserService {
       String password = formData['password']!;
       String orgName = formData['orgName'] ?? '';
       bool? isOwner = formData['isOwner'];
+      bool isMember = formData['isMember'] ?? false;
       Map<String, dynamic>? formulario = formData['formulario'];
 
       // logger a lo que llegó en el formulario
@@ -149,7 +150,7 @@ class UserService {
       String solicitudId = '';
       if (firebaseUser != null) {
         // Enviar la solicitud a la organización
-        if (formulario != null) {
+        if (formulario != null && orgName.isNotEmpty) {
           var result = await _organizationService.registerSolicitud(
             orgName,
             formulario,
@@ -157,10 +158,13 @@ class UserService {
           );
           _logger.d('Solicitud de organización creada: ${result['ref']}');
           solicitudId = result['ref'];
+        } else if (orgName.isEmpty) {
+          _logger.w('No se proporcionó un nombre de organización');
+          return null;
         }
         // Crear instancia de Usuario con datos del formulario
         Usuario newUser;
-        if (orgName.isNotEmpty) {
+        if (orgName.isNotEmpty && isMember) {
           newUser = Usuario(
             uid: firebaseUser.uid,
             nombre: fullName,
@@ -173,6 +177,14 @@ class UserService {
                 isOwner: isOwner ?? false,
               ),
             ],
+          );
+        } else if (orgName.isNotEmpty && !isMember) {
+          newUser = Usuario(
+            uid: firebaseUser.uid,
+            nombre: fullName,
+            email: email,
+            birthdate: birthdate,
+            solicitudes: [solicitudId],
           );
         } else {
           newUser = Usuario(

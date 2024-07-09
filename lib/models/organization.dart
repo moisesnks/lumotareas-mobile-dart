@@ -32,7 +32,7 @@ class Organization {
   final int miembros;
   final Owner owner;
   final bool vacantes;
-  final List<dynamic> formulario;
+  final Map<String, dynamic> formulario;
   final String descripcion;
   final String imageUrl;
 
@@ -52,7 +52,7 @@ class Organization {
       miembros: map['miembros'] ?? 0,
       owner: Owner.fromMap(Map<String, String>.from(map['owner'] ?? {})),
       vacantes: map['vacantes'] ?? false,
-      formulario: map['formulario'] ?? [],
+      formulario: map['formulario'] ?? {},
       descripcion: map['descripcion'] ?? '',
       imageUrl: map['imageUrl'] ?? 'assets/organization_logo.png',
     );
