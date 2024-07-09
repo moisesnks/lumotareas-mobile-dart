@@ -45,8 +45,6 @@ class LoginViewModel extends ChangeNotifier {
       );
     }));
 
-    // 500ms de retraso para mostrar la ventana de carga
-    await Future.delayed(const Duration(milliseconds: 500));
     try {
       Usuario? user = await _userService.signInWithGoogle();
       if (user != null) {
@@ -93,9 +91,6 @@ class LoginViewModel extends ChangeNotifier {
           ),
         );
       }));
-
-      // 500ms de retraso para mostrar la ventana de carga
-      await Future.delayed(const Duration(milliseconds: 500));
 
       Usuario? user =
           await _userService.signInWithEmailAndPassword(email, password);
@@ -160,6 +155,7 @@ class LoginViewModel extends ChangeNotifier {
   }
 
   Future<Usuario?> registerUserWithEmailAndPassword(
+      // TODO: falta pantalla de carga?
       Map<String, dynamic> formData) async {
     _logger.d('Datos del formulario desde LoginViewModel: $formData');
 
