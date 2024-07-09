@@ -125,8 +125,8 @@ class CreandoOrgScreenState extends State<CreandoOrgScreen> {
       owner: Owner(nombre: widget.orgName, uid: widget.ownerUID),
       descripcion: _preguntas[0]['controller'].text,
       vacantes: _vacantes,
-      miembros: 0,
-      formulario: [],
+      miembros: 1, // El owner es el primer miembro
+      formulario: {},
     );
 
     // Llamar al servicio para crear la organización
