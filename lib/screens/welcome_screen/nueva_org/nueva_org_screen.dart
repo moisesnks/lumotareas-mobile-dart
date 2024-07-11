@@ -219,8 +219,8 @@ class NuevaOrgScreenState extends State<NuevaOrgScreen> {
     );
 
 // Registrar usuario y organización
-    Usuario? newUser =
-        await loginViewModel.registerUserWithEmailAndPassword(formData);
+    Usuario? newUser = await loginViewModel.registerUserWithEmailAndPassword(
+        context, formData);
 
     if (newUser != null) {
       widget._logger.d('Usuario registrado correctamente: ${newUser.uid}');

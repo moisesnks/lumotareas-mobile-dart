@@ -4,6 +4,7 @@ import 'auth_service.dart';
 import 'firestore_service.dart';
 import 'package:lumotareas/models/user.dart';
 import 'package:lumotareas/services/organization_service.dart';
+import 'package:lumotareas/services/rest_service.dart';
 
 class UserService {
   final AuthService _authService = AuthService();
@@ -15,6 +16,37 @@ class UserService {
   Usuario? _currentUser;
 
   Usuario? get currentUser => _currentUser;
+
+// Método para obtener el historial de inicios de sesión
+  Future<List<Map<String, dynamic>>> getHistory(String email) async {
+    try {
+      // Obtener el JWT del usuario autenticado
+      User? firebaseUser = _authService.getCurrentUser();
+
+      if (firebaseUser != null) {
+        String? idToken = await firebaseUser.getIdToken();
+
+        if (idToken != null) {
+          // Llamar al servicio RestService para obtener el historial de inicios de sesión
+          List<Map<String, dynamic>> history =
+              await RestService.all(idToken, email);
+          _logger.d('Historial de inicios de sesión obtenido correctamente');
+          return history;
+        } else {
+          _logger.w(
+              'No se pudo obtener el token JWT para obtener el historial de inicios de sesión');
+          return [];
+        }
+      } else {
+        _logger.w(
+            'No hay usuario autenticado para obtener el historial de inicios de sesión');
+        return [];
+      }
+    } catch (e) {
+      _logger.e('Error al obtener el historial de inicios de sesión: $e');
+      return [];
+    }
+  }
 
   // Método para iniciar sesión con Google SignIn
   Future<Usuario?> signInWithGoogle() async {
@@ -65,16 +97,28 @@ class UserService {
           await _authService.signInWithEmailPassword(email, password);
 
       if (firebaseUser != null) {
-        // Obtener información de usuario por UID
-        Usuario? user = await getUserByUid(firebaseUser.uid);
+        // Obtener el JWT del usuario autenticado
+        String? idToken = await firebaseUser.getIdToken();
 
-        if (user != null) {
-          _logger.d(
-              'Inicio de sesión exitoso con correo y contraseña: ${user.email}');
-          return user;
+        if (idToken != null) {
+          // Llamar al servicio RestService para registrar el acceso
+          await RestService.access(idToken);
+
+          // Obtener información de usuario por UID
+          Usuario? user = await getUserByUid(firebaseUser.uid);
+
+          if (user != null) {
+            _logger.d(
+                'Inicio de sesión exitoso con correo y contraseña: ${user.email}');
+            return user;
+          } else {
+            _logger.w(
+                'Error al obtener información de usuario después de iniciar sesión con correo y contraseña');
+            return null;
+          }
         } else {
-          _logger.w(
-              'Error al obtener información de usuario después de iniciar sesión con correo y contraseña');
+          _logger
+              .w('No se pudo obtener el token JWT después de iniciar sesión');
           return null;
         }
       } else {

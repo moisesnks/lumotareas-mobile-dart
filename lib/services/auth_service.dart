@@ -10,6 +10,11 @@ class AuthService {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final Logger _logger = Logger();
 
+//metodo getcurrentuser:
+  User? getCurrentUser() {
+    return _auth.currentUser;
+  }
+
   Future<User?> signUpWithEmailPassword(
       String email, String password, String name) async {
     try {

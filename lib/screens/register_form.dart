@@ -94,8 +94,8 @@ class RegisterFormState extends State<RegisterForm> {
           Provider.of<LoginViewModel>(context, listen: false);
 
 // Registrar usuario y organización
-      Usuario? newUser =
-          await loginViewModel.registerUserWithEmailAndPassword(formData);
+      Usuario? newUser = await loginViewModel.registerUserWithEmailAndPassword(
+          context, formData);
 
       // Pushear ventana de carga
       if (context.mounted) {
