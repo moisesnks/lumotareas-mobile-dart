@@ -4,33 +4,85 @@ import 'package:lumotareas/services/firestore_service.dart';
 class OrganizationService {
   final FirestoreService _firestoreService = FirestoreService();
 
-  Future<Map<String, dynamic>> isOwner(String orgName, String uid) async {
+  // Crear una tarea dentro de un sprint
+  Future<Map<String, dynamic>> createTask(String orgName, String projectId,
+      String sprintId, Map<String, dynamic> task) async {
     try {
-      final result = await getOrganization(orgName);
+      final result = await _firestoreService.addDocument(
+          'organizaciones/$orgName/proyectos/$projectId/sprints/$sprintId/tareas',
+          null,
+          task);
 
       if (result['success']) {
-        Organization organization = result['organization'];
-        if (organization.owner.uid == uid) {
-          return {
-            'success': true,
-            'message': 'El usuario es el owner de la organización',
-          };
-        } else {
-          return {
-            'success': false,
-            'message': 'El usuario no es el owner de la organización',
-          };
-        }
+        return {
+          'success': true,
+          'message': 'Tarea creada correctamente',
+          'ref': result['documentId'],
+        };
       } else {
         return {
           'success': false,
-          'message': result['message'],
+          'message': 'Error al crear la tarea',
         };
       }
     } catch (e) {
       return {
         'success': false,
-        'message': 'Error al verificar si el usuario es el owner: $e',
+        'message': 'Error al crear la tarea: $e',
+      };
+    }
+  }
+
+  // Crear un sprint dentro de un proyecto
+  Future<Map<String, dynamic>> createSprint(
+      String orgName, String projectId, Map<String, dynamic> sprint) async {
+    try {
+      final result = await _firestoreService.addDocument(
+          'organizaciones/$orgName/proyectos/$projectId/sprints', null, sprint);
+
+      if (result['success']) {
+        return {
+          'success': true,
+          'message': 'Sprint creado correctamente',
+          'ref': result['documentId'],
+        };
+      } else {
+        return {
+          'success': false,
+          'message': 'Error al crear el sprint',
+        };
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Error al crear el sprint: $e',
+      };
+    }
+  }
+
+  // Crear un proyecto dentro de la organización
+  Future<Map<String, dynamic>> createProject(
+      String orgName, Map<String, dynamic> proyecto) async {
+    try {
+      final result = await _firestoreService.addDocument(
+          'organizaciones/$orgName/proyectos', null, proyecto);
+
+      if (result['success']) {
+        return {
+          'success': true,
+          'message': 'Proyecto creado correctamente',
+          'ref': result['documentId'],
+        };
+      } else {
+        return {
+          'success': false,
+          'message': 'Error al crear el proyecto',
+        };
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Error al crear el proyecto: $e',
       };
     }
   }
@@ -47,7 +99,7 @@ class OrganizationService {
     try {
       final result = await _firestoreService.addDocument(
           'organizaciones/$orgName/solicitudes',
-          null, // Firestore generates an ID automatically
+          null, // Firestore generará un ID único
           data);
 
       if (result['success']) {
@@ -113,10 +165,16 @@ class OrganizationService {
             'initial',
             {'message': 'Initial solicitud document'});
 
+        // Crear la colección 'tareas' dentro de la organización
+        await _firestoreService.addDocument(
+            'organizaciones/${organization.nombre}/proyectos',
+            'initial',
+            {'message': 'Initial proyectos document'});
+
         return {
           'success': true,
           'message':
-              'Organización creada correctamente con la colección solicitudes',
+              'Organización creada correctamente con la colección solicitudes y proyectos',
         };
       } else {
         return {

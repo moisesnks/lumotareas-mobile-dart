@@ -4,7 +4,6 @@ import 'auth_service.dart';
 import 'firestore_service.dart';
 import 'package:lumotareas/models/user.dart';
 import 'package:lumotareas/services/organization_service.dart';
-import 'package:lumotareas/services/rest_service.dart';
 
 class UserService {
   final AuthService _authService = AuthService();
@@ -16,37 +15,6 @@ class UserService {
   Usuario? _currentUser;
 
   Usuario? get currentUser => _currentUser;
-
-// Método para obtener el historial de inicios de sesión
-  Future<List<Map<String, dynamic>>> getHistory(String email) async {
-    try {
-      // Obtener el JWT del usuario autenticado
-      User? firebaseUser = _authService.getCurrentUser();
-
-      if (firebaseUser != null) {
-        String? idToken = await firebaseUser.getIdToken();
-
-        if (idToken != null) {
-          // Llamar al servicio RestService para obtener el historial de inicios de sesión
-          List<Map<String, dynamic>> history =
-              await RestService.all(idToken, email);
-          _logger.d('Historial de inicios de sesión obtenido correctamente');
-          return history;
-        } else {
-          _logger.w(
-              'No se pudo obtener el token JWT para obtener el historial de inicios de sesión');
-          return [];
-        }
-      } else {
-        _logger.w(
-            'No hay usuario autenticado para obtener el historial de inicios de sesión');
-        return [];
-      }
-    } catch (e) {
-      _logger.e('Error al obtener el historial de inicios de sesión: $e');
-      return [];
-    }
-  }
 
   // Método para iniciar sesión con Google SignIn
   Future<Usuario?> signInWithGoogle() async {
@@ -88,6 +56,7 @@ class UserService {
     }
   }
 
+  // TODO: borrar estos métodos
   // Método para iniciar sesión con correo y contraseña
   Future<Usuario?> signInWithEmailAndPassword(
       String email, String password) async {
@@ -101,9 +70,6 @@ class UserService {
         String? idToken = await firebaseUser.getIdToken();
 
         if (idToken != null) {
-          // Llamar al servicio RestService para registrar el acceso
-          await RestService.access(idToken);
-
           // Obtener información de usuario por UID
           Usuario? user = await getUserByUid(firebaseUser.uid);
 
@@ -365,19 +331,6 @@ class UserService {
     } catch (e) {
       _logger.e(
           'Error al actualizar información de usuario para UID: ${user.uid}, error: $e');
-      return false;
-    }
-  }
-
-  // Método para eliminar usuario
-  Future<bool> deleteUserData(String uid) async {
-    try {
-      // Eliminar documento de usuario en Firestore usando FirestoreService
-      await _firestoreService.deleteDocument('users', uid);
-      _logger.d('Usuario eliminado correctamente para UID: $uid');
-      return true;
-    } catch (e) {
-      _logger.e('Error al eliminar usuario para UID: $uid, error: $e');
       return false;
     }
   }

@@ -51,7 +51,11 @@ class WelcomeScreenState extends State<WelcomeScreen> {
             ),
           ),
         ),
-        const SizedBox(height: 20),
+        TextButton(
+            onPressed: () {
+              _logic.handleLoginButtonPress(context);
+            },
+            child: const Text('¿Ya tienes una cuenta? Inicia sesión')),
       ],
     );
   }

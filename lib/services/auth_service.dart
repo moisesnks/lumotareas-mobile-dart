@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:logger/logger.dart';
 import 'package:lumotareas/services/firestore_service.dart';
+import 'package:lumotareas/services/rest_service.dart';
 import 'dart:async';
 
 class AuthService {
@@ -9,6 +10,54 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final Logger _logger = Logger();
+
+  // Instancia de GoogleSignIn con los scopes necesarios
+  static final GoogleSignIn googleSignIn =
+      GoogleSignIn(scopes: ['email', 'profile']);
+
+  Future<User?> signInWithGoogle() async {
+    try {
+      // Intenta iniciar sesión con Google
+      GoogleSignInAccount? account = await googleSignIn.signIn();
+      if (account != null) {
+        GoogleSignInAuthentication auth = await account.authentication;
+        final String idToken = auth.idToken ?? '';
+        final String accessToken = auth.accessToken ?? '';
+
+        if (idToken.isNotEmpty && accessToken.isNotEmpty) {
+          // Guarda la información de autenticación en el servicio REST
+          RestService.access(idToken);
+
+          // Crea las credenciales de autenticación
+          final AuthCredential credential = GoogleAuthProvider.credential(
+            idToken: idToken,
+            accessToken: accessToken,
+          );
+
+          // Inicia sesión en Firebase Auth
+          final UserCredential userCredential =
+              await _auth.signInWithCredential(credential);
+          final User? user = userCredential.user;
+
+          if (user != null) {
+            _logger.d(
+                'Inicio de sesión con Google exitoso. Usuario: ${user.email}');
+            return user;
+          } else {
+            _logger.w(
+                'No se pudo obtener el usuario después de iniciar sesión con Google.');
+          }
+        } else {
+          _logger.w('No se pudo obtener el token de Google.');
+        }
+      } else {
+        _logger.w('El usuario canceló el inicio de sesión con Google.');
+      }
+    } catch (e) {
+      _logger.e('Error al iniciar sesión con Google: $e');
+    }
+    return null;
+  }
 
 //metodo getcurrentuser:
   User? getCurrentUser() {
@@ -54,63 +103,6 @@ class AuthService {
       _logger.e('Error al iniciar sesión con correo y contraseña: $e');
       return null;
     }
-  }
-
-  Future<User?> signInWithGoogle() async {
-    try {
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser != null) {
-        final GoogleSignInAuthentication googleAuth =
-            await googleUser.authentication;
-        final AuthCredential credential = GoogleAuthProvider.credential(
-          accessToken: googleAuth.accessToken,
-          idToken: googleAuth.idToken,
-        );
-
-        final UserCredential userCredential =
-            await _auth.signInWithCredential(credential);
-        final User? user = userCredential.user;
-
-        if (user != null) {
-          // Verificar si el usuario ya existe en la base de datos
-          final userExists = await checkIfUserExists(user.uid);
-
-          if (userExists) {
-            _logger.d(
-                'Inicio de sesión exitoso con Google. Usuario: ${user.email}');
-
-            // Verificar si el proveedor de Google ya está vinculado
-            if (userCredential.additionalUserInfo!.isNewUser) {
-              // Nuevo usuario creado con Google, vincular la cuenta
-              await user.linkWithCredential(credential);
-              _logger.d('Cuenta de Google vinculada exitosamente.');
-            } else {
-              _logger.d(
-                  'Cuenta de Google ya vinculada. No es necesario hacer nada.');
-            }
-
-            return user;
-          } else {
-            _logger.w('Usuario no existe en la base de datos.');
-
-            // Eliminar el usuario recién creado
-            await user.delete();
-
-            _logger.d('Usuario eliminado. No se pudo iniciar sesión.');
-
-            return null; // Retornamos null ya que no se pudo iniciar sesión correctamente
-          }
-        } else {
-          _logger.w(
-              'No se pudo obtener el usuario después de iniciar sesión con Google.');
-        }
-      } else {
-        _logger.w('El usuario canceló el inicio de sesión con Google.');
-      }
-    } catch (e) {
-      _logger.e('Error al iniciar sesión con Google: $e');
-    }
-    return null; // Retornar null si ocurre algún error
   }
 
   Future<User?> registerWithGoogle() async {

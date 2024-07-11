@@ -318,18 +318,18 @@ class NuevaOrgScreenState extends State<NuevaOrgScreen> {
                                 }
                               : null,
                           style: ButtonStyle(
-                            shape: MaterialStateProperty.all<
-                                RoundedRectangleBorder>(
+                            shape:
+                                WidgetStateProperty.all<RoundedRectangleBorder>(
                               RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10.0),
                               ),
                             ),
-                            elevation: MaterialStateProperty.all<double>(4.0),
+                            elevation: WidgetStateProperty.all<double>(4.0),
                             padding:
-                                MaterialStateProperty.all<EdgeInsetsGeometry>(
+                                WidgetStateProperty.all<EdgeInsetsGeometry>(
                               const EdgeInsets.all(10.0),
                             ),
-                            minimumSize: MaterialStateProperty.all<Size>(
+                            minimumSize: WidgetStateProperty.all<Size>(
                               const Size(double.infinity, 0),
                             ),
                           ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'loading_buscando.dart'; // pantalla de carga
 import 'detalle_org/detalle_org_screen.dart'; // pantalla de detalles
+import '../login_screen.dart'; // pantalla de login
 import 'nueva_org/nueva_org_screen.dart'; // pantalla de nueva organización
 import 'package:logger/logger.dart'; // logger
 import 'package:lumotareas/services/organization_service.dart'; // servicio de las organizaciones
@@ -18,6 +19,17 @@ class WelcomeScreenLogic {
 
   void dispose() {
     organizationNameController.dispose();
+  }
+
+  void handleLoginButtonPress(BuildContext context) {
+    if (context.mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const LoginScreen(),
+        ),
+      );
+    }
   }
 
   // Método para mostrar un dialogo de error genérico

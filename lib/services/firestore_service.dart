@@ -32,6 +32,35 @@ class FirestoreService {
     }
   }
 
+  Future<Map<String, dynamic>> getCollection(String collectionName,
+      {int limit = 10}) async {
+    try {
+      var snapshot = await FirebaseFirestore.instance
+          .collection(collectionName)
+          .limit(limit)
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        return {
+          'found': true,
+          'data': snapshot.docs.map((doc) => doc.data()).toList(),
+          'message': '$collectionName encontrado',
+        };
+      } else {
+        return {
+          'found': false,
+          'message': '$collectionName no encontrado',
+        };
+      }
+    } catch (e) {
+      _logger.e('Error al obtener $collectionName: $e');
+      return {
+        'error': true,
+        'message': 'Hubo un error al obtener $collectionName: $e',
+      };
+    }
+  }
+
   Future<Map<String, dynamic>> getDocument(
       String collectionName, String documentId) async {
     try {
@@ -91,31 +120,6 @@ class FirestoreService {
       return {
         'error': true,
         'message': 'Hubo un error al eliminar documento de $collectionName',
-      };
-    }
-  }
-
-  Future<Map<String, dynamic>> addToArray(String collectionName,
-      String documentId, String arrayFieldName, dynamic elementToAdd) async {
-    try {
-      await _firestore.collection(collectionName).doc(documentId).update({
-        arrayFieldName: FieldValue.arrayUnion([elementToAdd]),
-      });
-
-      _logger.d(
-          'Elemento añadido a $arrayFieldName en documento $documentId de $collectionName');
-      return {
-        'success': true,
-        'message':
-            'Elemento añadido correctamente a $arrayFieldName en $collectionName',
-      };
-    } catch (e) {
-      _logger.e(
-          'Error al añadir elemento a $arrayFieldName en documento $documentId de $collectionName: $e');
-      return {
-        'error': true,
-        'message':
-            'Hubo un error al añadir elemento a $arrayFieldName en $collectionName',
       };
     }
   }

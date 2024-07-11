@@ -32,7 +32,7 @@ class ProfileBody extends StatelessWidget {
                   Text('Email: ${currentUser.email}'),
                   Text('Fecha de nacimiento: ${currentUser.birthdate}'),
                   const Divider(),
-                  HistoryList(),
+                  const HistoryList(),
                 ],
               ),
       ),

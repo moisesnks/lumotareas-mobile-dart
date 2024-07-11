@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:lumotareas/screens/main_screen/main_body/descubrir_body/descubrir_body.dart';
 import 'package:lumotareas/screens/main_screen/main_body/home_body/home_body.dart';
+import 'package:lumotareas/screens/main_screen/main_body/profile_body/profile_body.dart';
 import 'package:lumotareas/widgets/bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:logger/logger.dart';
 import 'package:lumotareas/viewmodels/login_viewmodel.dart';
 import 'package:lumotareas/services/preferences_service.dart';
 import 'package:lumotareas/widgets/header2.dart';
-import 'settings_screen/settings_screen.dart';
 import 'package:lumotareas/models/user.dart';
-import 'menu_flotante/menu_flotante.dart';
-import 'main_body/profile_body/profile_body.dart';
+import 'menu_flotante/main_floating_button.dart';
+import 'settings_screen/screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -161,9 +161,14 @@ class MainScreenState extends State<MainScreen> {
           },
         ),
         floatingActionButton: _currentUser != null
-            ? AddFlotante(
-                mainIcon: Icons.add,
+            ? MainFloatingButton(
+                mainIcon: _selectedIndex == 2 ? Icons.edit : Icons.add,
                 currentUser: _currentUser!,
+                currentPage: _selectedIndex == 0
+                    ? 'home'
+                    : _selectedIndex == 1
+                        ? 'descubrir'
+                        : 'perfil',
               )
             : null,
         bottomNavigationBar: BottomNavBar(

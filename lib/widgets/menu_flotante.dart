@@ -20,8 +20,6 @@ class MenuFlotante extends StatelessWidget {
         icon: task['icon'],
         screen: task['screen'],
       ));
-
-      _logger.i('Se agregó "${task['label']}" al menú flotante.');
     }
 
     return SpeedDial(

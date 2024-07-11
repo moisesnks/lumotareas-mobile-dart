@@ -46,7 +46,7 @@ class InputField extends StatelessWidget {
               borderSide: BorderSide.none,
             ),
             filled: true,
-            fillColor: Theme.of(context).colorScheme.background,
+            fillColor: Theme.of(context).colorScheme.onSurface,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 14,

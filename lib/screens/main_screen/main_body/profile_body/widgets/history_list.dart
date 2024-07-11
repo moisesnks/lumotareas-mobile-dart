@@ -1,31 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:lumotareas/viewmodels/login_viewmodel.dart';
+import 'package:lumotareas/utils/utils.dart';
 
 class HistoryList extends StatelessWidget {
+  const HistoryList({super.key});
+
   @override
   Widget build(BuildContext context) {
-    final loginViewModel = Provider.of<LoginViewModel>(context, listen: true);
-
-    // Llamar a getHistory aquí para asegurar que se cargue el historial
-    if (loginViewModel.history.isEmpty) {
-      // Llamar solo si la lista está vacía para evitar recargas innecesarias
-      loginViewModel.getHistory(
-          context, loginViewModel.currentUser?.email ?? '');
-    }
-
-    return loginViewModel.history.isEmpty
-        ? Center(child: Text('No hay historial disponible'))
-        : ListView.builder(
-            itemCount: loginViewModel.history.length,
-            itemBuilder: (context, index) {
-              final historyItem = loginViewModel.history[index];
-              return ListTile(
-                title: Text('Email: ${historyItem['email']}'),
-                subtitle: Text('User Agent: ${historyItem['userAgent']}'),
-                trailing: Text('Fecha: ${historyItem['created']}'),
-              );
-            },
-          );
+    return Consumer<LoginViewModel>(
+      builder: (context, loginViewModel, child) {
+        return FutureBuilder<void>(
+          future: loginViewModel.fetchUserHistoryIfNotFetched(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else {
+              final history = loginViewModel.history;
+              if (history.isEmpty) {
+                return const Center(
+                    child: Text('No hay historial disponible.'));
+              } else {
+                return Expanded(
+                  child: ListView.builder(
+                    itemCount: history.length,
+                    itemBuilder: (context, index) {
+                      final historyItem = history[index];
+                      return ListTile(
+                        title: Text('Email: ${historyItem['email']}'),
+                        subtitle:
+                            Text('User Agent: ${historyItem['userAgent']}'),
+                        trailing: Text(
+                            'Fecha: ${Utils.formatToLocalTime(historyItem['created'])}'),
+                      );
+                    },
+                  ),
+                );
+              }
+            }
+          },
+        );
+      },
+    );
   }
 }

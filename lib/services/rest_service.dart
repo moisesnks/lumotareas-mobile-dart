@@ -29,9 +29,10 @@ class RestService {
 
   // Método de acceso POST
   static Future<void> access(String idToken) async {
+    _logger.i('Acceso con idToken: $idToken');
     try {
       _logger.i('Acceso con idToken: $idToken');
-      final String url = '$_baseUrl/v1/access/login';
+      const String url = '$_baseUrl/v1/access/login';
 
       final response = await http.post(
         Uri.parse(url),
@@ -46,14 +47,13 @@ class RestService {
     }
   }
 
-  // Método para obtener todos los usuarios
-  static Future<List<Map<String, dynamic>>> all(
-      String idToken, String email) async {
-    List<Map<String, dynamic>> users = [];
+  // Método para obtener los registros de sesión
+  static Future<List<Map<String, dynamic>>> all(String email) async {
+    List<Map<String, dynamic>> logs = [];
     try {
-      _logger.d('Marcando acceso de: $idToken');
+      _logger.d('Obteniendo registros de: $email');
       _logger.d("Get all");
-      final String url = '$_baseUrl/v1/access/all';
+      const String url = '$_baseUrl/v1/access/all';
 
       final response = await http.get(
         Uri.parse(url).replace(queryParameters: {'email': email}),
@@ -64,12 +64,12 @@ class RestService {
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
         List<dynamic> data = json.decode(response.body);
-        users = data.map((user) => Map<String, dynamic>.from(user)).toList();
+        logs = data.map((user) => Map<String, dynamic>.from(user)).toList();
       }
     } catch (error, stackTrace) {
       _logger.e(error.toString());
       _logger.d(stackTrace.toString());
     }
-    return users;
+    return logs;
   }
 }

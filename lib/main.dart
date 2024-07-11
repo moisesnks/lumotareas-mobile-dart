@@ -103,11 +103,9 @@ class MyApp extends StatelessWidget {
       colorScheme: const ColorScheme.dark(
         primary: Color(0xFFC9B8F9),
         secondary: Color(0xFFA193C7),
-        background: Color(0xFF191B5B),
         surface: Color(0xFF191B5B),
         onPrimary: Color(0xFF07081D),
         onSecondary: Color(0xFF191B5B),
-        onBackground: Color(0xFFF1DDD9),
         onSurface: Color(0xFFF1DDD9),
       ),
     );

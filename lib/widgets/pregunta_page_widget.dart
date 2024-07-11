@@ -51,7 +51,7 @@ class PreguntaPage extends StatelessWidget {
             children: [
               TextFormField(
                 maxLines: null,
-                maxLength: 150,
+                maxLength: pregunta['max_length'] ?? 150,
                 initialValue: respuesta,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(

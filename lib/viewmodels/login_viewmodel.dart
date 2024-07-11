@@ -2,6 +2,7 @@ import 'package:logger/logger.dart';
 import 'package:lumotareas/models/user.dart';
 import 'package:lumotareas/services/user_service.dart';
 import 'package:flutter/material.dart';
+import 'package:lumotareas/services/rest_service.dart';
 
 class LoginViewModel extends ChangeNotifier {
   final UserService _userService = UserService();
@@ -15,7 +16,9 @@ class LoginViewModel extends ChangeNotifier {
 
   String? get message => _message;
 
-  List<Map<String, dynamic>> _history = [];
+  final List<Map<String, dynamic>> _history = [];
+
+  bool _isHistoryFetched = false;
 
   List<Map<String, dynamic>> get history => _history;
 
@@ -28,6 +31,25 @@ class LoginViewModel extends ChangeNotifier {
     final message = _message;
     _message = null;
     return message;
+  }
+
+  Future<void> fetchUserHistoryIfNotFetched() async {
+    if (_currentUser != null && !_isHistoryFetched) {
+      await fetchUserHistory(_currentUser!.email);
+      _isHistoryFetched = true;
+    }
+  }
+
+  Future<void> fetchUserHistory(String email) async {
+    try {
+      List<Map<String, dynamic>> logs = await RestService.all(email);
+      _history.clear();
+      _history.addAll(logs);
+      notifyListeners();
+      _logger.d('Historial de usuario obtenido correctamente. $logs');
+    } catch (e) {
+      _logger.e('Error al obtener historial de usuario: $e');
+    }
   }
 
   // Método para iniciar sesión con Google SignIn
@@ -208,19 +230,6 @@ class LoginViewModel extends ChangeNotifier {
     } catch (e) {
       _logger.e('Error al registrar usuario con correo y contraseña: $e');
       return null;
-    }
-  }
-
-  // Método para obtener el historial de inicios de sesión
-  Future<void> getHistory(BuildContext context, String email) async {
-    try {
-      List<Map<String, dynamic>> history = await _userService.getHistory(email);
-      _history = history;
-      notifyListeners();
-      _logger.d('Historial de inicios de sesión obtenido correctamente');
-    } catch (e) {
-      _logger.e('Error al obtener el historial de inicios de sesión: $e');
-      setMessage('Error al obtener el historial de inicios de sesión');
     }
   }
 }
