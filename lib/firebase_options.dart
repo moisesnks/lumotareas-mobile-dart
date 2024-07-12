@@ -69,9 +69,10 @@ class DefaultFirebaseOptions {
     messagingSenderId: '293636913953',
     projectId: 'lumotareas-858a3',
     storageBucket: 'lumotareas-858a3.appspot.com',
-    androidClientId: '293636913953-gg8ptti6ibo76ojjv5t88ljmtkt1ef17.apps.googleusercontent.com',
-    iosClientId: '293636913953-arqtaib911fbk0p2mbl5buqvc78g2s2r.apps.googleusercontent.com',
+    androidClientId:
+        '293636913953-gg8ptti6ibo76ojjv5t88ljmtkt1ef17.apps.googleusercontent.com',
+    iosClientId:
+        '293636913953-arqtaib911fbk0p2mbl5buqvc78g2s2r.apps.googleusercontent.com',
     iosBundleId: 'com.lumonidy.lumotareas',
   );
-
 }

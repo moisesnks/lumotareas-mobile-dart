@@ -38,12 +38,14 @@ class Usuario {
   final String birthdate;
   final List<OrganizacionInterna>? organizaciones;
   final List<String>? solicitudes;
+  final String photoURL;
 
   Usuario({
     required this.uid,
     required this.nombre,
     required this.email,
     required this.birthdate,
+    required this.photoURL,
     this.organizaciones,
     this.solicitudes,
   });
@@ -57,6 +59,7 @@ class Usuario {
       nombre: map['nombre'],
       email: map['email'],
       birthdate: map['birthdate'],
+      photoURL: map['photoURL'],
       organizaciones: map['organizaciones'] != null
           ? List<OrganizacionInterna>.from(
               map['organizaciones'].map((org) =>
@@ -76,6 +79,7 @@ class Usuario {
       'nombre': nombre,
       'email': email,
       'birthdate': birthdate,
+      'photoURL': photoURL,
       'organizaciones': organizaciones?.map((org) => org.toMap()).toList(),
       'solicitudes': solicitudes,
     };

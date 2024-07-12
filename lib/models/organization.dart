@@ -29,7 +29,7 @@ class Owner {
 
 class Organization {
   final String nombre;
-  final int miembros;
+  final List<String> miembros;
   final Owner owner;
   final bool vacantes;
   final Map<String, dynamic> formulario;
@@ -49,7 +49,7 @@ class Organization {
   factory Organization.fromMap(Map<String, dynamic> map) {
     return Organization(
       nombre: map['nombre'] ?? '',
-      miembros: map['miembros'] ?? 0,
+      miembros: List<String>.from(map['miembros'] ?? []),
       owner: Owner.fromMap(Map<String, String>.from(map['owner'] ?? {})),
       vacantes: map['vacantes'] ?? false,
       formulario: map['formulario'] ?? {},
