@@ -3,6 +3,7 @@ import 'package:lumotareas/models/user.dart';
 import 'children/invite_members.dart/screen.dart';
 import 'children/create_project/screen.dart';
 import 'package:lumotareas/screens/welcome_screen/nueva_org/creando_org/creando_org_screen.dart';
+import 'package:lumotareas/features/editor/quill_editor_page.dart';
 
 List<Map<String, dynamic>> getFloatingButtonItems(
     Usuario currentUser, String currentPage) {
@@ -31,7 +32,7 @@ List<Map<String, dynamic>> getFloatingButtonItems(
     discoverTasks.add({
       'label': 'Añadir publicación',
       'icon': Icons.post_add,
-      'screen': null,
+      'screen': const QuillEditorPage(),
       'requiredRole': TaskRole.any,
     });
   }
