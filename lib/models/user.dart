@@ -37,7 +37,7 @@ class Usuario {
   final String email;
   final String birthdate;
   final List<OrganizacionInterna>? organizaciones;
-  final List<dynamic>? solicitudes;
+  final List<String>? solicitudes;
 
   Usuario({
     required this.uid,
@@ -64,7 +64,7 @@ class Usuario {
             )
           : [],
       solicitudes: map['solicitudes'] != null
-          ? List<dynamic>.from(map['solicitudes'])
+          ? List<String>.from(map['solicitudes'])
           : [],
     );
   }
