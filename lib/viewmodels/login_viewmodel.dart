@@ -44,6 +44,23 @@ class LoginViewModel extends ChangeNotifier {
 
   Future<void> createOrganization(
       BuildContext context, Organization organization) async {
+    // pushear una ventana de carga
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return const Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 10),
+              Text('Creando organización...'),
+            ],
+          ),
+        ),
+      );
+    }));
+
     Usuario? user =
         await _userService.createOrganization(_currentUser!.uid, organization);
     if (user != null) {
@@ -59,6 +76,11 @@ class LoginViewModel extends ChangeNotifier {
       setMessage('Error al crear la organización');
       if (context.mounted) {
         Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Error al crear la organización'),
+          ),
+        );
       }
     }
   }

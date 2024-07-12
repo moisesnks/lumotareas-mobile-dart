@@ -6,11 +6,11 @@ class PreguntaPage extends StatelessWidget {
   final ValueChanged<dynamic> onChanged;
 
   const PreguntaPage({
-    Key? key,
+    super.key,
     required this.pregunta,
     required this.respuesta,
     required this.onChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
