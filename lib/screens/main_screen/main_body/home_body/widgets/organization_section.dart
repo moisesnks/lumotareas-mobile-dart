@@ -71,6 +71,7 @@ class OrganizationSection extends StatelessWidget {
               children: [
                 const Proyectos(),
                 Miembros(miembros: organization.miembros),
+                // TODO: Agregar un widget para ver la organización y poder editarla
               ],
             );
           }

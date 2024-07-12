@@ -3,55 +3,14 @@ import 'package:lumotareas/models/post.dart';
 import 'package:lumotareas/services/organization_service.dart';
 
 class DescubrirLogic {
-  static List<Organization> obtenerOrganizacionesDestacadas() {
-    return [
-      Organization(
-        nombre: 'Organización 1',
-        miembros: [
-          'member1',
-          'member2',
-          'member3',
-          'member4',
-          'member5',
-        ],
-        owner: Owner(nombre: 'Owner 1', uid: 'owner1'),
-        vacantes: true,
-        formulario: {},
-        descripcion:
-            'Descripción de la organización 1 Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1',
-        imageUrl: 'assets/organization_logo.png',
-      ),
-      Organization(
-        nombre: 'Organización 2',
-        miembros: [
-          'member1',
-          'member2',
-          'member3',
-          'member4',
-          'member5',
-        ],
-        owner: Owner(nombre: 'Owner 2', uid: 'owner2'),
-        vacantes: false,
-        formulario: {},
-        descripcion: 'Descripción de la organización 2',
-        imageUrl: 'assets/organization_logo.png',
-      ),
-      Organization(
-        nombre: 'Organización 3',
-        miembros: [
-          'member1',
-          'member2',
-          'member3',
-          'member4',
-          'member5',
-        ],
-        owner: Owner(nombre: 'Owner 3', uid: 'owner3'),
-        vacantes: true,
-        formulario: {},
-        descripcion: 'Descripción de la organización 3',
-        imageUrl: 'assets/organization_logo.png',
-      ),
-    ];
+  static Future<List<Organization>> obtenerOrganizacionesDestacadas() async {
+    final result = await OrganizationService().getPopularOrganizations();
+
+    if (result['success']) {
+      return result['organizations'];
+    } else {
+      return [];
+    }
   }
 
   static Future<Map<String, dynamic>> buscarOrganizaciones(String query) async {

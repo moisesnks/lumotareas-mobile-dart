@@ -158,7 +158,7 @@ class OrganizationService {
       var result = await _firestoreService.getCollection(
         'organizaciones',
         limit: 10,
-        orderByField: 'clicks',
+        orderByField: 'likes',
         descending: true,
       );
 

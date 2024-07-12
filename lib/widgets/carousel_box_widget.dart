@@ -21,7 +21,7 @@ class CarouselBox<T> extends StatelessWidget {
   final EdgeInsets padding;
 
   const CarouselBox({
-    Key? key,
+    super.key,
     required this.items,
     required this.itemBuilder,
     this.height = 125.0,
@@ -38,7 +38,7 @@ class CarouselBox<T> extends StatelessWidget {
     this.borderColor = const Color.fromARGB(255, 100, 102, 168),
     this.labelBackgroundColor = const Color.fromARGB(255, 7, 8, 29),
     this.padding = const EdgeInsets.only(top: 16.0),
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

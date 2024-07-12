@@ -13,7 +13,7 @@ class DescubrirBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<Organization> organizacionesDestacadas =
+    final Future<List<Organization>> organizacionesDestacadas =
         DescubrirLogic.obtenerOrganizacionesDestacadas();
     final List<Post> publicacionesRecientes =
         DescubrirLogic.obtenerPublicacionesRecientes();
@@ -24,13 +24,26 @@ class DescubrirBody extends StatelessWidget {
         direction: Axis.vertical,
         children: [
           const BuscarOrganizacion(),
-          CarouselBox<Organization>(
-            items: organizacionesDestacadas,
-            itemBuilder: (context, index) => OrganizacionCard(
-              organization: organizacionesDestacadas[index],
-            ),
-            labelText: 'Organizaciones Destacadas',
-            height: 125,
+          FutureBuilder<List<Organization>>(
+            future: organizacionesDestacadas,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return const Text('No hay organizaciones destacadas.');
+              } else {
+                return CarouselBox<Organization>(
+                  items: snapshot.data!,
+                  itemBuilder: (context, index) => OrganizacionCard(
+                    organization: snapshot.data![index],
+                  ),
+                  labelText: 'Organizaciones Destacadas',
+                  height: MediaQuery.of(context).size.height * 0.25,
+                );
+              }
+            },
           ),
           CarouselBox<Post>(
             items: publicacionesRecientes,
