@@ -62,8 +62,15 @@ class FirestoreService {
   }
 
   Future<Map<String, dynamic>> getDocument(
-      String collectionName, String documentId) async {
+      String collectionName, String? documentId) async {
     try {
+      if (documentId == null) {
+        return {
+          'error': true,
+          'message': 'ID de documento es nulo',
+        };
+      }
+
       var snapshot =
           await _firestore.collection(collectionName).doc(documentId).get();
 

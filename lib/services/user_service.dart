@@ -5,6 +5,7 @@ import 'firestore_service.dart';
 import 'package:lumotareas/models/user.dart';
 import 'package:lumotareas/services/organization_service.dart';
 import 'package:lumotareas/models/register_form.dart';
+import 'package:lumotareas/models/organization.dart';
 
 class UserService {
   final AuthService _authService = AuthService();
@@ -16,6 +17,34 @@ class UserService {
   Usuario? _currentUser;
 
   Usuario? get currentUser => _currentUser;
+
+  // Crea una organización y se la asigna al usuario
+  Future<Usuario?> createOrganization(Organization organization) async {
+    Map<String, dynamic> result =
+        await _organizationService.createOrganization(organization);
+    if (result['success']) {
+      // Obtener el usuario actual
+      Usuario? user = await getUserByUid(_currentUser!.uid);
+      if (user != null) {
+        // Agregar la organización al usuario
+        user.organizaciones!.add(OrganizacionInterna(
+          nombre: organization.nombre,
+          id: result['ref'],
+          isOwner: true,
+        ));
+        // Actualizar los datos del usuario en Firestore
+        await updateUserData(user);
+        _logger.d('Organización creada y asignada al usuario correctamente');
+        return user;
+      } else {
+        _logger.w('No se encontró al usuario actual');
+        return null;
+      }
+    } else {
+      _logger.e('Error al crear la organización');
+      return null;
+    }
+  }
 
   // Método para registrar con Google llamando al Auth
   Future<Usuario?> signUpWithGoogle(RegisterForm form) async {
@@ -46,17 +75,19 @@ class UserService {
           // Se le agrega a la solicitud
           newUser = Usuario(
             uid: firebaseUser.uid,
-            nombre: form.fullName,
+            nombre: firebaseUser.displayName ?? '',
             email: firebaseUser.email ?? '',
             birthdate: form.birthDate,
+            photoURL: firebaseUser.photoURL ?? '',
             solicitudes: [solicitudId],
           );
         } else if (form.orgName.isNotEmpty && form.isOwner) {
           newUser = Usuario(
             uid: firebaseUser.uid,
-            nombre: form.fullName,
+            nombre: firebaseUser.displayName ?? '',
             email: firebaseUser.email ?? '',
             birthdate: form.birthDate,
+            photoURL: firebaseUser.photoURL ?? '',
             organizaciones: [
               OrganizacionInterna(
                 nombre: form.orgName,
@@ -68,9 +99,10 @@ class UserService {
         } else if (solicitudId.isEmpty) {
           newUser = Usuario(
             uid: firebaseUser.uid,
-            nombre: form.fullName,
+            nombre: firebaseUser.displayName ?? '',
             email: firebaseUser.email ?? '',
             birthdate: form.birthDate,
+            photoURL: firebaseUser.photoURL ?? '',
           );
         } else {
           _logger.w('No se pudo crear el usuario');
@@ -178,12 +210,14 @@ class UserService {
 
   // Método para obtener información de usuario por UID
   Future<Usuario?> getUserByUid(String uid) async {
+    _logger.d('Obteniendo información de usuario por UID: $uid');
     try {
       // Obtener documento de usuario de Firestore usando FirestoreService
       Map<String, dynamic> result =
           await _firestoreService.getDocument('users', uid);
 
       if (result['found'] == true) {
+        _logger.d('Usuario encontrado en Firestore con UID: $uid');
         // Convertir el mapa obtenido de Firestore a una instancia de Usuario
         Usuario user = Usuario.fromMap(uid, result['data']);
         _logger.d('Usuario encontrado en Firestore con UID: $uid');

@@ -45,6 +45,22 @@ class AuthService {
             // Accede al servicio REST en el registro
             RestService.access(idToken);
 
+            // Verifica si existe en la base de datos
+            final bool userExists = await checkIfUserExists(user.uid);
+
+            // Si el usuario existe en la base de datos, no se debería registrar denuevo
+            // por lo tanto, return null
+            if (userExists) {
+              _logger.i('Bienvenido de nuevo, ${user.email}!');
+              return null;
+            }
+
+            // Setea la foto de perfil del usuario, es una foto predeterminada usando ui-avatars.com
+            await user.updateProfile(
+              photoURL:
+                  'https://ui-avatars.com/api/?name=${user.displayName}&background=random&size=128&rounded=true',
+            );
+
             return user;
           } else {
             _logger.w(
@@ -101,6 +117,13 @@ class AuthService {
               _logger.i('Bienvenido de nuevo, ${user.email}!');
               // Accede al servicio REST para obtener la información del usuario
               RestService.access(idToken);
+              // Si no tiene foto de perfil, se le asigna una predeterminada
+              if (user.photoURL == null) {
+                await user.updateProfile(
+                  photoURL:
+                      'https://ui-avatars.com/api/?name=${user.displayName}&background=random&size=128&rounded=true',
+                );
+              }
               return user;
             } else {
               _logger.e('Este usuario no figura en la base de datos.');
@@ -124,7 +147,6 @@ class AuthService {
       // Limpiar instancia de GoogleSignIn para permitir un nuevo intento
       googleSignIn.disconnect();
     }
-
     return null;
   }
 
