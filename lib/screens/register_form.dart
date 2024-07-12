@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:lumotareas/widgets/contenedor_widget.dart';
 import 'package:lumotareas/widgets/org_formulario.dart';
 import 'package:lumotareas/widgets/checkbox_widget.dart';
 import 'package:lumotareas/widgets/header.dart';
@@ -7,28 +8,26 @@ import 'package:logger/logger.dart';
 import 'package:lumotareas/viewmodels/login_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:lumotareas/models/register_form.dart';
+import 'package:lumotareas/services/preferences_service.dart';
 
 class RegisterFormWidget extends StatefulWidget {
   final Logger _logger = Logger();
-  final Map<String, dynamic> respuestas;
+  final Map<String, dynamic>? respuestas;
   final String orgName;
 
-  RegisterFormWidget(
-      {super.key, required this.respuestas, required this.orgName});
+  RegisterFormWidget({super.key, this.respuestas, this.orgName = ''});
 
   @override
   RegisterFormWidgetState createState() => RegisterFormWidgetState();
 }
 
 class RegisterFormWidgetState extends State<RegisterFormWidget> {
-  final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _dayController = TextEditingController();
   final TextEditingController _monthController = TextEditingController();
   final TextEditingController _yearController = TextEditingController();
 
   bool _canSubmit() {
-    return _fullNameController.text.isNotEmpty &&
-        _dayController.text.isNotEmpty &&
+    return _dayController.text.isNotEmpty &&
         _monthController.text.isNotEmpty &&
         _yearController.text.isNotEmpty &&
         _isChecked;
@@ -38,7 +37,6 @@ class RegisterFormWidgetState extends State<RegisterFormWidget> {
 
   @override
   void dispose() {
-    _fullNameController.dispose();
     _dayController.dispose();
     _monthController.dispose();
     _yearController.dispose();
@@ -69,14 +67,12 @@ class RegisterFormWidgetState extends State<RegisterFormWidget> {
 
   void _submitForm(BuildContext context) async {
     if (_canSubmit()) {
-      String fullName = _fullNameController.text.trim();
       String day = _dayController.text.trim();
       String month = _monthController.text.trim();
       String year = _yearController.text.trim();
       String birthDate = '$day/$month/$year';
 
       RegisterForm formData = RegisterForm(
-        fullName: fullName,
         birthDate: birthDate,
         orgName: widget.orgName,
         respuestas: widget.respuestas,
@@ -104,8 +100,11 @@ class RegisterFormWidgetState extends State<RegisterFormWidget> {
               ),
             ),
             SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Contenedor(
+                height: MediaQuery.of(context).size.height * 0.85,
+                direction: Axis.vertical,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Header(
                     onTap: () {
@@ -122,7 +121,6 @@ class RegisterFormWidgetState extends State<RegisterFormWidget> {
                         renderSubtitle(),
                         const SizedBox(height: 20),
                         OrgFormulario(
-                          fullNameController: _fullNameController,
                           dayController: _dayController,
                           monthController: _monthController,
                           yearController: _yearController,
@@ -169,6 +167,23 @@ class RegisterFormWidgetState extends State<RegisterFormWidget> {
                                   color: Colors.black)),
                         ),
                       ],
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      // Usar el servicio de preferencias para setear
+                      // el redirectToLogin en false
+                      // y navegar a '/'
+                      PreferenceService.setRedirectToLogin(false);
+                      Navigator.pushNamed(context, '/');
+                    },
+                    child: const Text(
+                      'Haz clic aquí para buscar tu organización',
+                      style: TextStyle(
+                        fontFamily: 'Manrope',
+                        fontSize: 14,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ],
