@@ -6,7 +6,13 @@ class DescubrirLogic {
     return [
       Organization(
         nombre: 'Organización 1',
-        miembros: 10,
+        miembros: [
+          'member1',
+          'member2',
+          'member3',
+          'member4',
+          'member5',
+        ],
         owner: Owner(nombre: 'Owner 1', uid: 'owner1'),
         vacantes: true,
         formulario: {},
@@ -16,7 +22,13 @@ class DescubrirLogic {
       ),
       Organization(
         nombre: 'Organización 2',
-        miembros: 5,
+        miembros: [
+          'member1',
+          'member2',
+          'member3',
+          'member4',
+          'member5',
+        ],
         owner: Owner(nombre: 'Owner 2', uid: 'owner2'),
         vacantes: false,
         formulario: {},
@@ -25,7 +37,13 @@ class DescubrirLogic {
       ),
       Organization(
         nombre: 'Organización 3',
-        miembros: 20,
+        miembros: [
+          'member1',
+          'member2',
+          'member3',
+          'member4',
+          'member5',
+        ],
         owner: Owner(nombre: 'Owner 3', uid: 'owner3'),
         vacantes: true,
         formulario: {},
