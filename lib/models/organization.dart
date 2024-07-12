@@ -35,6 +35,7 @@ class Organization {
   final Map<String, dynamic> formulario;
   final String descripcion;
   final String imageUrl;
+  final int clicks;
 
   Organization({
     required this.nombre,
@@ -44,6 +45,7 @@ class Organization {
     required this.formulario,
     required this.descripcion,
     this.imageUrl = 'assets/organization_logo.png',
+    this.clicks = 0,
   });
 
   factory Organization.fromMap(Map<String, dynamic> map) {

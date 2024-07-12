@@ -33,12 +33,17 @@ class FirestoreService {
   }
 
   Future<Map<String, dynamic>> getCollection(String collectionName,
-      {int limit = 10}) async {
+      {int limit = 10, String? orderByField, bool descending = false}) async {
     try {
-      var snapshot = await FirebaseFirestore.instance
-          .collection(collectionName)
-          .limit(limit)
-          .get();
+      Query<Map<String, dynamic>> query =
+          FirebaseFirestore.instance.collection(collectionName);
+
+      // Añadir ordenamiento si orderByField no es nulo
+      if (orderByField != null) {
+        query = query.orderBy(orderByField, descending: descending);
+      }
+
+      var snapshot = await query.limit(limit).get();
 
       if (snapshot.docs.isNotEmpty) {
         var filteredDocs =

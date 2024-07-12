@@ -151,6 +151,42 @@ class OrganizationService {
     }
   }
 
+//metodo para obtener la lista de las organizaciones mas polulares
+
+  Future<Map<String, dynamic>> getPopularOrganizations() async {
+    try {
+      var result = await _firestoreService.getCollection(
+        'organizaciones',
+        limit: 10,
+        orderByField: 'clicks',
+        descending: true,
+      );
+
+      if (result['found']) {
+        List<Organization> organizations =
+            result['data'].map<Organization>((doc) {
+          return Organization.fromMap(doc);
+        }).toList();
+
+        return {
+          'success': true,
+          'organizations': organizations,
+          'message': result['message'],
+        };
+      } else {
+        return {
+          'success': false,
+          'message': result['message'],
+        };
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Error al obtener las organizaciones: $e',
+      };
+    }
+  }
+
   Future<Map<String, dynamic>> registerSolicitud(
       String orgName, Map<String, dynamic> solicitud, String uid) async {
     // Crear un mapa con los datos de la solicitud
