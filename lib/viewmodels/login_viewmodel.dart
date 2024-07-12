@@ -1,10 +1,11 @@
 import 'package:logger/logger.dart';
 import 'package:lumotareas/models/user.dart';
-import 'package:lumotareas/screens/welcome_screen/nueva_org/creando_org_screen.dart';
+import 'package:lumotareas/screens/welcome_screen/nueva_org/creando_org/creando_org_screen.dart';
 import 'package:lumotareas/services/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:lumotareas/services/rest_service.dart';
 import 'package:lumotareas/models/register_form.dart';
+import 'package:lumotareas/models/organization.dart';
 
 class LoginViewModel extends ChangeNotifier {
   final UserService _userService = UserService();
@@ -39,6 +40,26 @@ class LoginViewModel extends ChangeNotifier {
     final message = _message;
     _message = null;
     return message;
+  }
+
+  Future<void> createOrganization(
+      BuildContext context, Organization organization) async {
+    Usuario? user = await _userService.createOrganization(organization);
+    if (user != null) {
+      _currentUser = user;
+      notifyListeners();
+      _logger.d('Organización creada y asignada al usuario correctamente');
+      setMessage('Organización creada y asignada al usuario correctamente');
+      if (context.mounted) {
+        Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);
+      }
+    } else {
+      _logger.e('Error al crear la organización');
+      setMessage('Error al crear la organización');
+      if (context.mounted) {
+        Navigator.pop(context);
+      }
+    }
   }
 
   Future<void> fetchUserHistory(String email) async {
@@ -83,10 +104,10 @@ class LoginViewModel extends ChangeNotifier {
         setMessage('Registro exitoso con Google');
         // Navegar a '/main' y reemplazar todas las rutas anteriores
         if (context.mounted) {
-          if (form.respuestas != null) {
+          if (form.respuestas != null || form.orgName.isEmpty) {
             Navigator.pushNamedAndRemoveUntil(
                 context, '/main', (route) => false);
-          } else {
+          } else if (form.orgName.isNotEmpty && form.respuestas == null) {
             Navigator.pushReplacement(context, MaterialPageRoute(
               builder: (context) {
                 return CreandoOrgScreen(
@@ -100,6 +121,13 @@ class LoginViewModel extends ChangeNotifier {
         setMessage('Registro fallido con Google, usuario no encontrado');
         if (context.mounted) {
           Navigator.pop(context);
+          // Mostrar un snackbar con 'El usuario no existe en la base de datos'
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                  'El usuario ya existe, o ha ocurrido un error mientras se registraba con Google'),
+            ),
+          );
         }
       }
     } catch (e) {
@@ -148,7 +176,8 @@ class LoginViewModel extends ChangeNotifier {
           // Mostrar un snackbar con 'El usuario no existe en la base de datos'
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('El usuario no existe en la base de datos'),
+              content: Text(
+                  'El usuario no existe, o ha ocurrido un error mientras se iniciaba sesión con Google'),
             ),
           );
         }
