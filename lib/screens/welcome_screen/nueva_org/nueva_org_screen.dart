@@ -20,14 +20,12 @@ class NuevaOrgScreen extends StatefulWidget {
 }
 
 class NuevaOrgScreenState extends State<NuevaOrgScreen> {
-  final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _dayController = TextEditingController();
   final TextEditingController _monthController = TextEditingController();
   final TextEditingController _yearController = TextEditingController();
 
   bool _canSubmit() {
-    return _fullNameController.text.isNotEmpty &&
-        _dayController.text.isNotEmpty &&
+    return _dayController.text.isNotEmpty &&
         _monthController.text.isNotEmpty &&
         _yearController.text.isNotEmpty &&
         _isChecked;
@@ -36,20 +34,6 @@ class NuevaOrgScreenState extends State<NuevaOrgScreen> {
   bool _isChecked = false;
 
   final List<String> _errors = [];
-
-  bool _validateFullName(String fullName) {
-    if (fullName.isEmpty) {
-      _errors.add('El nombre completo es requerido');
-      return false;
-    } else if (fullName
-        .contains(RegExp(r'[0-9!@#<>?":_`~;[\]\\|=+)(*&^%$£/{}-]'))) {
-      _errors.add(
-          'El nombre completo no puede contener caracteres especiales o números');
-      return false;
-    } else {
-      return true;
-    }
-  }
 
   bool _validateBirthDate(String day, String month, String year) {
     if (day.isEmpty || month.isEmpty || year.isEmpty) {
@@ -63,7 +47,6 @@ class NuevaOrgScreenState extends State<NuevaOrgScreen> {
   void validateForm() {
     _errors.clear();
 
-    _validateFullName(_fullNameController.text.trim());
     _validateBirthDate(
       _dayController.text.trim(),
       _monthController.text.trim(),
@@ -107,7 +90,6 @@ class NuevaOrgScreenState extends State<NuevaOrgScreen> {
 
   @override
   void dispose() {
-    _fullNameController.dispose();
     _dayController.dispose();
     _monthController.dispose();
     _yearController.dispose();
@@ -138,7 +120,6 @@ class NuevaOrgScreenState extends State<NuevaOrgScreen> {
 
   void submitForm(BuildContext context) async {
     RegisterForm formData = RegisterForm(
-      fullName: _fullNameController.text.trim(),
       birthDate:
           '${_dayController.text.trim()}/${_monthController.text.trim()}/${_yearController.text.trim()}',
       orgName: widget.orgName,
@@ -183,7 +164,6 @@ class NuevaOrgScreenState extends State<NuevaOrgScreen> {
                         renderTitle(),
                         renderSubtitle(),
                         OrgFormulario(
-                          fullNameController: _fullNameController,
                           dayController: _dayController,
                           monthController: _monthController,
                           yearController: _yearController,
