@@ -17,7 +17,7 @@ class ProfileBody extends StatelessWidget {
         child: currentUser == null
             ? const SizedBox.shrink() // SizedBox vacío si currentUser es null
             : SingleChildScrollView(
-                padding: EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16.0),
                 child: Column(
                   children: <Widget>[
                     ProfileWidget(),
