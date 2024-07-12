@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'date_picker.dart';
-import './my_textfield.dart';
 
 class OrgFormulario extends StatefulWidget {
-  final TextEditingController fullNameController;
   final TextEditingController dayController;
   final TextEditingController monthController;
   final TextEditingController yearController;
 
   const OrgFormulario({
     super.key,
-    required this.fullNameController,
     required this.dayController,
     required this.monthController,
     required this.yearController,
@@ -23,8 +20,6 @@ class OrgFormulario extends StatefulWidget {
 
 class OrgFormularioState extends State<OrgFormulario> {
   String? selectedDate;
-  bool isPasswordVisible = false;
-  bool isConfirmPasswordVisible = false;
 
   void showBirthdayDatePickerModal(BuildContext context) {
     showModalBottomSheet(
@@ -65,14 +60,6 @@ class OrgFormularioState extends State<OrgFormulario> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          MyTextField(
-            controller: widget.fullNameController,
-            labelText: 'Ingresa tu nombre completo',
-            hintText:
-                'Es un campo obligatorio. Los caracteres especiales como @, #, etc. no están permitidos.',
-            icon: Icons.person,
-          ),
-          const SizedBox(height: 5),
           GestureDetector(
             onTap: () {
               showBirthdayDatePickerModal(context);
