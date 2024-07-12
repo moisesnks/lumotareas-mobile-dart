@@ -39,9 +39,9 @@ class LastLogin extends StatelessWidget {
                         builder: (BuildContext context) {
                           return Container(
                             color: const Color(0xFF111111),
-                            child: Column(
+                            child: const Column(
                               children: [
-                                const Padding(
+                                Padding(
                                   padding: EdgeInsets.all(16.0),
                                   child: Text(
                                     'Historial de conexiones',
@@ -53,7 +53,7 @@ class LastLogin extends StatelessWidget {
                                   ),
                                 ),
                                 Expanded(
-                                  child: const HistoryList(),
+                                  child: HistoryList(),
                                 ),
                               ],
                             ),
