@@ -139,8 +139,8 @@ class FormWidgetState extends State<FormWidget> {
                     child: PreguntaPage(
                       pregunta: pregunta,
                       respuesta: _respuestas[pregunta['enunciado'].toString()],
-                      onChanged: (value) => _updateRespuesta(
-                          pregunta['enunciado'].toString(), value),
+                      onChanged: (value) =>
+                          _updateRespuesta(pregunta['enunciado'], value),
                     ),
                   );
                 },

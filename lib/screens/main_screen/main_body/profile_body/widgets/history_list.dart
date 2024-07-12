@@ -27,10 +27,10 @@ class HistoryList extends StatelessWidget {
           itemBuilder: (context, index) {
             final historyItem = history[index];
             return ListTile(
-              title: Text('${historyItem['email']}'),
-              subtitle: Text('${historyItem['userAgent']}'),
+              title: Text(historyItem['email']),
+              subtitle: Text(historyItem['userAgent'].split(' ')[0]),
               trailing: Text(
-                'Fecha: ${Utils.formatToLocalTime(historyItem['created'])}',
+                Utils.formatToLocalTime(historyItem['created']),
               ),
             );
           },

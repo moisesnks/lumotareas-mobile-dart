@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:lumotareas/models/register_form.dart';
+import 'package:lumotareas/widgets/contenedor_widget.dart';
 import 'package:lumotareas/widgets/org_formulario.dart';
 import 'package:provider/provider.dart';
 import 'package:lumotareas/viewmodels/login_viewmodel.dart';
 import 'package:lumotareas/widgets/checkbox_widget.dart';
 import 'package:lumotareas/widgets/header.dart';
 import 'package:logger/logger.dart';
-import 'package:lumotareas/screens/login_screen.dart';
+import 'package:lumotareas/screens/login_screen/login_screen.dart';
 import 'package:lumotareas/extensions/text_styles.dart';
 
 class NuevaOrgScreen extends StatefulWidget {
@@ -155,84 +157,111 @@ class NuevaOrgScreenState extends State<NuevaOrgScreen> {
                       widget._logger.d('Logo de Lumotareas clickeado');
                     },
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 20),
-                        renderTitle(),
-                        renderSubtitle(),
-                        OrgFormulario(
-                          dayController: _dayController,
-                          monthController: _monthController,
-                          yearController: _yearController,
-                        ),
-                        CheckboxWidget(
-                          onChanged: (isChecked) {
-                            setState(() {
-                              _isChecked = isChecked;
-                            });
-                            widget._logger
-                                .d('Checkbox seleccionado: $isChecked');
-                          },
-                        ),
-                        ElevatedButton(
-                          onPressed: _canSubmit()
-                              ? () {
-                                  widget._logger.d(
-                                      'Registrar organización y cuenta presionado');
-                                  validateForm(); // Llama al método para validar y mostrar el modal si hay errores
-                                }
-                              : null,
-                          style: ButtonStyle(
-                            shape:
-                                WidgetStateProperty.all<RoundedRectangleBorder>(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0),
+                  Contenedor(
+                    direction: Axis.vertical,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    height: MediaQuery.of(context).size.height * 0.85,
+                    children: [
+                      Contenedor(
+                        direction: Axis.vertical,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Contenedor(
+                            direction: Axis.vertical,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              renderTitle(),
+                              renderSubtitle(),
+                            ],
+                          ),
+                          Contenedor(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            direction: Axis.vertical,
+                            children: [
+                              OrgFormulario(
+                                dayController: _dayController,
+                                monthController: _monthController,
+                                yearController: _yearController,
                               ),
-                            ),
-                            elevation: WidgetStateProperty.all<double>(4.0),
-                            padding:
-                                WidgetStateProperty.all<EdgeInsetsGeometry>(
-                              const EdgeInsets.all(10.0),
-                            ),
-                            minimumSize: WidgetStateProperty.all<Size>(
-                              const Size(double.infinity, 0),
-                            ),
+                              Contenedor(
+                                direction: Axis.horizontal,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  CheckboxWidget(
+                                    onChanged: (isChecked) {
+                                      setState(() {
+                                        _isChecked = isChecked;
+                                      });
+                                      widget._logger.d(
+                                          'Checkbox seleccionado: $isChecked');
+                                    },
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 40),
+                              ElevatedButton.icon(
+                                onPressed: _canSubmit()
+                                    ? () {
+                                        widget._logger.d(
+                                            'Registrar organización y cuenta presionado');
+                                        validateForm(); // Llama al método para validar y mostrar el modal si hay errores
+                                      }
+                                    : null,
+                                style: ElevatedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 16, horizontal: 10),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  backgroundColor:
+                                      const Color.fromARGB(255, 207, 207, 207),
+                                ),
+                                icon: SvgPicture.asset(
+                                  'assets/images/google-svgrepo.svg',
+                                  width: 24,
+                                  height: 24,
+                                ),
+                                label: const Text('Continuar con Google',
+                                    style: TextStyle(
+                                        fontFamily: 'Manrope',
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black)),
+                              ),
+                            ],
                           ),
-                          child: const Text(
-                              'Registrar mi organización y mi cuenta'),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Center(
-                    child: TextButton(
-                      onPressed: () {
-                        widget._logger
-                            .d('Botón "Ya tengo cuenta..." presionado');
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const LoginScreen(),
-                          ),
-                        );
-                      },
-                      child: Text(
-                        'Ya tengo cuenta en Lumotareas pero quiero crear una nueva organización',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w300,
-                        ).underlined(
-                          distance:
-                              2, // Distancia entre el texto y el subrayado
-                          thickness: 1, // Grosor del subrayado
-                        ),
-                        textAlign: TextAlign.center,
+                        ],
                       ),
-                    ),
+                      TextButton(
+                        onPressed: () {
+                          widget._logger
+                              .d('Botón "Ya tengo cuenta..." presionado');
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const LoginScreen(),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          'Ya tengo cuenta en Lumotareas pero quiero crear una nueva organización',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w300,
+                          ).underlined(
+                            distance:
+                                2, // Distancia entre el texto y el subrayado
+                            thickness: 1, // Grosor del subrayado
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

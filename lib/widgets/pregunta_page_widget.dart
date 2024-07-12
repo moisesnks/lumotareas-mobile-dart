@@ -6,14 +6,16 @@ class PreguntaPage extends StatelessWidget {
   final ValueChanged<dynamic> onChanged;
 
   const PreguntaPage({
-    super.key,
+    Key? key,
     required this.pregunta,
     required this.respuesta,
     required this.onChanged,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    bool boolRespuesta = respuesta == 'true'; // Conversión condicional
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -63,6 +65,24 @@ class PreguntaPage extends StatelessWidget {
                       const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
                 ),
                 onChanged: (value) => onChanged(value),
+              ),
+            ],
+          ),
+        if (pregunta['tipo'] == 'booleano')
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              RadioListTile(
+                title: const Text('Sí'),
+                value: true,
+                groupValue: boolRespuesta, // Usa boolRespuesta en groupValue
+                onChanged: (value) => onChanged(value), // Convierte a String
+              ),
+              RadioListTile(
+                title: const Text('No'),
+                value: false,
+                groupValue: boolRespuesta, // Usa boolRespuesta en groupValue
+                onChanged: (value) => onChanged(value), // Convierte a String
               ),
             ],
           ),

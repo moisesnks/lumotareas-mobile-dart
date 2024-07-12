@@ -175,6 +175,7 @@ class OrganizationService {
           'success': true,
           'message':
               'Organización creada correctamente con la colección solicitudes y proyectos',
+          'ref': result['documentId'],
         };
       } else {
         return {

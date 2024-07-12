@@ -81,13 +81,15 @@ class LastLogin extends StatelessWidget {
                       const Icon(Icons.phone_android, color: Colors.white),
                       const SizedBox(width: 10),
                       Text(
-                        '${latestHistoryItem['userAgent']}',
+                        latestHistoryItem['userAgent']
+                            .split(' ')[0]
+                            .split('/')[0],
                         style: const TextStyle(color: Colors.white),
                       ),
                     ],
                   ),
                   Text(
-                    'Fecha: ${Utils.formatToLocalTime(latestHistoryItem['created'])}',
+                    Utils.formatToLocalTime(latestHistoryItem['created']),
                     style: const TextStyle(color: Colors.white70),
                   ),
                 ],

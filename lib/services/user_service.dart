@@ -19,12 +19,13 @@ class UserService {
   Usuario? get currentUser => _currentUser;
 
   // Crea una organización y se la asigna al usuario
-  Future<Usuario?> createOrganization(Organization organization) async {
+  Future<Usuario?> createOrganization(
+      String uid, Organization organization) async {
     Map<String, dynamic> result =
         await _organizationService.createOrganization(organization);
     if (result['success']) {
       // Obtener el usuario actual
-      Usuario? user = await getUserByUid(_currentUser!.uid);
+      Usuario? user = await getUserByUid(uid);
       if (user != null) {
         // Agregar la organización al usuario
         user.organizaciones!.add(OrganizacionInterna(

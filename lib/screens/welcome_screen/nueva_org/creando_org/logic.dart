@@ -5,7 +5,7 @@ List<Map<String, dynamic>> getPreguntas(String orgName) {
     {
       'titulo': 'Descripción',
       'enunciado': 'Descripción',
-      'tipo': 'texto',
+      'tipo': 'desarrollo',
       'required': true,
     },
     {
@@ -38,7 +38,7 @@ Organization createOrganizationFromResponses(
     nombre: respuestas['Nombre de la organización'] ?? orgName ?? '',
     owner: Owner(nombre: orgName, uid: ownerUID ?? ''),
     descripcion: respuestas['Descripción'] ?? '',
-    vacantes: respuestas['¿Tiene vacantes?'] ?? false,
+    vacantes: respuestas['¿Tiene vacantes?'] ?? "false",
     miembros: [ownerUID ?? ''],
     formulario: {},
   );

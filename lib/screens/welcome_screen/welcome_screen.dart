@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lumotareas/screens/login_screen.dart';
+import 'package:lumotareas/screens/login_screen/login_screen.dart';
 import 'package:lumotareas/services/preferences_service.dart';
 
 import 'logic.dart';

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lumotareas/screens/welcome_screen/formulario/formulario_screen.dart';
-import 'package:lumotareas/screens/login_screen.dart';
+import 'package:lumotareas/screens/login_screen/login_screen.dart';
 
 class AuthButtons extends StatelessWidget {
-  final bool vacantes;
+  final String vacantes;
   final String orgName;
   final Map<String, dynamic> formulario;
 
@@ -13,6 +13,8 @@ class AuthButtons extends StatelessWidget {
     required this.formulario,
     required this.orgName,
   });
+
+  bool get isVacantes => vacantes.toLowerCase() == 'true';
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +61,7 @@ class AuthButtons extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-                onPressed: vacantes
+                onPressed: isVacantes
                     ? () {
                         // Navegar a la pantalla de registro con el formulario
                         Navigator.push(
@@ -80,16 +82,16 @@ class AuthButtons extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    vacantes
+                    isVacantes
                         ? const Icon(Icons.person_add, color: Colors.white)
                         : Icon(Icons.block, color: Colors.grey[400]),
                     const SizedBox(width: 8.0),
                     Text(
-                      vacantes
+                      isVacantes
                           ? 'Registrarse'
                           : 'Esta organización no recibe solicitudes',
                       style: TextStyle(
-                        color: vacantes ? Colors.white : Colors.grey[400],
+                        color: isVacantes ? Colors.white : Colors.grey[400],
                         fontSize: 14.0,
                         fontWeight: FontWeight.bold,
                       ),

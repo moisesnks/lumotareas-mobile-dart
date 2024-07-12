@@ -5,7 +5,7 @@ import 'package:lumotareas/widgets/contenedor_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:lumotareas/viewmodels/login_viewmodel.dart';
 import 'package:lumotareas/widgets/welcome_title.dart';
-import '../register_screen/register_form.dart';
+import '../register_form.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

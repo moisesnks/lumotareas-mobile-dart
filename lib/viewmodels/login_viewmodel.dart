@@ -44,7 +44,8 @@ class LoginViewModel extends ChangeNotifier {
 
   Future<void> createOrganization(
       BuildContext context, Organization organization) async {
-    Usuario? user = await _userService.createOrganization(organization);
+    Usuario? user =
+        await _userService.createOrganization(_currentUser!.uid, organization);
     if (user != null) {
       _currentUser = user;
       notifyListeners();
