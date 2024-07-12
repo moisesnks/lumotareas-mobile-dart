@@ -21,7 +21,7 @@ class ProfileBody extends StatelessWidget {
                 child: Column(
                   children: <Widget>[
                     ProfileWidget(),
-                    const Divider(),
+                    const SizedBox(height: 24),
                     const LastLogin(),
                   ],
                 ),
