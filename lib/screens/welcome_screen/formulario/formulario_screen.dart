@@ -31,7 +31,7 @@ class FormularioScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => RegisterForm(
+                      builder: (context) => RegisterFormWidget(
                           respuestas: respuestas, orgName: orgName),
                     ),
                   );

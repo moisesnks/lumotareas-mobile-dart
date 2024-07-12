@@ -4,6 +4,7 @@ import 'auth_service.dart';
 import 'firestore_service.dart';
 import 'package:lumotareas/models/user.dart';
 import 'package:lumotareas/services/organization_service.dart';
+import 'package:lumotareas/models/register_form.dart';
 
 class UserService {
   final AuthService _authService = AuthService();
@@ -15,6 +16,89 @@ class UserService {
   Usuario? _currentUser;
 
   Usuario? get currentUser => _currentUser;
+
+  // Método para registrar con Google llamando al Auth
+  Future<Usuario?> signUpWithGoogle(RegisterForm form) async {
+    try {
+      // Intentar el registro con el AuthService
+      User? firebaseUser = await _authService.signUpWithGoogle();
+      String solicitudId = '';
+      if (firebaseUser != null) {
+        // Enviar la solicitud a la organización
+        if (form.respuestas != null && form.orgName.isNotEmpty) {
+          // Esperar la solicitud
+          Map<String, dynamic> result =
+              await _organizationService.registerSolicitud(
+            form.orgName,
+            form.respuestas!,
+            firebaseUser.uid,
+          );
+          _logger.d('Solicitud enviada a la organización: ${form.orgName}');
+          _logger.i('Referencia de la solicitud: ${result['ref']}');
+          solicitudId = result['ref'];
+        } else if (form.orgName.isEmpty) {
+          _logger.w('No se proporcionó el nombre de la organización');
+        }
+        // Crear una instancia de Usuario con los datos entregados por el formulario
+        // y usando también de Google, como el email y el uid.
+        Usuario newUser;
+        if (form.orgName.isNotEmpty && !form.isOwner) {
+          // Se le agrega a la solicitud
+          newUser = Usuario(
+            uid: firebaseUser.uid,
+            nombre: form.fullName,
+            email: firebaseUser.email ?? '',
+            birthdate: form.birthDate,
+            solicitudes: [solicitudId],
+          );
+        } else if (form.orgName.isNotEmpty && form.isOwner) {
+          newUser = Usuario(
+            uid: firebaseUser.uid,
+            nombre: form.fullName,
+            email: firebaseUser.email ?? '',
+            birthdate: form.birthDate,
+            organizaciones: [
+              OrganizacionInterna(
+                nombre: form.orgName,
+                id: form.orgName,
+                isOwner: form.isOwner,
+              )
+            ],
+          );
+        } else if (solicitudId.isEmpty) {
+          newUser = Usuario(
+            uid: firebaseUser.uid,
+            nombre: form.fullName,
+            email: firebaseUser.email ?? '',
+            birthdate: form.birthDate,
+          );
+        } else {
+          _logger.w('No se pudo crear el usuario');
+          return null;
+        }
+        // Convertir el objeto Usuario a un mapa para almacenarlo en Firestore
+        Map<String, dynamic> userData = newUser.toMap();
+
+        // Añadir documento de usuario a Firestore usando FirestoreService
+        Map<String, dynamic> result =
+            await _firestoreService.addDocument('users', newUser.uid, userData);
+
+        if (result['success'] == true) {
+          _logger.d(
+              'Usuario registrado correctamente con Google: ${firebaseUser.email}');
+          return newUser;
+        } else {
+          _logger.e(
+              'Error al añadir usuario a Firestore después de registrar con Google');
+          return null;
+        }
+      }
+    } catch (e) {
+      _logger.e('Error al registrar con Google: $e');
+      return null;
+    }
+    return null;
+  }
 
   // Método para iniciar sesión con Google SignIn
   Future<Usuario?> signInWithGoogle() async {
@@ -56,47 +140,6 @@ class UserService {
     }
   }
 
-  // TODO: borrar estos métodos
-  // Método para iniciar sesión con correo y contraseña
-  Future<Usuario?> signInWithEmailAndPassword(
-      String email, String password) async {
-    try {
-      // Iniciar sesión con correo y contraseña usando AuthService
-      User? firebaseUser =
-          await _authService.signInWithEmailPassword(email, password);
-
-      if (firebaseUser != null) {
-        // Obtener el JWT del usuario autenticado
-        String? idToken = await firebaseUser.getIdToken();
-
-        if (idToken != null) {
-          // Obtener información de usuario por UID
-          Usuario? user = await getUserByUid(firebaseUser.uid);
-
-          if (user != null) {
-            _logger.d(
-                'Inicio de sesión exitoso con correo y contraseña: ${user.email}');
-            return user;
-          } else {
-            _logger.w(
-                'Error al obtener información de usuario después de iniciar sesión con correo y contraseña');
-            return null;
-          }
-        } else {
-          _logger
-              .w('No se pudo obtener el token JWT después de iniciar sesión');
-          return null;
-        }
-      } else {
-        _logger.w('Inicio de sesión fallido con correo y contraseña');
-        return null;
-      }
-    } catch (e) {
-      _logger.e('Error al iniciar sesión con correo y contraseña: $e');
-      return null;
-    }
-  }
-
   // Método
   // Registrar la referencia de la solicitud en el usuario, para eso
   // el usuario tiene un campo (array) que se llama solicitudes el cual con el servicio
@@ -129,168 +172,6 @@ class UserService {
       }
     } catch (e) {
       _logger.e('Error al agregar solicitud al usuario: $e');
-      return false;
-    }
-  }
-
-  Future<Usuario?> registerUserWithEmailAndPassword(
-    Map<String, dynamic> formData,
-  ) async {
-    // logger a lo que llegó en el formulario
-    _logger.d('Datos del formulario desde user_service: $formData');
-
-    try {
-      // Extraer datos del formulario
-      String email = formData['email']!;
-      String fullName = formData['fullName']!;
-      String birthdate = formData['birthDate']!;
-      String password = formData['password']!;
-      String orgName = formData['orgName'] ?? '';
-      bool? isOwner = formData['isOwner'];
-      bool isMember = formData['isMember'] ?? false;
-      Map<String, dynamic>? formulario = formData['formulario'];
-
-      // logger a lo que llegó en el formulario
-      _logger.d(
-          'Extracción correcta de todos los datos del formulario: $formData');
-
-      User? firebaseUser =
-          await _authService.signUpWithEmailPassword(email, password, fullName);
-
-      String solicitudId = '';
-      if (firebaseUser != null) {
-        // Enviar la solicitud a la organización
-        if (formulario != null && orgName.isNotEmpty) {
-          var result = await _organizationService.registerSolicitud(
-            orgName,
-            formulario,
-            firebaseUser.uid,
-          );
-          _logger.d('Solicitud de organización creada: ${result['ref']}');
-          solicitudId = result['ref'];
-        } else if (orgName.isEmpty) {
-          _logger.w('No se proporcionó un nombre de organización');
-          return null;
-        }
-        // Crear instancia de Usuario con datos del formulario
-        Usuario newUser;
-        if (orgName.isNotEmpty && isMember) {
-          newUser = Usuario(
-            uid: firebaseUser.uid,
-            nombre: fullName,
-            email: email,
-            birthdate: birthdate,
-            organizaciones: [
-              OrganizacionInterna(
-                nombre: orgName,
-                id: orgName,
-                isOwner: isOwner ?? false,
-              ),
-            ],
-          );
-        } else if (orgName.isNotEmpty && !isMember) {
-          newUser = Usuario(
-            uid: firebaseUser.uid,
-            nombre: fullName,
-            email: email,
-            birthdate: birthdate,
-            solicitudes: [solicitudId],
-          );
-        } else {
-          newUser = Usuario(
-            uid: firebaseUser.uid,
-            nombre: fullName,
-            email: email,
-            birthdate: birthdate,
-          );
-        }
-
-        // Convertir el objeto Usuario a un mapa para almacenarlo en Firestore
-        Map<String, dynamic> userData = newUser.toMap();
-
-        // Añadir documento de usuario a Firestore usando FirestoreService
-        Map<String, dynamic> result =
-            await _firestoreService.addDocument('users', newUser.uid, userData);
-
-        if (result['success'] == true) {
-          _logger.d(
-              'Usuario registrado correctamente con correo y contraseña: $email');
-          // Agregar la solicitud al usuario
-          bool success = await addSolicitudToUser(newUser.uid, solicitudId);
-          if (success) {
-            return newUser;
-          } else {
-            _logger.e(
-                'Error al agregar referencia de solicitud al usuario: $email');
-            return null;
-          }
-        } else {
-          _logger.e(
-              'Error al añadir usuario a Firestore después de registrar con correo y contraseña');
-          return null;
-        }
-      } else {
-        _logger.w('Inicio de sesión fallido con correo y contraseña');
-        return null;
-      }
-    } catch (e) {
-      _logger.e('Error al registrar usuario con correo y contraseña: $e');
-      return null;
-    }
-  }
-
-  // Método para registrar un usuario utilizando Google SignIn
-  Future<Usuario?> registerUserWithGoogle() async {
-    try {
-      // Iniciar sesión con Google usando AuthService
-      User? firebaseUser = await _authService.registerWithGoogle();
-
-      if (firebaseUser != null) {
-        // Crear instancia de Usuario con datos mínimos
-        Usuario newUser = Usuario(
-          uid: firebaseUser.uid,
-          nombre: firebaseUser.displayName ?? '',
-          email: firebaseUser.email ?? '',
-          birthdate: '',
-          organizaciones: [],
-        );
-
-        // Convertir el objeto Usuario a un mapa para almacenarlo en Firestore
-        Map<String, dynamic> userData = newUser.toMap();
-
-        // Añadir documento de usuario a Firestore usando FirestoreService
-        Map<String, dynamic> result =
-            await _firestoreService.addDocument('users', newUser.uid, userData);
-
-        if (result['success'] == true) {
-          _logger.d(
-              'Usuario registrado correctamente con Google: ${firebaseUser.email}');
-          return newUser;
-        } else {
-          _logger.e(
-              'Error al añadir usuario a Firestore después de registrar con Google');
-          return null;
-        }
-      } else {
-        _logger.w('El usuario no fue registrado con Google');
-        return null;
-      }
-    } catch (e) {
-      _logger.e('Error al registrar usuario con Google: $e');
-      return null;
-    }
-  }
-
-  Future<bool> checkIfUserExists(String uid) async {
-    try {
-      // Obtener documento de usuario de Firestore usando FirestoreService
-      Map<String, dynamic> result =
-          await _firestoreService.getDocument('users', uid);
-
-      // Verificar si se encontró el usuario
-      return result['found'] ?? false;
-    } catch (e) {
-      _logger.e('Error al verificar si el usuario existe: $e');
       return false;
     }
   }

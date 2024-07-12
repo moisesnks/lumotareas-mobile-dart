@@ -1,8 +1,10 @@
 import 'package:logger/logger.dart';
 import 'package:lumotareas/models/user.dart';
+import 'package:lumotareas/screens/welcome_screen/nueva_org/creando_org_screen.dart';
 import 'package:lumotareas/services/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:lumotareas/services/rest_service.dart';
+import 'package:lumotareas/models/register_form.dart';
 
 class LoginViewModel extends ChangeNotifier {
   final UserService _userService = UserService();
@@ -18,9 +20,15 @@ class LoginViewModel extends ChangeNotifier {
 
   final List<Map<String, dynamic>> _history = [];
 
-  bool _isHistoryFetched = false;
+  bool loading = false;
 
-  List<Map<String, dynamic>> get history => _history;
+  // Getter usa el fetchUserHistory
+  List<Map<String, dynamic>> get history {
+    if (_currentUser != null && _history.isEmpty) {
+      fetchUserHistory(_currentUser!.email);
+    }
+    return _history;
+  }
 
   void setMessage(String message) {
     _message = message;
@@ -33,22 +41,70 @@ class LoginViewModel extends ChangeNotifier {
     return message;
   }
 
-  Future<void> fetchUserHistoryIfNotFetched() async {
-    if (_currentUser != null && !_isHistoryFetched) {
-      await fetchUserHistory(_currentUser!.email);
-      _isHistoryFetched = true;
-    }
-  }
-
   Future<void> fetchUserHistory(String email) async {
+    loading = true;
     try {
       List<Map<String, dynamic>> logs = await RestService.all(email);
       _history.clear();
       _history.addAll(logs);
       notifyListeners();
       _logger.d('Historial de usuario obtenido correctamente. $logs');
+      loading = false;
     } catch (e) {
       _logger.e('Error al obtener historial de usuario: $e');
+    }
+  }
+
+  // Método para registrarse con Google
+  Future<void> signUpWithGoogle(BuildContext context, RegisterForm form) async {
+    // Pushea una ventana de carga
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return const Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 10),
+              Text('Registrando con Google...'),
+            ],
+          ),
+        ),
+      );
+    }));
+
+    try {
+      Usuario? user = await _userService.signUpWithGoogle(form);
+      if (user != null) {
+        _currentUser = user;
+        notifyListeners();
+        _logger.d('Registro exitoso con Google: ${user.email}');
+        setMessage('Registro exitoso con Google');
+        // Navegar a '/main' y reemplazar todas las rutas anteriores
+        if (context.mounted) {
+          if (form.respuestas != null) {
+            Navigator.pushNamedAndRemoveUntil(
+                context, '/main', (route) => false);
+          } else {
+            Navigator.pushReplacement(context, MaterialPageRoute(
+              builder: (context) {
+                return CreandoOrgScreen(
+                    orgName: form.orgName, ownerUID: _currentUser!.uid);
+              },
+            ));
+          }
+        }
+      } else {
+        _logger.w('Registro fallido con Google');
+        setMessage('Registro fallido con Google, usuario no encontrado');
+        if (context.mounted) {
+          Navigator.pop(context);
+        }
+      }
+    } catch (e) {
+      _logger.e('Error al registrar con Google: $e');
+      setMessage('Error al registrar con Google');
     }
   }
 
@@ -89,57 +145,17 @@ class LoginViewModel extends ChangeNotifier {
             'Inicio de sesión fallido con Google, usuario no encontrado');
         if (context.mounted) {
           Navigator.pop(context);
+          // Mostrar un snackbar con 'El usuario no existe en la base de datos'
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('El usuario no existe en la base de datos'),
+            ),
+          );
         }
       }
     } catch (e) {
       _logger.e('Error al iniciar sesión con Google: $e');
       setMessage('Error al iniciar sesión con Google');
-    }
-  }
-
-  // Método para iniciar sesión con email y contraseña
-  Future<void> signInWithEmailAndPassword(
-      BuildContext context, String email, String password) async {
-    try {
-      // Pushea una ventana de carga
-      Navigator.push(context, MaterialPageRoute(builder: (context) {
-        return const Scaffold(
-          body: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 10),
-                Text('Iniciando sesión...'),
-              ],
-            ),
-          ),
-        );
-      }));
-
-      Usuario? user =
-          await _userService.signInWithEmailAndPassword(email, password);
-      if (user != null) {
-        _currentUser = user;
-        notifyListeners();
-        _logger.d(
-            'Inicio de sesión exitoso con correo y contraseña: ${user.email}');
-        setMessage('Inicio de sesión exitoso con correo y contraseña');
-        // Navegar a '/main' y reemplazar todas las rutas anteriores
-        if (context.mounted) {
-          Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);
-        }
-      } else {
-        _logger.w('Inicio de sesión fallido con correo y contraseña');
-        setMessage('Inicio de sesión fallido con correo y contraseña');
-        if (context.mounted) {
-          Navigator.pop(context);
-        }
-      }
-    } catch (e) {
-      _logger.e('Error al iniciar sesión con correo y contraseña: $e');
-      setMessage('Error al iniciar sesión con correo y contraseña');
     }
   }
 
@@ -167,9 +183,9 @@ class LoginViewModel extends ChangeNotifier {
     try {
       await _userService.signOut();
       _currentUser = null;
+      _history.clear();
       _logger.d('Sesión cerrada correctamente');
       setMessage('Sesión cerrada correctamente');
-      // navegar a '/login' y reemplazar todas las rutas anteriores
       if (context.mounted) {
         Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
       }
@@ -177,59 +193,6 @@ class LoginViewModel extends ChangeNotifier {
     } catch (e) {
       _logger.e('Error al cerrar sesión: $e');
       setMessage('Error al cerrar sesión');
-    }
-  }
-
-  Future<Usuario?> registerUserWithEmailAndPassword(
-      BuildContext context, Map<String, dynamic> formData) async {
-    _logger.d('Datos del formulario desde LoginViewModel: $formData');
-
-    // TODO: falta pantalla de carga?
-    // Pushea una ventana de carga
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return const Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 10),
-              Text('Registrando usuario...'),
-            ],
-          ),
-        ),
-      );
-    }));
-
-    // 500ms de retraso para mostrar la ventana de carga
-    await Future.delayed(const Duration(milliseconds: 500));
-
-    try {
-      Usuario? user =
-          await _userService.registerUserWithEmailAndPassword(formData);
-      if (user != null) {
-        _currentUser = user;
-        notifyListeners();
-        _logger.d(
-            'Usuario registrado correctamente con correo y contraseña: ${user.email}');
-        setMessage('Usuario registrado correctamente con correo y contraseña');
-        // Navegar a '/main' y reemplazar todas las rutas anteriores
-        if (context.mounted) {
-          Navigator.pushNamedAndRemoveUntil(context, '/main', (route) => false);
-        }
-        return user;
-      } else {
-        _logger.w('Registro de usuario fallido con correo y contraseña');
-        setMessage('Registro de usuario fallido con correo y contraseña');
-        if (context.mounted) {
-          Navigator.pop(context);
-        }
-        return null;
-      }
-    } catch (e) {
-      _logger.e('Error al registrar usuario con correo y contraseña: $e');
-      return null;
     }
   }
 }

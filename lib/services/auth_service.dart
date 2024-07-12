@@ -11,11 +11,64 @@ class AuthService {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final Logger _logger = Logger();
 
-  // Instancia de GoogleSignIn con los scopes necesarios
-  static final GoogleSignIn googleSignIn =
-      GoogleSignIn(scopes: ['email', 'profile']);
+  //metodo getcurrentuser:
+  User? getCurrentUser() {
+    return _auth.currentUser;
+  }
+
+  Future<User?> signUpWithGoogle() async {
+    GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
+
+    try {
+      // Intenta iniciar sesión con Google
+      GoogleSignInAccount? account = await googleSignIn.signIn();
+      if (account != null) {
+        GoogleSignInAuthentication auth = await account.authentication;
+        final String idToken = auth.idToken ?? '';
+        final String accessToken = auth.accessToken ?? '';
+
+        if (idToken.isNotEmpty && accessToken.isNotEmpty) {
+          // Crea las credenciales de autenticación
+          final AuthCredential credential = GoogleAuthProvider.credential(
+            idToken: idToken,
+            accessToken: accessToken,
+          );
+
+          // Intenta registrar al usuario en Firebase Auth
+          final UserCredential userCredential =
+              await FirebaseAuth.instance.signInWithCredential(credential);
+          final User? user = userCredential.user;
+
+          if (user != null) {
+            _logger.d('Registro con Google exitoso. Usuario: ${user.email}');
+
+            // Accede al servicio REST en el registro
+            RestService.access(idToken);
+
+            return user;
+          } else {
+            _logger.w(
+                'No se pudo obtener el usuario después del registro con Google.');
+          }
+        } else {
+          _logger.w('No se pudo obtener el token de Google.');
+        }
+      } else {
+        _logger.w('El usuario canceló el registro con Google.');
+      }
+    } catch (e) {
+      _logger.e('Error al registrar con Google: $e');
+    } finally {
+      // Limpiar instancia de GoogleSignIn para permitir un nuevo intento
+      googleSignIn.disconnect();
+    }
+
+    return null;
+  }
 
   Future<User?> signInWithGoogle() async {
+    GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
+
     try {
       // Intenta iniciar sesión con Google
       GoogleSignInAccount? account = await googleSignIn.signIn();
@@ -26,7 +79,6 @@ class AuthService {
 
         if (idToken.isNotEmpty && accessToken.isNotEmpty) {
           // Guarda la información de autenticación en el servicio REST
-          RestService.access(idToken);
 
           // Crea las credenciales de autenticación
           final AuthCredential credential = GoogleAuthProvider.credential(
@@ -36,13 +88,26 @@ class AuthService {
 
           // Inicia sesión en Firebase Auth
           final UserCredential userCredential =
-              await _auth.signInWithCredential(credential);
+              await FirebaseAuth.instance.signInWithCredential(credential);
           final User? user = userCredential.user;
 
           if (user != null) {
             _logger.d(
                 'Inicio de sesión con Google exitoso. Usuario: ${user.email}');
-            return user;
+
+            // Verifica si existe en la base de datos
+            final bool userExists = await checkIfUserExists(user.uid);
+            if (userExists) {
+              _logger.i('Bienvenido de nuevo, ${user.email}!');
+              // Accede al servicio REST para obtener la información del usuario
+              RestService.access(idToken);
+              return user;
+            } else {
+              _logger.e('Este usuario no figura en la base de datos.');
+              // Eliminar el usuario de Firebase Auth
+              deleteUser();
+              _logger.e('Usuario eliminado de Firebase Auth.');
+            }
           } else {
             _logger.w(
                 'No se pudo obtener el usuario después de iniciar sesión con Google.');
@@ -55,81 +120,12 @@ class AuthService {
       }
     } catch (e) {
       _logger.e('Error al iniciar sesión con Google: $e');
+    } finally {
+      // Limpiar instancia de GoogleSignIn para permitir un nuevo intento
+      googleSignIn.disconnect();
     }
+
     return null;
-  }
-
-//metodo getcurrentuser:
-  User? getCurrentUser() {
-    return _auth.currentUser;
-  }
-
-  Future<User?> signUpWithEmailPassword(
-      String email, String password, String name) async {
-    try {
-      final UserCredential userCredential =
-          await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
-      // Actualizar el nombre del usuario y darle foto con ui-avatar
-      await userCredential.user!.updateDisplayName(name);
-      await userCredential.user!
-          .updatePhotoURL('https://ui-avatars.com/api/?name=$name');
-
-      final User? user = userCredential.user;
-
-      _logger.d('Registro exitoso. Usuario: ${user?.email}');
-      return user;
-    } catch (e) {
-      _logger.e('Error al registrar con correo y contraseña: $e');
-      return null;
-    }
-  }
-
-  Future<User?> signInWithEmailPassword(String email, String password) async {
-    try {
-      final UserCredential userCredential =
-          await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      final User? user = userCredential.user;
-
-      _logger.d('Inicio de sesión exitoso. Usuario: ${user?.email}');
-      return user;
-    } catch (e) {
-      _logger.e('Error al iniciar sesión con correo y contraseña: $e');
-      return null;
-    }
-  }
-
-  Future<User?> registerWithGoogle() async {
-    try {
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser != null) {
-        final GoogleSignInAuthentication googleAuth =
-            await googleUser.authentication;
-        final AuthCredential credential = GoogleAuthProvider.credential(
-          accessToken: googleAuth.accessToken,
-          idToken: googleAuth.idToken,
-        );
-
-        final UserCredential userCredential =
-            await _auth.signInWithCredential(credential);
-        final User? user = userCredential.user;
-
-        _logger.d('Registro exitoso con Google. Usuario: ${user?.email}');
-        return user;
-      } else {
-        _logger.w('El usuario canceló el registro con Google.');
-      }
-    } catch (e) {
-      _logger.e('Error al registrar con Google: $e');
-    }
-
-    return null; // Retornar null si ocurre algún error
   }
 
   Future<void> signOut() async {

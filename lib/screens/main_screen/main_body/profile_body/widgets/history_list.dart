@@ -10,37 +10,31 @@ class HistoryList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<LoginViewModel>(
       builder: (context, loginViewModel, child) {
-        return FutureBuilder<void>(
-          future: loginViewModel.fetchUserHistoryIfNotFetched(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else {
-              final history = loginViewModel.history;
-              if (history.isEmpty) {
-                return const Center(
-                    child: Text('No hay historial disponible.'));
-              } else {
-                return Expanded(
-                  child: ListView.builder(
-                    itemCount: history.length,
-                    itemBuilder: (context, index) {
-                      final historyItem = history[index];
-                      return ListTile(
-                        title: Text('Email: ${historyItem['email']}'),
-                        subtitle:
-                            Text('User Agent: ${historyItem['userAgent']}'),
-                        trailing: Text(
-                            'Fecha: ${Utils.formatToLocalTime(historyItem['created'])}'),
-                      );
-                    },
-                  ),
-                );
-              }
-            }
-          },
+        final history = loginViewModel.history;
+        final loading = loginViewModel.loading;
+
+        if (loading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (history.isEmpty) {
+          return const Center(child: Text('No hay historial disponible.'));
+        }
+
+        return Expanded(
+          child: ListView.builder(
+            itemCount: history.length,
+            itemBuilder: (context, index) {
+              final historyItem = history[index];
+              return ListTile(
+                title: Text('Email: ${historyItem['email']}'),
+                subtitle: Text('User Agent: ${historyItem['userAgent']}'),
+                trailing: Text(
+                  'Fecha: ${Utils.formatToLocalTime(historyItem['created'])}',
+                ),
+              );
+            },
+          ),
         );
       },
     );

@@ -48,6 +48,8 @@ class Usuario {
     this.solicitudes,
   });
 
+  String get getUid => uid;
+
   // Método para convertir un mapa en una instancia de Usuario
   factory Usuario.fromMap(String uid, Map<String, dynamic> map) {
     return Usuario(

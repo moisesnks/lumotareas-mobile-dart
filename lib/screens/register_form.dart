@@ -1,36 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lumotareas/widgets/org_formulario.dart';
 import 'package:lumotareas/widgets/checkbox_widget.dart';
 import 'package:lumotareas/widgets/header.dart';
 import 'package:logger/logger.dart';
 import 'package:lumotareas/viewmodels/login_viewmodel.dart';
 import 'package:provider/provider.dart';
-import 'package:lumotareas/models/user.dart';
+import 'package:lumotareas/models/register_form.dart';
 
-class RegisterForm extends StatefulWidget {
+class RegisterFormWidget extends StatefulWidget {
   final Logger _logger = Logger();
   final Map<String, dynamic> respuestas;
   final String orgName;
 
-  RegisterForm({super.key, required this.respuestas, required this.orgName});
+  RegisterFormWidget(
+      {super.key, required this.respuestas, required this.orgName});
 
   @override
-  RegisterFormState createState() => RegisterFormState();
+  RegisterFormWidgetState createState() => RegisterFormWidgetState();
 }
 
-class RegisterFormState extends State<RegisterForm> {
-  final TextEditingController _emailController = TextEditingController();
+class RegisterFormWidgetState extends State<RegisterFormWidget> {
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _dayController = TextEditingController();
   final TextEditingController _monthController = TextEditingController();
   final TextEditingController _yearController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
 
   bool _canSubmit() {
-    return _emailController.text.isNotEmpty &&
-        _fullNameController.text.isNotEmpty &&
+    return _fullNameController.text.isNotEmpty &&
         _dayController.text.isNotEmpty &&
         _monthController.text.isNotEmpty &&
         _yearController.text.isNotEmpty &&
@@ -41,7 +38,6 @@ class RegisterFormState extends State<RegisterForm> {
 
   @override
   void dispose() {
-    _emailController.dispose();
     _fullNameController.dispose();
     _dayController.dispose();
     _monthController.dispose();
@@ -73,88 +69,23 @@ class RegisterFormState extends State<RegisterForm> {
 
   void _submitForm(BuildContext context) async {
     if (_canSubmit()) {
-      String email = _emailController.text.trim();
       String fullName = _fullNameController.text.trim();
       String day = _dayController.text.trim();
       String month = _monthController.text.trim();
       String year = _yearController.text.trim();
       String birthDate = '$day/$month/$year';
 
-      Map<String, dynamic> formData = {
-        'email': email,
-        'fullName': fullName,
-        'birthDate': birthDate,
-        'password': _passwordController.text.trim(),
-        'orgName': widget.orgName,
-        'formulario': widget.respuestas,
-      };
+      RegisterForm formData = RegisterForm(
+        fullName: fullName,
+        birthDate: birthDate,
+        orgName: widget.orgName,
+        respuestas: widget.respuestas,
+      );
 
       widget._logger.d('Datos del formulario: $formData');
       final loginViewModel =
           Provider.of<LoginViewModel>(context, listen: false);
-
-// Registrar usuario y organización
-      Usuario? newUser = await loginViewModel.registerUserWithEmailAndPassword(
-          context, formData);
-
-      // Pushear ventana de carga
-      if (context.mounted) {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return const Scaffold(
-            body: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 10),
-                  Text('Registrando cuenta...'),
-                ],
-              ),
-            ),
-          );
-        }));
-      }
-      if (newUser != null) {
-        widget._logger.d('Usuario registrado correctamente: ${newUser.uid}');
-        if (context.mounted) {
-          // Redirigir al usuario a la pantalla de inicio
-          Navigator.of(context).pushNamedAndRemoveUntil(
-            '/main',
-            (route) => false,
-          );
-        }
-      } else {
-        widget._logger.e('Error al agregar referencia de solicitud al usuario');
-        if (context.mounted) {
-          Navigator.pop(context);
-        }
-      }
-    } else {
-      if (context.mounted) {
-        Navigator.pop(context);
-      }
-      widget._logger.e('Error al registrar usuario');
-      if (context.mounted) {
-        showDialog(
-          context: context,
-          builder: (BuildContext dialogContext) {
-            return AlertDialog(
-              title: const Text('Error'),
-              content: const Text(
-                  'Hubo un error al registrar tu cuenta. Por favor, intenta de nuevo.'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(dialogContext).pop();
-                  },
-                  child: const Text('Aceptar'),
-                ),
-              ],
-            );
-          },
-        );
-      }
+      await loginViewModel.signUpWithGoogle(context, formData);
     }
   }
 
@@ -184,20 +115,17 @@ class RegisterFormState extends State<RegisterForm> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         const SizedBox(height: 20),
                         renderTitle(),
                         renderSubtitle(),
                         const SizedBox(height: 20),
                         OrgFormulario(
-                          emailController: _emailController,
                           fullNameController: _fullNameController,
                           dayController: _dayController,
                           monthController: _monthController,
                           yearController: _yearController,
-                          passwordController: _passwordController,
-                          confirmPasswordController: _confirmPasswordController,
                         ),
                         CheckboxWidget(
                           onChanged: (isChecked) {
@@ -210,7 +138,7 @@ class RegisterFormState extends State<RegisterForm> {
                           },
                         ),
                         const SizedBox(height: 20),
-                        ElevatedButton(
+                        ElevatedButton.icon(
                           onPressed: _canSubmit()
                               ? () {
                                   widget._logger
@@ -219,23 +147,26 @@ class RegisterFormState extends State<RegisterForm> {
                                       context); // Llama al método para enviar el formulario
                                 }
                               : null, // Deshabilita el botón si no se pueden enviar los datos
-                          style: ButtonStyle(
-                            shape:
-                                WidgetStateProperty.all<RoundedRectangleBorder>(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 16, horizontal: 10),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
                             ),
-                            elevation: WidgetStateProperty.all<double>(4.0),
-                            padding:
-                                WidgetStateProperty.all<EdgeInsetsGeometry>(
-                              const EdgeInsets.all(10.0),
-                            ),
-                            minimumSize: WidgetStateProperty.all<Size>(
-                              const Size(double.infinity, 0),
-                            ),
+                            backgroundColor:
+                                const Color.fromARGB(255, 207, 207, 207),
                           ),
-                          child: const Text('Registrar mi cuenta'),
+                          icon: SvgPicture.asset(
+                            'assets/images/google-svgrepo.svg',
+                            width: 24,
+                            height: 24,
+                          ),
+                          label: const Text('Continuar con Google',
+                              style: TextStyle(
+                                  fontFamily: 'Manrope',
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black)),
                         ),
                       ],
                     ),

@@ -4,20 +4,14 @@ import 'date_picker.dart';
 import './my_textfield.dart';
 
 class OrgFormulario extends StatefulWidget {
-  final TextEditingController emailController;
   final TextEditingController fullNameController;
-  final TextEditingController passwordController;
-  final TextEditingController confirmPasswordController;
   final TextEditingController dayController;
   final TextEditingController monthController;
   final TextEditingController yearController;
 
   const OrgFormulario({
     super.key,
-    required this.emailController,
     required this.fullNameController,
-    required this.passwordController,
-    required this.confirmPasswordController,
     required this.dayController,
     required this.monthController,
     required this.yearController,
@@ -78,29 +72,7 @@ class OrgFormularioState extends State<OrgFormulario> {
                 'Es un campo obligatorio. Los caracteres especiales como @, #, etc. no están permitidos.',
             icon: Icons.person,
           ),
-          MyTextField(
-            controller: widget.emailController,
-            labelText: 'Ingresa tu correo electrónico',
-            hintText: 'Es un campo obligatorio.\nEjemplo: \n \tmleiva@utem.cl',
-            icon: Icons.email,
-          ),
-          MyTextField(
-            controller: widget.passwordController,
-            labelText: 'Ingresa tu contraseña',
-            hintText:
-                'Es un campo obligatorio. Debe tener al menos 8 caracteres.',
-            isPassword: true,
-            icon: Icons.lock,
-          ),
-          MyTextField(
-            controller: widget.confirmPasswordController,
-            labelText: 'Confirma tu contraseña',
-            hintText:
-                'Es un campo obligatorio. Debe ser igual a la contraseña.',
-            isPassword: true,
-            icon: Icons.lock,
-          ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 5),
           GestureDetector(
             onTap: () {
               showBirthdayDatePickerModal(context);
