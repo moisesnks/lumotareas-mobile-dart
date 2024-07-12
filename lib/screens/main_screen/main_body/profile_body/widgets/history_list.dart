@@ -21,20 +21,19 @@ class HistoryList extends StatelessWidget {
           return const Center(child: Text('No hay historial disponible.'));
         }
 
-        return Expanded(
-          child: ListView.builder(
-            itemCount: history.length,
-            itemBuilder: (context, index) {
-              final historyItem = history[index];
-              return ListTile(
-                title: Text('Email: ${historyItem['email']}'),
-                subtitle: Text('User Agent: ${historyItem['userAgent']}'),
-                trailing: Text(
-                  'Fecha: ${Utils.formatToLocalTime(historyItem['created'])}',
-                ),
-              );
-            },
-          ),
+        return ListView.builder(
+          shrinkWrap: true,
+          itemCount: history.length,
+          itemBuilder: (context, index) {
+            final historyItem = history[index];
+            return ListTile(
+              title: Text('${historyItem['email']}'),
+              subtitle: Text('${historyItem['userAgent']}'),
+              trailing: Text(
+                'Fecha: ${Utils.formatToLocalTime(historyItem['created'])}',
+              ),
+            );
+          },
         );
       },
     );
