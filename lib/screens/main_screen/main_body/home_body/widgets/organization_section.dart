@@ -35,9 +35,9 @@ class OrganizationSection extends StatelessWidget {
         currentOrganizationId.isEmpty) {
       return Contenedor(
         direction: Axis.vertical,
-        color: const Color(0xFF1A1A1A),
         children: [
           const Parrafo(
+            fontSize: 16,
             texto:
                 'Actualmente, no estás afiliado a ninguna organización. Puedes crear tu propia organización o explorar otras existentes para enviar solicitudes de afiliación.',
           ),
@@ -63,72 +63,9 @@ class OrganizationSection extends StatelessWidget {
           if (snapshot.hasData) {
             final Organization organization = snapshot.data!['organization'];
             logger.i('Organización actual: $organization');
-            return Miembros(
-              miembros: organization.miembros,
-              onTap: () {
-                if (organization.miembros > 0) {
-                  showModalBottomSheet(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return Container(
-                        color: const Color(0xFF111111),
-                        child: Column(
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.all(16.0),
-                              child: Text(
-                                'Lista de miembros',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: ListView.builder(
-                                itemCount: organization.miembros,
-                                itemBuilder: (context, index) {
-                                  return ListTile(
-                                    title: Text(
-                                      'Miembro ${index + 1}',
-                                      style:
-                                          const TextStyle(color: Colors.white),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  );
-                } else {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text('Sin miembros'),
-                        content: const Text(
-                            'Aún no hay miembros en su organización. Puedes invitar a nuevos miembros.'),
-                        actions: <Widget>[
-                          TextButton(
-                            child: const Text('OK'),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                }
-              },
-            );
-          } else {
-            return const Text('Error: No se pudo obtener la organización');
+            return Miembros(miembros: organization.miembros);
           }
+          return const SizedBox.shrink();
         },
       );
     }
