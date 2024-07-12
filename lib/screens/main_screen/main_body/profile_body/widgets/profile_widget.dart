@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:lumotareas/viewmodels/login_viewmodel.dart';
+import 'package:logger/logger.dart';
 
 class ProfileWidget extends StatelessWidget {
-  const ProfileWidget({super.key});
+  ProfileWidget({super.key});
 
+  final Logger _logger = Logger();
   @override
   Widget build(BuildContext context) {
     final currentUser = Provider.of<LoginViewModel>(context).currentUser;
-
+    _logger.d('currentUser: $currentUser');
     return currentUser == null
         ? const SizedBox.shrink()
         : Column(

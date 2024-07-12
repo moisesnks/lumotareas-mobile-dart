@@ -12,6 +12,10 @@ class LastLogin extends StatelessWidget {
     return Consumer<LoginViewModel>(
       builder: (context, loginViewModel, child) {
         final history = loginViewModel.history;
+        final loading = loginViewModel.loading;
+        if (loading) {
+          return const Center(child: CircularProgressIndicator());
+        }
         if (history.isEmpty) {
           return const Center(
               child: Text('No hay historial disponible.',

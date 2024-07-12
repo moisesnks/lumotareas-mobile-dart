@@ -16,13 +16,13 @@ class ProfileBody extends StatelessWidget {
       body: SafeArea(
         child: currentUser == null
             ? const SizedBox.shrink() // SizedBox vacío si currentUser es null
-            : const SingleChildScrollView(
+            : SingleChildScrollView(
                 padding: EdgeInsets.all(16.0),
                 child: Column(
                   children: <Widget>[
                     ProfileWidget(),
-                    Divider(),
-                    LastLogin(),
+                    const Divider(),
+                    const LastLogin(),
                   ],
                 ),
               ),
