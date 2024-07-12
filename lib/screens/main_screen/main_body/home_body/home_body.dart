@@ -24,11 +24,14 @@ class HomeBody extends StatelessWidget {
 
   Widget _buildTitle(BuildContext context, Usuario currentUser) {
     return Contenedor(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
       direction: Axis.horizontal,
       height: 40,
       width: MediaQuery.of(context).size.width,
       children: [
-        Titulo(texto: 'Hola ${currentUser.nombre.split(' ')[0]}'),
+        Titulo(
+            minFontSize: 20, texto: 'Hola ${currentUser.nombre.split(' ')[0]}'),
         const SizedBox(width: 40),
         CurrentRole(user: currentUser, organizationId: currentOrganizationId),
       ],
