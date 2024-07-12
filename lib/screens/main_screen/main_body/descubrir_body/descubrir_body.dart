@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:lumotareas/models/organization.dart';
 import 'package:lumotareas/models/post.dart';
-import 'package:lumotareas/widgets/box_label_widget.dart';
 import 'package:lumotareas/widgets/contenedor_widget.dart';
-
-import './logic.dart';
+import 'package:lumotareas/widgets/carousel_box_widget.dart';
 import './widgets/buscar_organizacion/buscar_organizacion.dart';
 import './widgets/publicaciones/publicacion_card.dart';
 import './widgets/organizaciones_destacadas/organizacion_card.dart';
+import './logic.dart';
 
 class DescubrirBody extends StatelessWidget {
   const DescubrirBody({super.key});
@@ -25,98 +23,24 @@ class DescubrirBody extends StatelessWidget {
       child: Contenedor(
         direction: Axis.vertical,
         children: [
-          BuscarOrganizacion(
-            onSearch: (query) async {
-              final result = await DescubrirLogic.buscarOrganizaciones(query);
-              if (result['success']) {
-                final organizations = result['organizations'];
-                //muestra un modal bottom sheet con las organizaciones encontradas
-                if (context.mounted) {
-                  showModalBottomSheet(
-                    context: context,
-                    builder: (context) {
-                      return ListView.builder(
-                        itemCount: organizations.length,
-                        itemBuilder: (context, index) {
-                          return ListTile(
-                            title: Text(organizations[index].nombre),
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                          );
-                        },
-                      );
-                    },
-                  );
-                }
-              } else {
-                final message = result['message'];
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(message),
-                    ),
-                  );
-                }
-              }
-            },
-          ),
-          BoxLabel(
-            padding: const EdgeInsets.only(top: 16.0),
-            labelText: 'Organizaciones Destacadas',
-            borderColor: const Color.fromARGB(255, 100, 102, 168),
-            labelBackgroundColor: const Color.fromARGB(255, 7, 8, 29),
-            child: CarouselSlider.builder(
-              itemCount: organizacionesDestacadas.length,
-              options: CarouselOptions(
-                height: 125,
-                viewportFraction: 0.9,
-                initialPage: 0,
-                enableInfiniteScroll: true,
-                reverse: false,
-                enlargeCenterPage: true,
-                scrollDirection: Axis.horizontal,
-                autoPlay: true,
-                autoPlayInterval: const Duration(seconds: 10),
-                autoPlayAnimationDuration: const Duration(milliseconds: 800),
-                autoPlayCurve: Curves.fastOutSlowIn,
-              ),
-              itemBuilder: (BuildContext context, int index, int realIndex) {
-                return OrganizacionCard(
-                  organization: organizacionesDestacadas[index],
-                );
-              },
+          const BuscarOrganizacion(),
+          CarouselBox<Organization>(
+            items: organizacionesDestacadas,
+            itemBuilder: (context, index) => OrganizacionCard(
+              organization: organizacionesDestacadas[index],
             ),
+            labelText: 'Organizaciones Destacadas',
+            height: 125,
           ),
-          BoxLabel(
-            padding: const EdgeInsets.only(
-              top: 16.0,
+          CarouselBox<Post>(
+            items: publicacionesRecientes,
+            itemBuilder: (context, index) => PublicacionCard(
+              post: publicacionesRecientes[index],
             ),
             labelText: 'Publicaciones Recientes',
-            borderColor: const Color.fromARGB(255, 100, 102, 168),
-            labelBackgroundColor: const Color.fromARGB(255, 7, 8, 29),
-            child: CarouselSlider.builder(
-              itemCount: publicacionesRecientes.length,
-              options: CarouselOptions(
-                height: 370,
-                viewportFraction: 0.9,
-                initialPage: 0,
-                enableInfiniteScroll: true,
-                reverse: false,
-                autoPlayCurve: Curves.fastOutSlowIn,
-                enlargeCenterPage: true,
-                scrollDirection: Axis.horizontal,
-                autoPlay: true,
-                autoPlayInterval: const Duration(seconds: 15),
-                autoPlayAnimationDuration: const Duration(milliseconds: 800),
-              ),
-              itemBuilder: (BuildContext context, int index, int realIndex) {
-                return PublicacionCard(
-                  post: publicacionesRecientes[index],
-                );
-              },
-            ),
-          )
+            height: 370,
+            autoPlayInterval: const Duration(seconds: 15),
+          ),
         ],
       ),
     );

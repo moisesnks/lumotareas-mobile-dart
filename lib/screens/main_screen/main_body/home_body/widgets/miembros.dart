@@ -27,9 +27,11 @@ class MiembrosState extends State<Miembros> {
 
   Future<void> _cargarNombres() async {
     List<String> nombres = await obtenerNombres();
-    setState(() {
-      _nombres = nombres;
-    });
+    if (mounted) {
+      setState(() {
+        _nombres = nombres;
+      });
+    }
   }
 
   Future<List<String>> obtenerNombres() async {
