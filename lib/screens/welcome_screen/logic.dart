@@ -104,7 +104,6 @@ class WelcomeScreenLogic {
             context,
             MaterialPageRoute(
               builder: (context) => DetalleOrgScreen(
-                orgName: organizationName,
                 organization: result['organization'],
               ),
             ),
