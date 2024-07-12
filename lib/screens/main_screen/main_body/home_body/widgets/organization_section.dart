@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:lumotareas/widgets/flexible_wrap_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:lumotareas/viewmodels/login_viewmodel.dart';
 import 'package:lumotareas/services/organization_service.dart';
@@ -8,6 +9,7 @@ import 'package:lumotareas/widgets/parrafo_widget.dart';
 import 'package:lumotareas/models/organization.dart';
 import 'miembros.dart';
 import 'solicitudes.dart';
+import 'proyectos.dart';
 
 class OrganizationSection extends StatelessWidget {
   final String currentOrganizationId;
@@ -63,7 +65,14 @@ class OrganizationSection extends StatelessWidget {
           if (snapshot.hasData) {
             final Organization organization = snapshot.data!['organization'];
             logger.i('Organización actual: $organization');
-            return Miembros(miembros: organization.miembros);
+            return FlexibleWrap(
+              color: Colors.transparent,
+              spacing: 10,
+              children: [
+                const Proyectos(),
+                Miembros(miembros: organization.miembros),
+              ],
+            );
           }
           return const SizedBox.shrink();
         },

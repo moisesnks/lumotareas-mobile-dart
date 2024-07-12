@@ -69,9 +69,11 @@ class FormWidgetState extends State<FormWidget> {
       if (widget.preguntas[_currentIndex]['tipo'] == 'seleccion_multiple') {
         _respuestas[key] =
             value; // value es List<String> para selección múltiple
+      } else if (widget.preguntas[_currentIndex]['tipo'] == 'booleano') {
+        _respuestas[key] = value; // value es bool para booleano
       } else {
-        _respuestas[key] = value
-            .toString(); // value es String para selección única y desarrollo
+        _respuestas[key] =
+            value.toString(); // value es String para desarrollo (texto)
       }
     });
   }
@@ -120,7 +122,9 @@ class FormWidgetState extends State<FormWidget> {
   @override
   Widget build(BuildContext context) {
     _logger.d('Datos recibidos en FormWidget: preguntas=${widget.preguntas}');
-    _logger.d('Respuestas actuales: $_respuestas');
+    _respuestas.forEach((key, value) {
+      _logger.d('Key: $key, Value: $value, Type: ${value.runtimeType}');
+    });
 
     return Scaffold(
       body: SafeArea(

@@ -8,11 +8,13 @@ import 'package:lumotareas/viewmodels/login_viewmodel.dart';
 class CreandoOrgScreen extends StatefulWidget {
   final String orgName;
   final String? ownerUID;
+  final String? username;
 
   const CreandoOrgScreen({
     super.key,
     this.orgName = '',
     this.ownerUID,
+    this.username,
   });
 
   @override
@@ -21,18 +23,16 @@ class CreandoOrgScreen extends StatefulWidget {
 
 class CreandoOrgScreenState extends State<CreandoOrgScreen> {
   late String _initializedOwnerUID;
+  late String _initializedUsername;
 
   @override
   void initState() {
     super.initState();
     _initializedOwnerUID = initializeOwnerUID();
+    _initializedUsername = initializeUsername();
   }
 
   String initializeOwnerUID() {
-    // Si el ownerUID no se ha pasado como argumento, se obtiene del loginViewModel
-    // Si no se encuentra, se asigna un string vacío
-    // Si se asigna un string vacío, se retorna una cadena vacía para manejarlo en el build
-
     final loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
     String ownerUID = widget.ownerUID ?? loginViewModel.currentUser?.uid ?? '';
     if (ownerUID.isNotEmpty) {
@@ -43,12 +43,24 @@ class CreandoOrgScreenState extends State<CreandoOrgScreen> {
     }
   }
 
+  String initializeUsername() {
+    final loginViewModel = Provider.of<LoginViewModel>(context, listen: false);
+    String username =
+        widget.username ?? loginViewModel.currentUser?.nombre ?? '';
+    if (username.isNotEmpty) {
+      return username;
+    } else {
+      Navigator.of(context).pop();
+      return '';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final preguntas = getPreguntas(widget.orgName);
 
-    // Verificar si _initializedOwnerUID está vacío y manejar la lógica correspondiente
-    if (_initializedOwnerUID.isEmpty) {
+    // Verificar si _initializedOwnerUID o _initializedUsername están vacíos y manejar la lógica correspondiente
+    if (_initializedOwnerUID.isEmpty || _initializedUsername.isEmpty) {
       return const Scaffold(
         body: Center(
           child: CircularProgressIndicator(),
@@ -70,7 +82,7 @@ class CreandoOrgScreenState extends State<CreandoOrgScreen> {
   Future<void> _crearOrganizacion(
       BuildContext context, Map<String, dynamic> respuestas) async {
     Organization newOrg = createOrganizationFromResponses(
-        widget.orgName, _initializedOwnerUID, respuestas);
+        _initializedUsername, widget.orgName, _initializedOwnerUID, respuestas);
 
     await Provider.of<LoginViewModel>(context, listen: false)
         .createOrganization(context, newOrg);

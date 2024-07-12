@@ -31,7 +31,7 @@ class Organization {
   final String nombre;
   final List<String> miembros;
   final Owner owner;
-  final String vacantes;
+  final bool vacantes;
   final Map<String, dynamic> formulario;
   final String descripcion;
   final String imageUrl;

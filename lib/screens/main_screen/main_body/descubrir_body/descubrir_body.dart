@@ -25,7 +25,42 @@ class DescubrirBody extends StatelessWidget {
       child: Contenedor(
         direction: Axis.vertical,
         children: [
-          BuscarOrganizacion(),
+          BuscarOrganizacion(
+            onSearch: (query) async {
+              final result = await DescubrirLogic.buscarOrganizaciones(query);
+              if (result['success']) {
+                final organizations = result['organizations'];
+                //muestra un modal bottom sheet con las organizaciones encontradas
+                if (context.mounted) {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (context) {
+                      return ListView.builder(
+                        itemCount: organizations.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            title: Text(organizations[index].nombre),
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                          );
+                        },
+                      );
+                    },
+                  );
+                }
+              } else {
+                final message = result['message'];
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(message),
+                    ),
+                  );
+                }
+              }
+            },
+          ),
           BoxLabel(
             padding: const EdgeInsets.only(top: 16.0),
             labelText: 'Organizaciones Destacadas',

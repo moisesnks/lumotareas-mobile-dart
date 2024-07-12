@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lumotareas/services/user_service.dart';
 import 'package:lumotareas/models/user.dart';
+import 'package:lumotareas/widgets/icon_box_widget.dart';
 
 class Miembros extends StatefulWidget {
   final List<String> miembros;
@@ -87,67 +88,12 @@ class MiembrosState extends State<Miembros> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return IconBox(
+      icon: Icons.group,
+      label: 'Miembros',
+      count: widget.miembros.length,
+      showCount: true,
       onTap: () => _showMemberList(context),
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Container(
-            width: 100,
-            height: 100,
-            decoration: BoxDecoration(
-              color: widget.miembros.isNotEmpty
-                  ? const Color(0xFF6C63FF)
-                  : Colors.grey,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.group,
-                  color: widget.miembros.isNotEmpty
-                      ? Colors.white
-                      : Colors.black45,
-                  size: 50,
-                ),
-                const SizedBox(height: 5),
-                Text(
-                  'Miembros',
-                  style: TextStyle(
-                    color: widget.miembros.isNotEmpty
-                        ? Colors.white
-                        : Colors.black45,
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          if (widget.miembros.isNotEmpty)
-            Positioned(
-              top: -10,
-              right: -5,
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: const BoxDecoration(
-                  color: Colors.red,
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: Text(
-                    '${widget.miembros.length}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-        ],
-      ),
     );
   }
 }

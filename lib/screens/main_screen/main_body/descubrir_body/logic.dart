@@ -1,5 +1,6 @@
 import 'package:lumotareas/models/organization.dart';
 import 'package:lumotareas/models/post.dart';
+import 'package:lumotareas/services/organization_service.dart';
 
 class DescubrirLogic {
   static List<Organization> obtenerOrganizacionesDestacadas() {
@@ -14,7 +15,7 @@ class DescubrirLogic {
           'member5',
         ],
         owner: Owner(nombre: 'Owner 1', uid: 'owner1'),
-        vacantes: "true",
+        vacantes: true,
         formulario: {},
         descripcion:
             'Descripción de la organización 1 Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1Descripción de la organización 1',
@@ -30,7 +31,7 @@ class DescubrirLogic {
           'member5',
         ],
         owner: Owner(nombre: 'Owner 2', uid: 'owner2'),
-        vacantes: "false",
+        vacantes: false,
         formulario: {},
         descripcion: 'Descripción de la organización 2',
         imageUrl: 'assets/organization_logo.png',
@@ -45,12 +46,29 @@ class DescubrirLogic {
           'member5',
         ],
         owner: Owner(nombre: 'Owner 3', uid: 'owner3'),
-        vacantes: "true",
+        vacantes: true,
         formulario: {},
         descripcion: 'Descripción de la organización 3',
         imageUrl: 'assets/organization_logo.png',
       ),
     ];
+  }
+
+  static Future<Map<String, dynamic>> buscarOrganizaciones(String query) async {
+    final result = await OrganizationService().getOrganizationsByPrefix(query);
+
+    if (result['success']) {
+      return {
+        'success': true,
+        'organizations': result['organizations'],
+        'message': result['message'],
+      };
+    } else {
+      return {
+        'success': false,
+        'message': result['message'],
+      };
+    }
   }
 
   static List<Post> obtenerPublicacionesRecientes() {

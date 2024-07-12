@@ -14,7 +14,13 @@ class PreguntaPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool boolRespuesta = respuesta == 'true'; // Conversión condicional
+    // Convertir respuesta de String a bool si es necesario
+    bool? boolRespuesta;
+    if (respuesta is String) {
+      boolRespuesta = respuesta == 'true';
+    } else if (respuesta is bool) {
+      boolRespuesta = respuesta;
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,14 +81,14 @@ class PreguntaPage extends StatelessWidget {
               RadioListTile(
                 title: const Text('Sí'),
                 value: true,
-                groupValue: boolRespuesta, // Usa boolRespuesta en groupValue
-                onChanged: (value) => onChanged(value), // Convierte a String
+                groupValue: boolRespuesta,
+                onChanged: (value) => onChanged(value), // value es bool
               ),
               RadioListTile(
                 title: const Text('No'),
                 value: false,
-                groupValue: boolRespuesta, // Usa boolRespuesta en groupValue
-                onChanged: (value) => onChanged(value), // Convierte a String
+                groupValue: boolRespuesta,
+                onChanged: (value) => onChanged(value), // value es bool
               ),
             ],
           ),

@@ -32,11 +32,11 @@ List<Map<String, dynamic>> getPreguntas(String orgName) {
   return preguntas;
 }
 
-Organization createOrganizationFromResponses(
-    String orgName, String? ownerUID, Map<String, dynamic> respuestas) {
+Organization createOrganizationFromResponses(String username, String orgName,
+    String? ownerUID, Map<String, dynamic> respuestas) {
   return Organization(
     nombre: respuestas['Nombre de la organización'] ?? orgName ?? '',
-    owner: Owner(nombre: orgName, uid: ownerUID ?? ''),
+    owner: Owner(nombre: username, uid: ownerUID ?? ''),
     descripcion: respuestas['Descripción'] ?? '',
     vacantes: respuestas['¿Tiene vacantes?'] ?? "false",
     miembros: [ownerUID ?? ''],

@@ -3,7 +3,7 @@ import 'package:lumotareas/screens/welcome_screen/formulario/formulario_screen.d
 import 'package:lumotareas/screens/login_screen/login_screen.dart';
 
 class AuthButtons extends StatelessWidget {
-  final String vacantes;
+  final bool vacantes;
   final String orgName;
   final Map<String, dynamic> formulario;
 
@@ -14,7 +14,7 @@ class AuthButtons extends StatelessWidget {
     required this.orgName,
   });
 
-  bool get isVacantes => vacantes.toLowerCase() == 'true';
+  bool get isVacantes => vacantes;
 
   @override
   Widget build(BuildContext context) {

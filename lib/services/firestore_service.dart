@@ -41,10 +41,15 @@ class FirestoreService {
           .get();
 
       if (snapshot.docs.isNotEmpty) {
+        var filteredDocs =
+            snapshot.docs.where((doc) => doc.id != 'initial').toList();
+
         return {
-          'found': true,
-          'data': snapshot.docs.map((doc) => doc.data()).toList(),
-          'message': '$collectionName encontrado',
+          'found': filteredDocs.isNotEmpty,
+          'data': filteredDocs.map((doc) => doc.data()).toList(),
+          'message': filteredDocs.isNotEmpty
+              ? '$collectionName encontrado'
+              : '$collectionName no encontrado',
         };
       } else {
         return {
@@ -57,6 +62,35 @@ class FirestoreService {
       return {
         'error': true,
         'message': 'Hubo un error al obtener $collectionName: $e',
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> getDocumentsByPrefix(
+      String collectionName, String prefix) async {
+    try {
+      var snapshot = await _firestore
+          .collection(collectionName)
+          .orderBy(FieldPath.documentId)
+          .startAt([prefix]).endAt(['$prefix\uf8ff']).get();
+
+      if (snapshot.docs.isNotEmpty) {
+        return {
+          'found': true,
+          'data': snapshot.docs.map((doc) => doc.data()).toList(),
+          'message': 'Documentos encontrados en $collectionName',
+        };
+      } else {
+        return {
+          'found': false,
+          'message': 'No se encontraron documentos en $collectionName',
+        };
+      }
+    } catch (e) {
+      _logger.e('Error al buscar documentos en $collectionName: $e');
+      return {
+        'error': true,
+        'message': 'Hubo un error al buscar documentos en $collectionName',
       };
     }
   }

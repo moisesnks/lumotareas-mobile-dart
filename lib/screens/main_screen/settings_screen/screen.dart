@@ -13,17 +13,21 @@ class SettingsScreen extends StatefulWidget {
 
 class SettingsScreenState extends State<SettingsScreen> {
   bool? _redirectValue;
+  String? _currentOrganization;
 
   @override
   void initState() {
     super.initState();
-    _initializeRedirectValue();
+    _initializeValues();
   }
 
-  Future<void> _initializeRedirectValue() async {
-    bool value = await PreferenceService.getRedirectToLogin();
+  Future<void> _initializeValues() async {
+    bool redirectValue = await PreferenceService.getRedirectToLogin();
+    String? currentOrganization =
+        await PreferenceService.getCurrentOrganization();
     setState(() {
-      _redirectValue = value;
+      _redirectValue = redirectValue;
+      _currentOrganization = currentOrganization;
     });
   }
 
@@ -44,10 +48,10 @@ class SettingsScreenState extends State<SettingsScreen> {
               title: 'Configuración',
               isPoppable: true,
             ),
-            if (_redirectValue != null)
+            if (_redirectValue != null && _currentOrganization != null)
               Expanded(
                 child: ListView.builder(
-                  itemCount: 2, // Dos elementos en la lista
+                  itemCount: 3, // Tres elementos en la lista
                   itemBuilder: (BuildContext context, int index) {
                     // Color de fondo alternativo
                     Color? backgroundColor = index.isOdd
@@ -89,6 +93,26 @@ class SettingsScreenState extends State<SettingsScreen> {
                             await PreferenceService.setCurrentOrganization('');
                           },
                           trailing: const Icon(Icons.exit_to_app),
+                          tileColor: backgroundColor, // Aplicar color de fondo
+                        );
+                        break;
+                      case 2:
+                        listTile = ListTile(
+                          title: const Text(
+                            'Organización actual',
+                            style: TextStyle(
+                              fontFamily: 'Manrope',
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          subtitle: Text(
+                            _currentOrganization ??
+                                'No hay organización seleccionada',
+                            style: const TextStyle(
+                              fontFamily: 'Manrope',
+                              fontWeight: FontWeight.w300,
+                            ),
+                          ),
                           tileColor: backgroundColor, // Aplicar color de fondo
                         );
                         break;

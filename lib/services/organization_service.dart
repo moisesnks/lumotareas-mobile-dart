@@ -1,10 +1,12 @@
 import 'package:lumotareas/models/organization.dart';
 import 'package:lumotareas/services/firestore_service.dart';
+import 'package:lumotareas/models/project.dart';
 
 class OrganizationService {
   final FirestoreService _firestoreService = FirestoreService();
 
   // Crear una tarea dentro de un sprint
+  //TODO: Cambiar el parametro de task por un modelo de tarea
   Future<Map<String, dynamic>> createTask(String orgName, String projectId,
       String sprintId, Map<String, dynamic> task) async {
     try {
@@ -29,6 +31,35 @@ class OrganizationService {
       return {
         'success': false,
         'message': 'Error al crear la tarea: $e',
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> getOrganizationsByPrefix(String prefix) async {
+    try {
+      final result = await _firestoreService.getDocumentsByPrefix(
+          'organizaciones', prefix);
+
+      if (result['found']) {
+        List<Organization> organizations = [];
+        for (var doc in result['data']) {
+          organizations.add(Organization.fromMap(doc));
+        }
+        return {
+          'success': true,
+          'organizations': organizations,
+          'message': result['message'],
+        };
+      } else {
+        return {
+          'success': false,
+          'message': result['message'],
+        };
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Error al obtener las organizaciones: $e',
       };
     }
   }
@@ -62,10 +93,13 @@ class OrganizationService {
 
   // Crear un proyecto dentro de la organización
   Future<Map<String, dynamic>> createProject(
-      String orgName, Map<String, dynamic> proyecto) async {
+      String orgName, Project project) async {
     try {
+      // Convertir el objeto Project a un mapa para almacenarlo
+      Map<String, dynamic> data = project.toMap();
+
       final result = await _firestoreService.addDocument(
-          'organizaciones/$orgName/proyectos', null, proyecto);
+          'organizaciones/$orgName/proyectos', project.id, data);
 
       if (result['success']) {
         return {
@@ -83,6 +117,36 @@ class OrganizationService {
       return {
         'success': false,
         'message': 'Error al crear el proyecto: $e',
+      };
+    }
+  }
+  //metodo para obtener la lista de proyectos de una organizacion
+
+  Future<Map<String, dynamic>> getProjects(String orgName) async {
+    try {
+      final result = await _firestoreService
+          .getCollection('organizaciones/$orgName/proyectos');
+
+      if (result['found']) {
+        List<Project> projects = [];
+        for (var doc in result['data']) {
+          projects.add(Project.fromMap(doc));
+        }
+        return {
+          'success': true,
+          'projects': projects,
+          'message': result['message'],
+        };
+      } else {
+        return {
+          'success': false,
+          'message': result['message'],
+        };
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Error al obtener los proyectos: $e',
       };
     }
   }
