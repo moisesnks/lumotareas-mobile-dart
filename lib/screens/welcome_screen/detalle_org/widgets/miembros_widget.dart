@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class MiembrosField extends StatelessWidget {
-  final int miembros;
+  final List<String> miembros;
 
   const MiembrosField({super.key, required this.miembros});
 
@@ -34,7 +34,7 @@ class MiembrosField extends StatelessWidget {
               borderRadius: BorderRadius.circular(8.0),
             ),
             child: Text(
-              '$miembros',
+              '${miembros.length}',
               style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
