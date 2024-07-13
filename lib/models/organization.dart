@@ -1,3 +1,36 @@
+class OrganizacionUser {
+  final String nombre;
+  final String id;
+  final bool isOwner;
+
+  OrganizacionUser({
+    required this.nombre,
+    required this.id,
+    this.isOwner = false,
+  });
+
+  factory OrganizacionUser.fromMap(Map<String, dynamic> map) {
+    return OrganizacionUser(
+      nombre: map['nombre'] ?? '',
+      id: map['id'] ?? '',
+      isOwner: map['isOwner'] ?? false,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'nombre': nombre,
+      'id': id,
+      'isOwner': isOwner,
+    };
+  }
+
+  @override
+  String toString() {
+    return 'OrganizacionUser{nombre: $nombre, id: $id, isOwner: $isOwner}';
+  }
+}
+
 /// Representa un propietario con atributos de nombre y UID.
 ///
 /// Un propietario tiene un [nombre] y un identificador único [uid].

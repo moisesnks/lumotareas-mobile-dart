@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:logger/logger.dart';
+import 'package:lumotareas/models/solicitud.dart';
 import 'auth_service.dart';
 import 'firestore_service.dart';
 import 'package:lumotareas/models/user.dart';
@@ -28,7 +29,7 @@ class UserService {
       Usuario? user = await getUserByUid(uid);
       if (user != null) {
         // Agregar la organización al usuario
-        user.organizaciones!.add(OrganizacionInterna(
+        user.organizaciones!.add(OrganizacionUser(
           nombre: organization.nombre,
           id: result['ref'],
           isOwner: true,
@@ -81,7 +82,7 @@ class UserService {
             birthdate: form.birthDate,
             photoURL: firebaseUser.photoURL ?? '',
             solicitudes: [
-              Solicitud(id: solicitudId, organizationId: form.orgName)
+              SolicitudUser(id: solicitudId, organizationId: form.orgName)
             ],
           );
         } else if (form.orgName.isNotEmpty && form.isOwner) {
@@ -92,7 +93,7 @@ class UserService {
             birthdate: form.birthDate,
             photoURL: firebaseUser.photoURL ?? '',
             organizaciones: [
-              OrganizacionInterna(
+              OrganizacionUser(
                 nombre: form.orgName,
                 id: form.orgName,
                 isOwner: form.isOwner,

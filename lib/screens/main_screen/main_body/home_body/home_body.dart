@@ -6,7 +6,7 @@ import 'package:logger/logger.dart';
 import 'package:lumotareas/viewmodels/login_viewmodel.dart';
 import 'package:lumotareas/models/user.dart';
 import 'widgets/current_role.dart';
-import 'widgets/organization_section.dart';
+import 'widgets/apps_menu.dart';
 import 'package:lumotareas/services/organization_service.dart';
 
 class HomeBody extends StatelessWidget {
@@ -47,7 +47,7 @@ class HomeBody extends StatelessWidget {
         children: [
           _buildTitle(context, currentUser),
           const SizedBox(height: 16),
-          OrganizationSection(
+          AppsMenu(
             currentOrganizationId: currentOrganizationId,
             logger: _logger,
             organizationService: _organizationService,

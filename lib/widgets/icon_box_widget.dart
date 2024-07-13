@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lumotareas/widgets/contenedor_widget.dart';
 
 class IconBox extends StatelessWidget {
   final IconData icon;
@@ -32,7 +33,9 @@ class IconBox extends StatelessWidget {
                   : Colors.grey,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Column(
+            child: Contenedor(
+              direction: Axis.vertical,
+              crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
@@ -45,12 +48,8 @@ class IconBox extends StatelessWidget {
                 const SizedBox(height: 5),
                 Text(
                   label,
-                  style: TextStyle(
-                    color: count != null && count! > 0
-                        ? Colors.white
-                        : Colors.black45,
-                    fontSize: 14,
-                  ),
+                  style: const TextStyle(color: Colors.white, fontSize: 10),
+                  textAlign: TextAlign.center,
                 ),
               ],
             ),

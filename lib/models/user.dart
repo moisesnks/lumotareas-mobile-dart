@@ -1,71 +1,13 @@
-class OrganizacionInterna {
-  final String nombre;
-  final String id;
-  final bool isOwner;
-
-  OrganizacionInterna({
-    required this.nombre,
-    required this.id,
-    this.isOwner = false,
-  });
-
-  factory OrganizacionInterna.fromMap(Map<String, dynamic> map) {
-    return OrganizacionInterna(
-      nombre: map['nombre'] ?? '',
-      id: map['id'] ?? '',
-      isOwner: map['isOwner'] ?? false,
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'nombre': nombre,
-      'id': id,
-      'isOwner': isOwner,
-    };
-  }
-
-  @override
-  String toString() {
-    return 'OrganizacionInterna{nombre: $nombre, id: $id, isOwner: $isOwner}';
-  }
-}
-
-class Solicitud {
-  final String id;
-  final String organizationId;
-
-  Solicitud({
-    required this.id,
-    required this.organizationId,
-  });
-
-  factory Solicitud.fromMap(String id, Map<String, dynamic> map) {
-    return Solicitud(
-      id: id,
-      organizationId: map['organizationId'],
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'organizationId': organizationId,
-    };
-  }
-
-  @override
-  String toString() {
-    return 'Solicitud{id: $id, organizationId: $organizationId}';
-  }
-}
+import 'solicitud.dart';
+import 'organization.dart';
 
 class Usuario {
   final String uid;
   final String nombre;
   final String email;
   final String birthdate;
-  final List<OrganizacionInterna>? organizaciones;
-  final List<Solicitud>? solicitudes;
+  final List<OrganizacionUser>? organizaciones;
+  final List<SolicitudUser> solicitudes; // Ya no puede ser nulo
   final String photoURL;
 
   Usuario({
@@ -75,7 +17,7 @@ class Usuario {
     required this.birthdate,
     required this.photoURL,
     this.organizaciones,
-    this.solicitudes,
+    this.solicitudes = const [], // Valor predeterminado
   });
 
   String get getUid => uid;
@@ -88,11 +30,12 @@ class Usuario {
       birthdate: map['birthdate'] ?? '',
       photoURL: map['photoURL'] ?? '',
       organizaciones: (map['organizaciones'] as List<dynamic>?)
-          ?.map((org) => OrganizacionInterna.fromMap(org))
+          ?.map((org) => OrganizacionUser.fromMap(org))
           .toList(),
       solicitudes: (map['solicitudes'] as List<dynamic>?)
-          ?.map((sol) => Solicitud.fromMap(sol['id'], sol))
-          .toList(),
+              ?.map((sol) => SolicitudUser.fromMap(sol['id'], sol))
+              .toList() ??
+          [], // Valor predeterminado si es null
     );
   }
 
@@ -104,8 +47,9 @@ class Usuario {
       'birthdate': birthdate,
       'photoURL': photoURL,
       'organizaciones': organizaciones?.map((org) => org.toMap()).toList(),
-      'solicitudes':
-          solicitudes?.map((solicitud) => solicitud.toMap()).toList(),
+      'solicitudes': solicitudes
+          .map((solicitud) => solicitud.toMap())
+          .toList(), // Ya no necesita verificación de null
     };
   }
 

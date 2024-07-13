@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:lumotareas/widgets/icon_box_widget.dart';
 import 'package:lumotareas/widgets/list_items_widget.dart';
 import 'package:lumotareas/services/organization_service.dart';
-import 'package:lumotareas/models/user.dart';
+import 'package:lumotareas/models/solicitud.dart';
 
 class SolicitudesButton extends StatelessWidget {
-  final List<Solicitud> solicitudes;
+  final List<SolicitudUser> solicitudes;
   final OrganizationService _organizationService = OrganizationService();
 
   SolicitudesButton({
@@ -20,7 +20,7 @@ class SolicitudesButton extends StatelessWidget {
           showModalBottomSheet(
             context: context,
             builder: (BuildContext context) {
-              return ListItems<Solicitud>(
+              return ListItems<SolicitudUser>(
                 items: solicitudes,
                 itemBuilder: (context, solicitud) {
                   return ListTile(

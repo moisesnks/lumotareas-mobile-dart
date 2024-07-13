@@ -1,14 +1,13 @@
 import 'package:lumotareas/models/organization.dart';
+import 'package:lumotareas/models/solicitud.dart';
+import 'package:lumotareas/models/user.dart';
 import 'package:lumotareas/services/firestore_service.dart';
 import 'package:lumotareas/models/project.dart';
+import 'package:logger/logger.dart';
 
 class OrganizationService {
   final FirestoreService _firestoreService = FirestoreService();
-
-  // Recibe un uid y una orgName y le da like (lo añade a List<String> likes) a la organización
-  // si el usuario no ha dado like previamente y retorna un mensaje de éxito o error
-  // si la organización no existe, retorna un mensaje de error
-  // si el usuario ya ha dado like, retorna un mensaje de error
+  final Logger _logger = Logger();
   Future<Map<String, dynamic>> likeOrganization(
       String orgName, String uid, bool addLike) async {
     try {
@@ -241,50 +240,46 @@ class OrganizationService {
     }
   }
 
-// metodo para registrar una solicitud
   Future<Map<String, dynamic>> registerSolicitud(
       String orgName, Map<String, dynamic> solicitud, String uid) async {
-    // Crear un mapa con los datos de la solicitud
-    Map<String, dynamic> data = {
-      'solicitud': solicitud,
-      'uid': uid,
-      'estado': 'pendiente',
-      'fecha': DateTime.now().toString(),
-    };
+    SolicitudOrg solicitudOrg = SolicitudOrg(
+      id: '',
+      estado: 'pendiente',
+      fecha: DateTime.now().toString(),
+      solicitud: solicitud,
+      uid: uid,
+    );
+
     try {
       final result = await _firestoreService.addDocument(
-          'organizaciones/$orgName/solicitudes',
-          null, // Firestore generará un ID único
-          data);
+          'organizaciones/$orgName/solicitudes', null, solicitudOrg.toMap());
 
       if (result['success']) {
+        // Actualizar la solicitud con el id del documento
+        await _firestoreService.updateDocument(
+            'organizaciones/$orgName/solicitudes', result['documentId'], {
+          'id': result['documentId'],
+        });
+
         return {
           'success': true,
-          'message': 'Solicitud registrada correctamente',
-          'ref': result['documentId'],
+          'message': 'Solicitud registrada con éxito',
+          'documentId': result['documentId'],
         };
       } else {
         return {
           'success': false,
-          'message': 'Error al registrar la solicitud',
+          'message': 'Error al enviar la solicitud',
         };
       }
     } catch (e) {
       return {
         'success': false,
-        'message': 'Error al registrar la solicitud: $e',
+        'message': 'Error al enviar la solicitud: $e',
       };
     }
   }
 
-  // metodo para obtener el resultado de una solicitud
-  // sería devolver dos campos como un mapa,
-  // los campos que extraremos de la solicitud de la organización son
-  // respuesta: la respuesta a la solicitud
-  // estado: el estado de la solicitud
-  // fecha: la fecha en la que se realizó la solicitud
-  // uid: el id del usuario que realizó la solicitud
-  // y el id de la solicitud
   Future<Map<String, dynamic>> getSolicitud(
       String orgName, String solicitudId) async {
     try {
@@ -292,12 +287,12 @@ class OrganizationService {
           'organizaciones/$orgName/solicitudes', solicitudId);
 
       if (result['found']) {
-        var data = result['data'];
+        var doc = result['data'];
         Map<String, dynamic> solicitud = {
-          'respuesta': data['respuesta'],
-          'estado': data['estado'],
-          'fecha': data['fecha'],
-          'uid': data['uid'],
+          'respuesta': doc['respuesta'],
+          'estado': doc['estado'],
+          'fecha': doc['fecha'],
+          'uid': doc['uid'],
           'solicitudId': solicitudId,
         };
         return {
@@ -316,6 +311,33 @@ class OrganizationService {
         'success': false,
         'message': 'Error al obtener la solicitud: $e',
       };
+    }
+  }
+
+  Future<List<SolicitudOrg>> getSolicitudes(
+      String orgName, Usuario user) async {
+    if (!user.isOwnerOfOrganization(orgName)) {
+      return [];
+    }
+    try {
+      _logger.i(
+          'Intentado obtener las solicitudes de la organización, orgName: $orgName, user: $user');
+      final result = await _firestoreService
+          .getCollection('organizaciones/$orgName/solicitudes');
+
+      if (result['found']) {
+        List<SolicitudOrg> solicitudes = result['data']
+            .map<SolicitudOrg>((doc) => SolicitudOrg.fromMap(doc['id'], doc))
+            .toList();
+        _logger.i('Solicitudes de la organización cargadas $solicitudes');
+        return solicitudes;
+      } else {
+        _logger.e('No se encontraron solicitudes de la organización');
+        return [];
+      }
+    } catch (e) {
+      _logger.e('Error al obtener las solicitudes de la organización: $e');
+      return [];
     }
   }
 

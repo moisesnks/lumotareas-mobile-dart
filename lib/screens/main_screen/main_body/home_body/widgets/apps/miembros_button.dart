@@ -37,15 +37,19 @@ class MiembrosButtonState extends State<MiembrosButton> {
     for (final id in widget.miembros) {
       Usuario? usuario = await _userService.getUserByUid(id);
       if (usuario != null) {
-        setState(() {
-          _miembros.add(usuario);
-          _isLoading = false;
-        });
+        if (mounted) {
+          setState(() {
+            _miembros.add(usuario);
+            _isLoading = false;
+          });
+        }
       } else {
         _logger.e('No se pudo cargar el usuario con el id: $id');
-        setState(() {
-          _isLoading = false;
-        });
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
       }
     }
 
