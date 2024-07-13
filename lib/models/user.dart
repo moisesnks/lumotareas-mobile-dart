@@ -1,14 +1,21 @@
+/// Representa una organización interna con atributos específicos.
+///
+/// Una organización interna tiene un [nombre], un [id] único y un indicador opcional de si el usuario es [isOwner] de la organización.
 class OrganizacionInterna {
   final String nombre;
   final String id;
   final bool isOwner;
 
+  /// Constructor para inicializar una organización interna con los atributos requeridos y opcionales.
   OrganizacionInterna({
     required this.nombre,
     required this.id,
     this.isOwner = false,
   });
 
+  /// Constructor de fábrica que crea un objeto [OrganizacionInterna] a partir de un mapa [Map<String, dynamic>].
+  ///
+  /// Utiliza las claves del mapa para asignar valores a los atributos de la organización interna.
   factory OrganizacionInterna.fromMap(Map<String, dynamic> map) {
     return OrganizacionInterna(
       nombre: map['nombre'] ?? '',
@@ -17,6 +24,9 @@ class OrganizacionInterna {
     );
   }
 
+  /// Convierte el objeto [OrganizacionInterna] en un mapa [Map<String, dynamic>].
+  ///
+  /// Cada atributo de la organización interna se convierte en una entrada en el mapa.
   Map<String, dynamic> toMap() {
     return {
       'nombre': nombre,
@@ -31,6 +41,10 @@ class OrganizacionInterna {
   }
 }
 
+/// Representa un usuario con atributos específicos.
+///
+/// Un usuario tiene un identificador único [uid], un [nombre], un [email], una [birthdate] (fecha de nacimiento),
+/// una lista de [organizaciones] internas donde participa, una lista de [solicitudes] pendientes y una URL de [photoURL] opcional.
 class Usuario {
   final String uid;
   final String nombre;
@@ -40,6 +54,7 @@ class Usuario {
   final List<String>? solicitudes;
   final String photoURL;
 
+  /// Constructor para inicializar un usuario con los atributos requeridos y opcionales.
   Usuario({
     required this.uid,
     required this.nombre,
@@ -50,9 +65,12 @@ class Usuario {
     this.solicitudes,
   });
 
+  /// Getter para obtener el UID del usuario.
   String get getUid => uid;
 
-  // Método para convertir un mapa en una instancia de Usuario
+  /// Constructor de fábrica que crea un objeto [Usuario] a partir de un mapa [Map<String, dynamic>].
+  ///
+  /// Utiliza las claves del mapa para asignar valores a los atributos del usuario.
   factory Usuario.fromMap(String uid, Map<String, dynamic> map) {
     return Usuario(
       uid: uid,
@@ -72,7 +90,9 @@ class Usuario {
     );
   }
 
-  // Método para convertir una instancia de Usuario en un mapa
+  /// Convierte el objeto [Usuario] en un mapa [Map<String, dynamic>].
+  ///
+  /// Cada atributo del usuario se convierte en una entrada en el mapa.
   Map<String, dynamic> toMap() {
     return {
       'uid': uid,
@@ -85,7 +105,7 @@ class Usuario {
     };
   }
 
-  // Método para obtener todos las IDs de las organizaciones donde el usuario es dueño
+  /// Método para obtener todos los IDs de las organizaciones donde el usuario es dueño.
   List<String> getOwnerOrganizationIds() {
     return organizaciones
             ?.where((org) => org.isOwner)
@@ -94,7 +114,7 @@ class Usuario {
         [];
   }
 
-  // Método para obtener todos las IDs de las organizaciones donde el usuario es miembro
+  /// Método para obtener todos los IDs de las organizaciones donde el usuario es miembro.
   List<String> getMemberOrganizationIds() {
     return organizaciones
             ?.where((org) => !org.isOwner)
@@ -103,6 +123,7 @@ class Usuario {
         [];
   }
 
+  /// Método para verificar si el usuario es dueño de una organización específica identificada por [organizationId].
   bool isOwnerOfOrganization(String organizationId) {
     return organizaciones
             ?.any((org) => org.id == organizationId && org.isOwner) ??

@@ -1,12 +1,19 @@
+/// Representa un propietario con atributos de nombre y UID.
+///
+/// Un propietario tiene un [nombre] y un identificador único [uid].
 class Owner {
   final String nombre;
   final String uid;
 
+  /// Constructor para inicializar un propietario con los atributos requeridos.
   Owner({
     required this.nombre,
     required this.uid,
   });
 
+  /// Constructor de fábrica que crea un objeto [Owner] a partir de un mapa [Map<String, String>].
+  ///
+  /// Utiliza las claves del mapa para asignar valores a los atributos del propietario.
   factory Owner.fromMap(Map<String, String> map) {
     return Owner(
       nombre: map['nombre'] ?? '',
@@ -14,6 +21,9 @@ class Owner {
     );
   }
 
+  /// Convierte el objeto [Owner] en un mapa [Map<String, String>].
+  ///
+  /// Cada atributo del propietario se convierte en una entrada en el mapa.
   Map<String, String> toMap() {
     return {
       'nombre': nombre,
@@ -21,12 +31,18 @@ class Owner {
     };
   }
 
+  /// Sobrescribe el método toString para proporcionar una representación en cadena del nombre del propietario.
   @override
   String toString() {
     return nombre;
   }
 }
 
+/// Representa una organización con atributos específicos.
+///
+/// Una organización tiene un [nombre], una lista de miembros [miembros],
+/// un propietario [owner], un estado de vacantes [vacantes], un formulario [formulario],
+/// una descripción [descripcion], una URL de imagen [imageUrl] y una lista de likes [likes].
 class Organization {
   final String nombre;
   final List<String> miembros;
@@ -36,6 +52,8 @@ class Organization {
   final String descripcion;
   final String imageUrl;
   final List<String> likes;
+
+  /// Constructor para inicializar una organización con los atributos requeridos.
   Organization({
     required this.nombre,
     required this.miembros,
@@ -47,6 +65,9 @@ class Organization {
     this.likes = const [],
   });
 
+  /// Constructor de fábrica que crea un objeto [Organization] a partir de un mapa [Map<String, dynamic>].
+  ///
+  /// Utiliza las claves del mapa para asignar valores a los atributos de la organización.
   factory Organization.fromMap(Map<String, dynamic> map) {
     return Organization(
       nombre: map['nombre'] ?? '',
@@ -60,6 +81,9 @@ class Organization {
     );
   }
 
+  /// Convierte el objeto [Organization] en un mapa [Map<String, dynamic>].
+  ///
+  /// Cada atributo de la organización se convierte en una entrada en el mapa.
   Map<String, dynamic> toMap() {
     return {
       'nombre': nombre,
@@ -73,8 +97,9 @@ class Organization {
     };
   }
 
+  /// Sobrescribe el método toString para proporcionar una representación en cadena detallada de la organización.
   @override
   String toString() {
-    return 'Organization: $nombre\nOwner: $owner\nMiembros: $miembros\nVacantes: $vacantes\nFormulario: $formulario\nDescripción: $descripcion \n Imagen: $imageUrl';
+    return 'Organization: $nombre\nOwner: $owner\nMiembros: $miembros\nVacantes: $vacantes\nFormulario: $formulario\nDescripción: $descripcion\nImagen: $imageUrl';
   }
 }
