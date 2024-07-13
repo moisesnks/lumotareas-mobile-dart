@@ -7,9 +7,11 @@ import './widgets/buscar_organizacion/buscar_organizacion.dart';
 import './widgets/publicaciones/publicacion_card.dart';
 import './widgets/organizaciones_destacadas/organizacion_card.dart';
 import './logic.dart';
+import 'package:lumotareas/models/user.dart';
 
 class DescubrirBody extends StatelessWidget {
-  const DescubrirBody({super.key});
+  final Usuario currentUser;
+  const DescubrirBody({super.key, required this.currentUser});
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +39,7 @@ class DescubrirBody extends StatelessWidget {
                 return CarouselBox<Organization>(
                   items: snapshot.data!,
                   itemBuilder: (context, index) => OrganizacionCard(
+                    currentUser: currentUser,
                     organization: snapshot.data![index],
                   ),
                   labelText: 'Organizaciones Destacadas',

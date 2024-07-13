@@ -32,21 +32,27 @@ class ProyectosState extends State<Proyectos> {
       final result = await _organizationService.getProjects(orgName);
       if (result['success']) {
         List<Project> projects = result['projects'];
-        setState(() {
-          _proyectos = projects;
-          _isLoading = false;
-        });
+        if (mounted) {
+          setState(() {
+            _proyectos = projects;
+            _isLoading = false;
+          });
+        }
       } else {
-        setState(() {
-          _isLoading = false;
-        });
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
         // Manejar el error si es necesario
         _logger.i(result['message']);
       }
     } else {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
       // Manejar el caso en que no haya una organización seleccionada
       _logger.e('No se encontró una organización actual.');
     }

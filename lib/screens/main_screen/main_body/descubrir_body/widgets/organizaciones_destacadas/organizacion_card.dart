@@ -5,13 +5,16 @@ import 'package:lumotareas/models/organization.dart';
 import 'package:lumotareas/widgets/parrafo_widget.dart';
 import 'package:lumotareas/widgets/titulo_widget.dart';
 import 'package:logger/logger.dart';
+import 'package:lumotareas/models/user.dart';
 
 class OrganizacionCard extends StatelessWidget {
   final Organization? organization;
+  final Usuario currentUser;
 
   OrganizacionCard({
     super.key,
     required this.organization,
+    required this.currentUser,
   });
 
   final Logger _logger = Logger();
@@ -22,7 +25,7 @@ class OrganizacionCard extends StatelessWidget {
     final String owner = organization?.owner.nombre ?? '';
     final String descripcion = organization?.descripcion ?? '';
     final String imageUrl = organization?.imageUrl ?? '';
-    final int likes = organization?.likes ?? 0;
+    final List<String> likes = organization?.likes ?? [];
 
     return Contenedor(
       height: MediaQuery.of(context).size.height * 0.25,
@@ -64,11 +67,12 @@ class OrganizacionCard extends StatelessWidget {
                             IconButton(
                               icon: const Icon(Icons.thumb_up),
                               onPressed: () {
-                                _logger.i('Likes: $likes');
+                                _logger.i(
+                                    '${currentUser.uid} ha likeado la organización ${organization?.nombre}');
                               },
                             ),
                             Text(
-                              '$likes',
+                              likes.length.toString(),
                               style: const TextStyle(fontSize: 12.0),
                             ),
                           ],

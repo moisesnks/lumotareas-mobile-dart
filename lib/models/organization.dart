@@ -35,9 +35,7 @@ class Organization {
   final Map<String, dynamic> formulario;
   final String descripcion;
   final String imageUrl;
-  final int
-      likes; // TODO: likes debe cambiar a un List<String, dynamic> para guardar los likes de los usuarios que han dado like
-
+  final List<String> likes;
   Organization({
     required this.nombre,
     required this.miembros,
@@ -46,7 +44,7 @@ class Organization {
     required this.formulario,
     required this.descripcion,
     this.imageUrl = 'assets/organization_logo.png',
-    this.likes = 0,
+    this.likes = const [],
   });
 
   factory Organization.fromMap(Map<String, dynamic> map) {
@@ -58,7 +56,7 @@ class Organization {
       formulario: map['formulario'] ?? {},
       descripcion: map['descripcion'] ?? '',
       imageUrl: map['imageUrl'] ?? 'assets/organization_logo.png',
-      likes: map['likes'] ?? 0,
+      likes: List<String>.from(map['likes'] ?? []),
     );
   }
 

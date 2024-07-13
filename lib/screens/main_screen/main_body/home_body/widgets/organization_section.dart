@@ -7,9 +7,9 @@ import 'package:lumotareas/services/organization_service.dart';
 import 'package:lumotareas/widgets/contenedor_widget.dart';
 import 'package:lumotareas/widgets/parrafo_widget.dart';
 import 'package:lumotareas/models/organization.dart';
-import 'miembros.dart';
-import 'solicitudes.dart';
-import 'proyectos.dart';
+import 'miembros_button.dart';
+import 'solicitudes_button.dart';
+import 'proyectos_button.dart';
 
 class OrganizationSection extends StatelessWidget {
   final String currentOrganizationId;

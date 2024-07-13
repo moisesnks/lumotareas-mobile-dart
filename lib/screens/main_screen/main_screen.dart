@@ -146,7 +146,7 @@ class MainScreenState extends State<MainScreen> {
                           currentOrganizationId: currentOrganizationId,
                           loginViewModel: loginViewModel,
                         ),
-                        const DescubrirBody(),
+                        DescubrirBody(currentUser: currentUser),
                         const ProfileBody(),
                       ],
                     ),
