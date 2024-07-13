@@ -111,7 +111,7 @@ class SolicitudesButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconBox(
       icon: Icons.email,
-      label: 'Solicitudes',
+      label: 'Mis Solicitudes',
       count: solicitudes.length,
       showCount: true,
       onTap: () => _showRequestList(context),

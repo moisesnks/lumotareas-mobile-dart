@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:lumotareas/widgets/icon_box_widget.dart';
-import 'package:lumotareas/widgets/list_items_widget.dart';
-import 'package:lumotareas/models/user.dart';
 import 'package:logger/logger.dart';
 import 'package:lumotareas/models/solicitud.dart';
+import 'package:lumotareas/models/user.dart';
+import 'package:lumotareas/widgets/icon_box_widget.dart';
+import 'package:lumotareas/widgets/list_items_widget.dart';
 
 class SolicitudesOrgButton extends StatelessWidget {
   final String orgName;
@@ -19,27 +19,36 @@ class SolicitudesOrgButton extends StatelessWidget {
   });
 
   void _showIncomingRequests(BuildContext context) {
-    // Mostrar las solicitudes entrantes en un modal
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return ListItems<SolicitudOrg>(
-          items: solicitudes,
-          itemBuilder: (context, solicitud) {
-            return ListTile(
-              title: Text(
-                solicitud.estado,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: Text('Fecha: ${solicitud.fecha}'),
-              onTap: () async {
-                // Lógica para manejar la solicitud al tocarla
-              },
-            );
-          },
-        );
-      },
-    );
+    if (solicitudes.isEmpty) {
+      // Mostrar un SnackBar si no hay solicitudes
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No hay solicitudes entrantes.'),
+        ),
+      );
+    } else {
+      // Mostrar las solicitudes entrantes en un modal
+      showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return ListItems<SolicitudOrg>(
+            items: solicitudes,
+            itemBuilder: (context, solicitud) {
+              return ListTile(
+                title: Text(
+                  solicitud.estado,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text('Fecha: ${solicitud.fecha}'),
+                onTap: () async {
+                  // Lógica para manejar la solicitud al tocarla
+                },
+              );
+            },
+          );
+        },
+      );
+    }
   }
 
   @override
