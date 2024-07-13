@@ -138,5 +138,5 @@ app.*.symbols
 !.vscode/settings.json
 
 # Firebase
-firebase.json
-google-services.json
+#firebase.json
+#google-services.json
