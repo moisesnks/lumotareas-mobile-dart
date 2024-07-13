@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:lumotareas/models/user.dart';
 import 'package:lumotareas/widgets/flexible_wrap_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:lumotareas/viewmodels/login_viewmodel.dart';
@@ -25,7 +26,8 @@ class OrganizationSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currentUser = Provider.of<LoginViewModel>(context).currentUser;
+    final Usuario? currentUser =
+        Provider.of<LoginViewModel>(context).currentUser;
 
     if (currentUser == null) {
       return const SizedBox
@@ -44,9 +46,9 @@ class OrganizationSection extends StatelessWidget {
                 'Actualmente, no estás afiliado a ninguna organización. Puedes crear tu propia organización o explorar otras existentes para enviar solicitudes de afiliación.',
           ),
           const SizedBox(height: 16),
-          Solicitudes(
-            solicitudes: currentUser.solicitudes ?? [],
-          ),
+          if (currentUser.solicitudes != null &&
+              currentUser.solicitudes!.isNotEmpty)
+            SolicitudesButton(solicitudes: currentUser.solicitudes!)
         ],
       );
     } else {

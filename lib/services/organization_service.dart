@@ -241,6 +241,7 @@ class OrganizationService {
     }
   }
 
+// metodo para registrar una solicitud
   Future<Map<String, dynamic>> registerSolicitud(
       String orgName, Map<String, dynamic> solicitud, String uid) async {
     // Crear un mapa con los datos de la solicitud
@@ -272,6 +273,48 @@ class OrganizationService {
       return {
         'success': false,
         'message': 'Error al registrar la solicitud: $e',
+      };
+    }
+  }
+
+  // metodo para obtener el resultado de una solicitud
+  // sería devolver dos campos como un mapa,
+  // los campos que extraremos de la solicitud de la organización son
+  // respuesta: la respuesta a la solicitud
+  // estado: el estado de la solicitud
+  // fecha: la fecha en la que se realizó la solicitud
+  // uid: el id del usuario que realizó la solicitud
+  // y el id de la solicitud
+  Future<Map<String, dynamic>> getSolicitud(
+      String orgName, String solicitudId) async {
+    try {
+      final result = await _firestoreService.getDocument(
+          'organizaciones/$orgName/solicitudes', solicitudId);
+
+      if (result['found']) {
+        var data = result['data'];
+        Map<String, dynamic> solicitud = {
+          'respuesta': data['respuesta'],
+          'estado': data['estado'],
+          'fecha': data['fecha'],
+          'uid': data['uid'],
+          'solicitudId': solicitudId,
+        };
+        return {
+          'success': true,
+          'solicitud': solicitud,
+          'message': result['message'],
+        };
+      } else {
+        return {
+          'success': false,
+          'message': result['message'],
+        };
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Error al obtener la solicitud: $e',
       };
     }
   }

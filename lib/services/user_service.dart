@@ -80,7 +80,9 @@ class UserService {
             email: firebaseUser.email ?? '',
             birthdate: form.birthDate,
             photoURL: firebaseUser.photoURL ?? '',
-            solicitudes: [solicitudId],
+            solicitudes: [
+              Solicitud(id: solicitudId, organizationId: form.orgName)
+            ],
           );
         } else if (form.orgName.isNotEmpty && form.isOwner) {
           newUser = Usuario(
@@ -170,42 +172,6 @@ class UserService {
       _logger.d('Sesión cerrada correctamente');
     } catch (e) {
       _logger.e('Error al cerrar sesión: $e');
-    }
-  }
-
-  // Método
-  // Registrar la referencia de la solicitud en el usuario, para eso
-  // el usuario tiene un campo (array) que se llama solicitudes el cual con el servicio
-  // de firestore se usará el método addToArray para agregar la referencia de la solicitud
-  // a ese array
-  Future<bool> addSolicitudToUser(String uid, String solicitudId) async {
-    try {
-      // Obtener usuario actual
-      Usuario? user = await getUserByUid(uid);
-
-      if (user != null) {
-        // Verificar si la solicitud ya existe en las solicitudes del usuario
-        if (user.solicitudes!.contains(solicitudId)) {
-          _logger.w('La solicitud ya existe en las solicitudes del usuario');
-          return true;
-        } else {
-          // Agregar la nueva solicitud
-          user.solicitudes!.add(solicitudId);
-
-          // Actualizar los datos del usuario en Firestore
-          await updateUserData(user);
-
-          _logger
-              .d('Solicitud agregada al usuario correctamente: $solicitudId');
-          return true;
-        }
-      } else {
-        _logger.w('No se encontró al usuario con UID: $uid');
-        return false;
-      }
-    } catch (e) {
-      _logger.e('Error al agregar solicitud al usuario: $e');
-      return false;
     }
   }
 

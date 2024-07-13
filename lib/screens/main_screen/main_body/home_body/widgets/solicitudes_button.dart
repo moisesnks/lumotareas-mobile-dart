@@ -1,69 +1,108 @@
 import 'package:flutter/material.dart';
 import 'package:lumotareas/widgets/icon_box_widget.dart';
+import 'package:lumotareas/widgets/list_items_widget.dart';
+import 'package:lumotareas/services/organization_service.dart';
+import 'package:lumotareas/models/user.dart';
 
-class Solicitudes extends StatelessWidget {
-  final List<String> solicitudes;
+class SolicitudesButton extends StatelessWidget {
+  final List<Solicitud> solicitudes;
+  final OrganizationService _organizationService = OrganizationService();
 
-  const Solicitudes({
+  SolicitudesButton({
     super.key,
     required this.solicitudes,
   });
 
-  void _showRequestList(BuildContext context) {
+  void _showRequestList(BuildContext context) async {
     if (solicitudes.isNotEmpty) {
-      showModalBottomSheet(
-        context: context,
-        builder: (BuildContext context) {
-          return Container(
-            color: const Color(0xFF111111),
-            child: Column(
-              children: [
-                const Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Text(
-                    'Lista de solicitudes',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+      try {
+        if (context.mounted) {
+          showModalBottomSheet(
+            context: context,
+            builder: (BuildContext context) {
+              return ListItems<Solicitud>(
+                items: solicitudes,
+                itemBuilder: (context, solicitud) {
+                  return ListTile(
+                    title: Text(
+                      solicitud.organizationId,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
-                  ),
-                ),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: solicitudes.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(
-                          solicitudes[index],
-                          style: const TextStyle(color: Colors.white),
-                        ),
+                    subtitle: Text('id: ${solicitud.id}'),
+                    onTap: () async {
+                      Map<String, dynamic> response =
+                          await _organizationService.getSolicitud(
+                        solicitud.organizationId,
+                        solicitud.id,
                       );
+                      if (response['success']) {
+                        if (context.mounted) {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('Solicitud'),
+                                content: Text(
+                                    'Respuestas: ${response['solicitud']}'),
+                              );
+                            },
+                          );
+                        }
+                      } else {
+                        if (context.mounted) {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('Error'),
+                                content: Text(
+                                    'Error al obtener la solicitud: ${response['message']}'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: const Text('OK'),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        }
+                      }
+                    },
+                  );
+                },
+              );
+            },
+          );
+        }
+      } catch (e) {
+        if (context.mounted) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('Error'),
+                content: Text('Error al obtener las solicitudes: $e'),
+                actions: <Widget>[
+                  TextButton(
+                    child: const Text('OK'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
                     },
                   ),
-                ),
-              ],
-            ),
+                ],
+              );
+            },
           );
-        },
-      );
+        }
+      }
     } else {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Sin solicitudes'),
-            content: const Text('No tienes solicitudes pendientes.'),
-            actions: <Widget>[
-              TextButton(
-                child: const Text('OK'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No hay solicitudes pendientes.'),
+        ),
       );
     }
   }
