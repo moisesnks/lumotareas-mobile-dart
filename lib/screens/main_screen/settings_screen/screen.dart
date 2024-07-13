@@ -64,6 +64,26 @@ class SettingsScreenState extends State<SettingsScreen> {
                       case 0:
                         listTile = ListTile(
                           title: const Text(
+                            'Organización actual',
+                            style: TextStyle(
+                              fontFamily: 'Manrope',
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          subtitle: Text(
+                            _currentOrganization ??
+                                'No hay organización seleccionada',
+                            style: const TextStyle(
+                              fontFamily: 'Manrope',
+                              fontWeight: FontWeight.w300,
+                            ),
+                          ),
+                          tileColor: backgroundColor, // Aplicar color de fondo
+                        );
+                        break;
+                      case 1:
+                        listTile = ListTile(
+                          title: const Text(
                             'Redirigir a Login',
                             style: TextStyle(
                               fontFamily: 'Manrope',
@@ -77,7 +97,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                           tileColor: backgroundColor, // Aplicar color de fondo
                         );
                         break;
-                      case 1:
+                      case 2:
                         listTile = ListTile(
                           title: const Text(
                             'Cerrar sesión',
@@ -93,26 +113,6 @@ class SettingsScreenState extends State<SettingsScreen> {
                             await PreferenceService.setCurrentOrganization('');
                           },
                           trailing: const Icon(Icons.exit_to_app),
-                          tileColor: backgroundColor, // Aplicar color de fondo
-                        );
-                        break;
-                      case 2:
-                        listTile = ListTile(
-                          title: const Text(
-                            'Organización actual',
-                            style: TextStyle(
-                              fontFamily: 'Manrope',
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          subtitle: Text(
-                            _currentOrganization ??
-                                'No hay organización seleccionada',
-                            style: const TextStyle(
-                              fontFamily: 'Manrope',
-                              fontWeight: FontWeight.w300,
-                            ),
-                          ),
                           tileColor: backgroundColor, // Aplicar color de fondo
                         );
                         break;
