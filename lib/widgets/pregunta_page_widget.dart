@@ -7,11 +7,11 @@ class PreguntaPage extends StatelessWidget {
   final ValueChanged<dynamic> onChanged;
 
   const PreguntaPage({
-    super.key,
+    Key? key,
     required this.pregunta,
     required this.respuesta,
     required this.onChanged,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -33,21 +33,26 @@ class PreguntaPage extends StatelessWidget {
         const SizedBox(height: 20),
         if (pregunta.tipo == 'seleccion_unica')
           ...pregunta.opciones.map<Widget>((opcion) => RadioListTile(
-                title: Text(opcion),
-                value: opcion,
+                title: Text(opcion.label),
+                value: opcion.id, // Usar opcion.id como valor
                 groupValue: respuesta,
                 onChanged: (value) => onChanged(value),
               )),
         if (pregunta.tipo == 'seleccion_multiple')
           ...pregunta.opciones.map<Widget>((opcion) => CheckboxListTile(
-                title: Text(opcion),
-                value: respuesta.contains(opcion),
+                title: Text(opcion.label),
+                value: respuesta != null &&
+                    respuesta
+                        .contains(opcion.id), // Usar opcion.id para comparar
                 onChanged: (checked) {
+                  List<String> newRespuesta = List.from(respuesta ?? []);
                   if (checked!) {
-                    onChanged([...respuesta, opcion]);
+                    newRespuesta.add(opcion.id); // Usar opcion.id correctamente
                   } else {
-                    onChanged(respuesta..remove(opcion));
+                    newRespuesta
+                        .remove(opcion.id); // Usar opcion.id correctamente
                   }
+                  onChanged(newRespuesta);
                 },
               )),
         if (pregunta.tipo == 'desarrollo')

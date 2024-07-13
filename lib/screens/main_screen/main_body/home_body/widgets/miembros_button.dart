@@ -5,6 +5,7 @@ import 'package:lumotareas/models/user.dart';
 import 'package:logger/logger.dart';
 import 'package:lumotareas/widgets/icon_box_widget.dart';
 import 'package:lumotareas/widgets/list_items_widget.dart';
+import 'package:lumotareas/services/preferences_service.dart';
 
 class MiembrosButton extends StatefulWidget {
   final List<String> miembros;
@@ -47,6 +48,10 @@ class MiembrosButtonState extends State<MiembrosButton> {
         });
       }
     }
+
+    // Guardar los miembros en las preferencias después de cargarlos
+    await PreferenceService.setMiembros(
+        _miembros.map((usuario) => usuario.toMap()).toList());
   }
 
   void _showMemberList(BuildContext context) {

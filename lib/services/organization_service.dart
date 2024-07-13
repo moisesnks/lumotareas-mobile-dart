@@ -148,8 +148,11 @@ class OrganizationService {
       // Convertir el objeto Project a un mapa para almacenarlo
       Map<String, dynamic> data = project.toMap();
 
+      // Ajustar projectId para que sea null si está vacío
+      String? projectId = project.id.isNotEmpty ? project.id : null;
+
       final result = await _firestoreService.addDocument(
-          'organizaciones/$orgName/proyectos', project.id, data);
+          'organizaciones/$orgName/proyectos', projectId, data);
 
       if (result['success']) {
         return {
@@ -170,6 +173,7 @@ class OrganizationService {
       };
     }
   }
+
   //metodo para obtener la lista de proyectos de una organizacion
 
   Future<Map<String, dynamic>> getProjects(String orgName) async {
