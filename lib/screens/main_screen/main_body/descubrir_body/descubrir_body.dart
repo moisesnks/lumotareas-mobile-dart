@@ -6,7 +6,7 @@ import 'package:lumotareas/widgets/carousel_box_widget.dart';
 import './widgets/buscar_organizacion/buscar_organizacion.dart';
 import './widgets/publicaciones/publicacion_card.dart';
 import './widgets/organizaciones_destacadas/organizacion_card.dart';
-import './logic.dart';
+import '../../../../logic/descubrir_logic.dart';
 import 'package:lumotareas/models/user.dart';
 
 class DescubrirBody extends StatelessWidget {

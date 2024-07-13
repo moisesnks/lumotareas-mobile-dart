@@ -13,6 +13,31 @@ class DescubrirLogic {
     }
   }
 
+  static Future<Map<String, dynamic>> likeOrganization(
+      String orgName, String uid, bool addLike) async {
+    try {
+      final result =
+          await OrganizationService().likeOrganization(orgName, uid, addLike);
+
+      if (result['success']) {
+        return {
+          'success': true,
+          'message': result['message'],
+        };
+      } else {
+        return {
+          'success': false,
+          'message': result['message'],
+        };
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Error al dar/quitar like a la organización: $e',
+      };
+    }
+  }
+
   static Future<Map<String, dynamic>> buscarOrganizaciones(String query) async {
     final result = await OrganizationService().getOrganizationsByPrefix(query);
 

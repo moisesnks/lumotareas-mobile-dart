@@ -5,6 +5,56 @@ import 'package:lumotareas/models/project.dart';
 class OrganizationService {
   final FirestoreService _firestoreService = FirestoreService();
 
+  // Recibe un uid y una orgName y le da like (lo añade a List<String> likes) a la organización
+  // si el usuario no ha dado like previamente y retorna un mensaje de éxito o error
+  // si la organización no existe, retorna un mensaje de error
+  // si el usuario ya ha dado like, retorna un mensaje de error
+  Future<Map<String, dynamic>> likeOrganization(
+      String orgName, String uid, bool addLike) async {
+    try {
+      final result =
+          await _firestoreService.getDocument('organizaciones', orgName);
+
+      if (result['found']) {
+        Organization organization = Organization.fromMap(result['data']);
+        if (addLike && !organization.likes.contains(uid)) {
+          // Agregar el like si no existe
+          organization.likes.add(uid);
+        } else if (!addLike && organization.likes.contains(uid)) {
+          // Quitar el like si existe
+          organization.likes.remove(uid);
+        } else {
+          // No hacer cambios si ya existe o se intenta quitar sin existir
+          return {
+            'success': false,
+            'message': addLike
+                ? 'Ya has dado like a esta organización'
+                : 'No has dado like previamente a esta organización',
+          };
+        }
+
+        await _firestoreService.updateDocument(
+            'organizaciones', orgName, organization.toMap());
+        return {
+          'success': true,
+          'message': addLike
+              ? 'Like añadido correctamente'
+              : 'Like quitado correctamente',
+        };
+      } else {
+        return {
+          'success': false,
+          'message': 'La organización no existe',
+        };
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Error al dar/quitar like a la organización: $e',
+      };
+    }
+  }
+
   // Crear una tarea dentro de un sprint
   //TODO: Cambiar el parametro de task por un modelo de tarea
   Future<Map<String, dynamic>> createTask(String orgName, String projectId,

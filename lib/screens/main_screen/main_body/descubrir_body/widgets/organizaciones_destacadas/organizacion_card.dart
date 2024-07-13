@@ -1,31 +1,53 @@
 import 'package:flutter/material.dart';
+import 'package:lumotareas/models/organization.dart';
 import 'package:lumotareas/widgets/contenedor_widget.dart';
 import 'package:lumotareas/widgets/imagen_widget.dart';
-import 'package:lumotareas/models/organization.dart';
 import 'package:lumotareas/widgets/parrafo_widget.dart';
 import 'package:lumotareas/widgets/titulo_widget.dart';
-import 'package:logger/logger.dart';
 import 'package:lumotareas/models/user.dart';
+import 'widgets/like_button_widget.dart';
 
-class OrganizacionCard extends StatelessWidget {
+class OrganizacionCard extends StatefulWidget {
   final Organization? organization;
   final Usuario currentUser;
 
-  OrganizacionCard({
+  const OrganizacionCard({
     super.key,
     required this.organization,
     required this.currentUser,
   });
 
-  final Logger _logger = Logger();
+  @override
+  OrganizacionCardState createState() => OrganizacionCardState();
+}
+
+class OrganizacionCardState extends State<OrganizacionCard> {
+  int likesCount = 0; // Estado local para contar los likes
+
+  @override
+  void initState() {
+    super.initState();
+    likesCount = widget.organization?.likes.length ?? 0;
+  }
+
+  void handleLike(bool isLiked) {
+    setState(() {
+      if (isLiked) {
+        likesCount++;
+        widget.organization?.likes.add(widget.currentUser.uid);
+      } else {
+        likesCount--;
+        widget.organization?.likes.remove(widget.currentUser.uid);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final String nombre = organization?.nombre ?? '';
-    final String owner = organization?.owner.nombre ?? '';
-    final String descripcion = organization?.descripcion ?? '';
-    final String imageUrl = organization?.imageUrl ?? '';
-    final List<String> likes = organization?.likes ?? [];
+    final String nombre = widget.organization?.nombre ?? '';
+    final String owner = widget.organization?.owner.nombre ?? '';
+    final String descripcion = widget.organization?.descripcion ?? '';
+    final String imageUrl = widget.organization?.imageUrl ?? '';
 
     return Contenedor(
       height: MediaQuery.of(context).size.height * 0.25,
@@ -64,15 +86,14 @@ class OrganizacionCard extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           width: 100,
                           children: [
-                            IconButton(
-                              icon: const Icon(Icons.thumb_up),
-                              onPressed: () {
-                                _logger.i(
-                                    '${currentUser.uid} ha likeado la organización ${organization?.nombre}');
+                            LikeButton(
+                              organization: widget.organization,
+                              onCallback: (isLiked) {
+                                handleLike(isLiked);
                               },
                             ),
                             Text(
-                              likes.length.toString(),
+                              '$likesCount',
                               style: const TextStyle(fontSize: 12.0),
                             ),
                           ],

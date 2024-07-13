@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:lumotareas/widgets/entrada_texto_boton_widget.dart';
-import '../../logic.dart';
+import '../../../../../../logic/descubrir_logic.dart';
 import 'package:lumotareas/models/organization.dart';
 import 'package:lumotareas/screens/detalle_org/detalle_org_screen.dart';
 
