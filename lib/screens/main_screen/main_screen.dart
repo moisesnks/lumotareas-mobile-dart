@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:lumotareas/screens/main_screen/main_body/descubrir_body/descubrir_body.dart';
 import 'package:lumotareas/screens/main_screen/main_body/home_body/home_body.dart';
 import 'package:lumotareas/screens/main_screen/main_body/profile_body/profile_body.dart';
-import 'package:lumotareas/widgets/bottom_nav_bar.dart';
+import 'package:lumotareas/widgets/bottom_nav_bar_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:logger/logger.dart';
 import 'package:lumotareas/viewmodels/login_viewmodel.dart';
 import 'package:lumotareas/services/preferences_service.dart';
-import 'package:lumotareas/widgets/header2.dart';
+import 'package:lumotareas/widgets/header2_widget.dart';
 import 'package:lumotareas/models/user.dart';
 import 'menu_flotante/main_floating_button.dart';
-import 'settings_screen/screen.dart';
+import 'settings_screen/settings_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});

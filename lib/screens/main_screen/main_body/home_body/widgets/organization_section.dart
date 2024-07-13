@@ -69,8 +69,11 @@ class OrganizationSection extends StatelessWidget {
               color: Colors.transparent,
               spacing: 10,
               children: [
-                const Proyectos(),
-                Miembros(miembros: organization.miembros),
+                const ProyectosButton(),
+                MiembrosButton(
+                  miembros: organization.miembros,
+                  orgName: organization.nombre,
+                ),
                 // TODO: Agregar un widget para ver la organización y poder editarla
               ],
             );

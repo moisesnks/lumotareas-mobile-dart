@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:lumotareas/widgets/header.dart';
+import 'package:lumotareas/screens/main_screen/menu_flotante/children/create_project/create_project_logic.dart';
+import 'package:lumotareas/widgets/header_widget.dart';
 import 'package:lumotareas/widgets/form_widget.dart';
-import './logic.dart'; // Importamos logic.dart para manejar la lógica del componente
 
 class CreateProjectScreen extends StatelessWidget {
   const CreateProjectScreen({super.key});
@@ -15,13 +15,13 @@ class CreateProjectScreen extends StatelessWidget {
             const Header(),
             Expanded(
               child: FormWidget(
-                preguntas: Logic
-                    .preguntasCrearProyecto, // Utilizamos las preguntas del Logic
+                preguntas: CreateProjectLogic
+                    .preguntasCrearProyecto, // Utilizamos las preguntas del CreateProjectLogic
                 onSubmit: (respuestas) {
                   String projectName = respuestas['Nombre del Proyecto'] ?? '';
                   String projectDescription =
                       respuestas['Descripción del Proyecto'] ?? '';
-                  Logic().logSubmit(projectName,
+                  CreateProjectLogic().logSubmit(projectName,
                       projectDescription); // Logging después del submit
                 },
               ),

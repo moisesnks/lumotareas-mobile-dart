@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lumotareas/models/user.dart';
-import 'package:lumotareas/widgets/menu_flotante.dart';
+import 'package:lumotareas/widgets/menu_flotante_widget.dart';
 import './items.dart';
 
 class MainFloatingButton extends StatelessWidget {

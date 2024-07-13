@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lumotareas/widgets/contenedor_widget.dart';
-import 'package:lumotareas/widgets/org_formulario.dart';
+import 'package:lumotareas/widgets/formulario_widget.dart';
 import 'package:lumotareas/widgets/checkbox_widget.dart';
-import 'package:lumotareas/widgets/header.dart';
+import 'package:lumotareas/widgets/header_widget.dart';
 import 'package:logger/logger.dart';
 import 'package:lumotareas/viewmodels/login_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -120,7 +120,7 @@ class RegisterFormWidgetState extends State<RegisterFormWidget> {
                         renderTitle(),
                         renderSubtitle(),
                         const SizedBox(height: 20),
-                        OrgFormulario(
+                        Formulario(
                           dayController: _dayController,
                           monthController: _monthController,
                           yearController: _yearController,

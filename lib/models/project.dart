@@ -11,7 +11,7 @@ class Project {
   final List<String> asignados;
 
   Project({
-    required this.id,
+    this.id = '',
     required this.nombre,
     required this.descripcion,
     required this.asignados,
@@ -37,6 +37,6 @@ class Project {
 
   @override
   String toString() {
-    return nombre;
+    return 'Project{id: $id, nombre: $nombre, descripcion: $descripcion, asignados: $asignados}';
   }
 }

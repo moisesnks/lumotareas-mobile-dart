@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:lumotareas/models/register_form.dart';
 import 'package:lumotareas/widgets/contenedor_widget.dart';
-import 'package:lumotareas/widgets/org_formulario.dart';
+import 'package:lumotareas/widgets/formulario_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:lumotareas/viewmodels/login_viewmodel.dart';
 import 'package:lumotareas/widgets/checkbox_widget.dart';
-import 'package:lumotareas/widgets/header.dart';
+import 'package:lumotareas/widgets/header_widget.dart';
 import 'package:logger/logger.dart';
 import 'package:lumotareas/screens/login_screen/login_screen.dart';
 import 'package:lumotareas/extensions/text_styles.dart';
@@ -181,7 +181,7 @@ class NuevaOrgScreenState extends State<NuevaOrgScreen> {
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             direction: Axis.vertical,
                             children: [
-                              OrgFormulario(
+                              Formulario(
                                 dayController: _dayController,
                                 monthController: _monthController,
                                 yearController: _yearController,

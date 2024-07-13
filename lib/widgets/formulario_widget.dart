@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'date_picker.dart';
+import 'date_picker_widget.dart';
 
-class OrgFormulario extends StatefulWidget {
+class Formulario extends StatefulWidget {
   final TextEditingController dayController;
   final TextEditingController monthController;
   final TextEditingController yearController;
 
-  const OrgFormulario({
+  const Formulario({
     super.key,
     required this.dayController,
     required this.monthController,
@@ -15,10 +15,10 @@ class OrgFormulario extends StatefulWidget {
   });
 
   @override
-  OrgFormularioState createState() => OrgFormularioState();
+  FormularioState createState() => FormularioState();
 }
 
-class OrgFormularioState extends State<OrgFormulario> {
+class FormularioState extends State<Formulario> {
   String? selectedDate;
 
   void showBirthdayDatePickerModal(BuildContext context) {

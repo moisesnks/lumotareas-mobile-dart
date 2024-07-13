@@ -4,7 +4,7 @@ import 'package:logger/logger.dart';
 import 'package:lumotareas/widgets/contenedor_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:lumotareas/viewmodels/login_viewmodel.dart';
-import 'package:lumotareas/widgets/welcome_title.dart';
+import 'package:lumotareas/widgets/welcome_widget.dart';
 import '../register_form.dart';
 
 class LoginScreen extends StatefulWidget {

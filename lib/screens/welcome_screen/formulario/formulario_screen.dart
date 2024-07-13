@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:lumotareas/models/question.dart';
 import 'package:lumotareas/screens/register_form.dart';
-import 'package:lumotareas/widgets/header.dart';
+import 'package:lumotareas/widgets/header_widget.dart';
 import 'package:lumotareas/widgets/form_widget.dart';
 import 'package:logger/logger.dart';
 
@@ -17,7 +18,9 @@ class FormularioScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<dynamic> preguntas = formulario['preguntas'];
+    List<Question> preguntas = formulario['preguntas']
+        .map<Question>((pregunta) => Question.fromMap(pregunta))
+        .toList();
     _logger.i('Se cargaron las preguntas del formulario $preguntas con éxito.');
     return Scaffold(
       body: SafeArea(

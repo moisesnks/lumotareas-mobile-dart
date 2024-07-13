@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:lumotareas/widgets/contenedor_widget.dart';
-import 'package:lumotareas/widgets/header.dart';
+import 'package:lumotareas/widgets/header_widget.dart';
 import 'package:lumotareas/models/organization.dart';
-import 'package:lumotareas/widgets/titulo_widget.dart';
 import 'widgets/descripcion_widget.dart';
 import 'widgets/miembros_widget.dart';
 import 'widgets/owner_widget.dart';
@@ -34,17 +33,23 @@ class DetalleOrgScreen extends StatelessWidget {
             direction: Axis.vertical,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Header(),
-              const SizedBox(height: 16.0),
-              const Text(
-                'Su búsqueda ha coincidido con:',
-                style: TextStyle(fontSize: 16, color: Colors.white),
-                textAlign: TextAlign.center,
+              Header(
+                isPoppable: currentUser != null ? true : false,
               ),
-              Titulo(
-                texto: organization.nombre,
-                minFontSize: 32,
-                maxFontSize: 48,
+              const SizedBox(height: 16.0),
+              Contenedor(
+                color: const Color(0xFF6466A8),
+                direction: Axis.vertical,
+                children: [
+                  Text(
+                    organization.nombre,
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
               ),
               Contenedor(
                 direction: Axis.vertical,

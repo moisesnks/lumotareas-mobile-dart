@@ -4,17 +4,18 @@ import 'package:lumotareas/services/organization_service.dart';
 import 'package:lumotareas/models/project.dart';
 import 'package:lumotareas/services/preferences_service.dart';
 import 'package:logger/logger.dart';
+import 'package:lumotareas/widgets/list_items_widget.dart';
 
-class Proyectos extends StatefulWidget {
-  const Proyectos({
+class ProyectosButton extends StatefulWidget {
+  const ProyectosButton({
     super.key,
   });
 
   @override
-  ProyectosState createState() => ProyectosState();
+  ProyectosButtonState createState() => ProyectosButtonState();
 }
 
-class ProyectosState extends State<Proyectos> {
+class ProyectosButtonState extends State<ProyectosButton> {
   final OrganizationService _organizationService = OrganizationService();
   List<Project> _proyectos = [];
   bool _isLoading = true;
@@ -23,10 +24,10 @@ class ProyectosState extends State<Proyectos> {
   @override
   void initState() {
     super.initState();
-    _cargarNombres();
+    _cargarProyectos();
   }
 
-  Future<void> _cargarNombres() async {
+  Future<void> _cargarProyectos() async {
     String? orgName = await PreferenceService.getCurrentOrganization();
     if (orgName != null) {
       final result = await _organizationService.getProjects(orgName);
@@ -70,39 +71,22 @@ class ProyectosState extends State<Proyectos> {
       showModalBottomSheet(
         context: context,
         builder: (BuildContext context) {
-          return Container(
-            color: const Color(0xFF111111),
-            child: Column(
-              children: [
-                const Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Text(
-                    'Lista de proyectos',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
+          return ListItems<Project>(
+            items: _proyectos,
+            itemBuilder: (context, project) => ListTile(
+              title: Text(
+                project.nombre,
+                style: const TextStyle(
+                  color: Colors.white,
                 ),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: _proyectos.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return ListTile(
-                        title: Text(
-                          _proyectos[index].nombre,
-                          style: const TextStyle(
-                            color: Colors.white,
-                          ),
-                        ),
-                        onTap: () =>
-                            _showProjectDetails(context, _proyectos[index]),
-                      );
-                    },
-                  ),
+              ),
+              subtitle: Text(
+                project.descripcion,
+                style: const TextStyle(
+                  color: Colors.white70,
                 ),
-              ],
+              ),
+              onTap: () => _showProjectDetails(context, project),
             ),
           );
         },

@@ -1,45 +1,49 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:lumotareas/viewmodels/login_viewmodel.dart';
 import 'package:logger/logger.dart';
+import 'package:lumotareas/models/user.dart';
+import 'package:lumotareas/viewmodels/login_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 class ProfileWidget extends StatelessWidget {
-  ProfileWidget({super.key});
+  final Usuario? user;
+  ProfileWidget({super.key, this.user});
 
   final Logger _logger = Logger();
 
   @override
   Widget build(BuildContext context) {
-    final currentUser = Provider.of<LoginViewModel>(context).currentUser;
+    final currentUser =
+        user ?? Provider.of<LoginViewModel>(context).currentUser;
     _logger.d('currentUser: $currentUser');
 
-    return currentUser == null
-        ? const SizedBox.shrink()
-        : Column(
-            children: [
-              ClipOval(
-                child: FadeInImage.assetNetwork(
-                  placeholder: 'assets/images/user-icon.png',
-                  image: currentUser.photoURL,
-                  width: 100,
-                  height: 100,
-                  fit: BoxFit.cover,
-                  imageErrorBuilder: (context, error, stackTrace) {
-                    _logger.e('Error cargando avatar: $error');
-                    return const CircleAvatar(
-                      radius: 50,
-                      backgroundImage:
-                          AssetImage('assets/images/user-icon.png'),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: 20),
-              _buildProfileInfo('Nombre', currentUser.nombre),
-              _buildProfileInfo('Correo Electrónico', currentUser.email),
-              _buildProfileInfo('Fecha de Nacimiento', currentUser.birthdate),
-            ],
-          );
+    if (currentUser == null) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      children: [
+        ClipOval(
+          child: FadeInImage.assetNetwork(
+            placeholder: 'assets/images/user-icon.png',
+            image: currentUser.photoURL,
+            width: 100,
+            height: 100,
+            fit: BoxFit.cover,
+            imageErrorBuilder: (context, error, stackTrace) {
+              _logger.e('Error cargando avatar: $error');
+              return const CircleAvatar(
+                radius: 50,
+                backgroundImage: AssetImage('assets/images/user-icon.png'),
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: 20),
+        _buildProfileInfo('Nombre', currentUser.nombre),
+        _buildProfileInfo('Correo Electrónico', currentUser.email),
+        _buildProfileInfo('Fecha de Nacimiento', currentUser.birthdate),
+      ],
+    );
   }
 
   Widget _buildProfileInfo(String label, String value) {
@@ -67,9 +71,8 @@ class ProfileWidget extends StatelessWidget {
               child: Text(
                 value,
                 style: const TextStyle(color: Colors.white),
-                overflow: TextOverflow
-                    .ellipsis, // Mostrar puntos suspensivos si el texto es demasiado largo
-                maxLines: 1, // Limitar a una línea de texto
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
             ),
           ),

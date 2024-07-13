@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:lumotareas/models/question.dart';
 import 'pregunta_page_widget.dart';
 
 class FormWidget extends StatefulWidget {
-  final List<dynamic> preguntas;
+  final List<Question> preguntas;
   final void Function(Map<String, dynamic> respuestas) onSubmit;
 
   const FormWidget({
@@ -29,8 +30,8 @@ class FormWidgetState extends State<FormWidget> {
     _respuestas = {};
     // Inicializar respuestas para cada pregunta
     for (var pregunta in widget.preguntas) {
-      var key = pregunta['enunciado'].toString();
-      _respuestas[key] = pregunta['tipo'] == 'seleccion_multiple' ? [] : '';
+      var key = pregunta.enunciado.toString();
+      _respuestas[key] = pregunta.tipo == 'seleccion_multiple' ? [] : '';
     }
   }
 
@@ -42,8 +43,8 @@ class FormWidgetState extends State<FormWidget> {
 
   bool _isCurrentQuestionAnswered() {
     var preguntaActual = widget.preguntas[_currentIndex];
-    if (preguntaActual['required'] == true) {
-      var respuesta = _respuestas[preguntaActual['enunciado'].toString()];
+    if (preguntaActual.required == true) {
+      var respuesta = _respuestas[preguntaActual.enunciado.toString()];
       if (respuesta == '' || (respuesta is List && respuesta.isEmpty)) {
         return false;
       }
@@ -54,8 +55,8 @@ class FormWidgetState extends State<FormWidget> {
   bool _allQuestionsAnswered() {
     // Verificar si todas las respuestas han sido completadas
     for (var pregunta in widget.preguntas) {
-      if (pregunta['required'] == true) {
-        var respuesta = _respuestas[pregunta['enunciado'].toString()];
+      if (pregunta.required == true) {
+        var respuesta = _respuestas[pregunta.enunciado.toString()];
         if (respuesta == '' || (respuesta is List && respuesta.isEmpty)) {
           return false;
         }
@@ -66,10 +67,10 @@ class FormWidgetState extends State<FormWidget> {
 
   void _updateRespuesta(String key, dynamic value) {
     setState(() {
-      if (widget.preguntas[_currentIndex]['tipo'] == 'seleccion_multiple') {
+      if (widget.preguntas[_currentIndex].tipo == 'seleccion_multiple') {
         _respuestas[key] =
             value; // value es List<String> para selección múltiple
-      } else if (widget.preguntas[_currentIndex]['tipo'] == 'booleano') {
+      } else if (widget.preguntas[_currentIndex].tipo == 'booleano') {
         _respuestas[key] = value; // value es bool para booleano
       } else {
         _respuestas[key] =
@@ -142,9 +143,9 @@ class FormWidgetState extends State<FormWidget> {
                     padding: const EdgeInsets.all(20.0),
                     child: PreguntaPage(
                       pregunta: pregunta,
-                      respuesta: _respuestas[pregunta['enunciado'].toString()],
+                      respuesta: _respuestas[pregunta.enunciado.toString()],
                       onChanged: (value) =>
-                          _updateRespuesta(pregunta['enunciado'], value),
+                          _updateRespuesta(pregunta.enunciado, value),
                     ),
                   );
                 },

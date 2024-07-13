@@ -1,89 +1,103 @@
 import 'package:flutter/material.dart';
+import 'package:lumotareas/screens/main_screen/main_body/home_body/screens/usuario_screen.dart';
 import 'package:lumotareas/services/user_service.dart';
 import 'package:lumotareas/models/user.dart';
+import 'package:logger/logger.dart';
 import 'package:lumotareas/widgets/icon_box_widget.dart';
+import 'package:lumotareas/widgets/list_items_widget.dart';
 
-class Miembros extends StatefulWidget {
+class MiembrosButton extends StatefulWidget {
   final List<String> miembros;
+  final String orgName;
 
-  const Miembros({
+  const MiembrosButton({
     super.key,
     required this.miembros,
+    required this.orgName,
   });
 
   @override
-  MiembrosState createState() => MiembrosState();
+  MiembrosButtonState createState() => MiembrosButtonState();
 }
 
-class MiembrosState extends State<Miembros> {
+class MiembrosButtonState extends State<MiembrosButton> {
   final UserService _userService = UserService();
-  List<String> _nombres = [];
+  final List<Usuario> _miembros = [];
+  bool _isLoading = true;
+  final Logger _logger = Logger();
 
   @override
   void initState() {
     super.initState();
-    _cargarNombres();
+    _cargarMiembros();
   }
 
-  Future<void> _cargarNombres() async {
-    List<String> nombres = await obtenerNombres();
-    if (mounted) {
-      setState(() {
-        _nombres = nombres;
-      });
-    }
-  }
-
-  Future<List<String>> obtenerNombres() async {
-    List<String> nombres = [];
-    for (String uid in widget.miembros) {
-      Usuario? user = await _userService.getUserByUid(uid);
-      if (user != null) {
-        nombres.add(user.nombre);
+  void _cargarMiembros() async {
+    for (final id in widget.miembros) {
+      Usuario? usuario = await _userService.getUserByUid(id);
+      if (usuario != null) {
+        setState(() {
+          _miembros.add(usuario);
+          _isLoading = false;
+        });
+      } else {
+        _logger.e('No se pudo cargar el usuario con el id: $id');
+        setState(() {
+          _isLoading = false;
+        });
       }
     }
-    return nombres;
   }
 
   void _showMemberList(BuildContext context) {
-    if (widget.miembros.isNotEmpty) {
+    if (_isLoading) {
+      // Mostrar un indicador de carga si los datos aún se están cargando
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Cargando proyectos, por favor espere...'),
+        ),
+      );
+    } else if (_miembros.isNotEmpty) {
       showModalBottomSheet(
         context: context,
         builder: (BuildContext context) {
-          return Container(
-            color: const Color(0xFF111111),
-            child: Column(
-              children: [
-                const Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Text(
-                    'Lista de miembros',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
+          return ListItems<Usuario>(
+            items: _miembros,
+            itemBuilder: (context, usuario) => ListTile(
+              leading: CircleAvatar(
+                backgroundImage: NetworkImage(usuario.photoURL),
+              ),
+              title: Text(
+                usuario.nombre,
+                style: const TextStyle(
+                  color: Colors.white,
                 ),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: _nombres.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return ListTile(
-                        title: Text(
-                          _nombres[index],
-                          style: const TextStyle(
-                            color: Colors.white,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+              ),
+              subtitle: Text(
+                usuario.isOwnerOfOrganization(widget.orgName)
+                    ? 'Dueño'
+                    : 'Miembro',
+                style: const TextStyle(
+                  color: Colors.white70,
                 ),
-              ],
+              ),
+              onTap: () {
+                // Lógica específica según necesites
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => UsuarioPage(usuario: usuario)),
+                );
+              },
             ),
           );
         },
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No hay miembros en esta organización.'),
+        ),
       );
     }
   }
@@ -91,9 +105,9 @@ class MiembrosState extends State<Miembros> {
   @override
   Widget build(BuildContext context) {
     return IconBox(
-      icon: Icons.group,
+      icon: Icons.people,
       label: 'Miembros',
-      count: widget.miembros.length,
+      count: _miembros.length,
       showCount: true,
       onTap: () => _showMemberList(context),
     );

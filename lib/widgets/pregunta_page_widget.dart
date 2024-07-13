@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:lumotareas/models/question.dart';
 
 class PreguntaPage extends StatelessWidget {
-  final Map<String, dynamic> pregunta;
+  final Question pregunta;
   final dynamic respuesta;
   final ValueChanged<dynamic> onChanged;
 
@@ -26,40 +27,36 @@ class PreguntaPage extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '${pregunta['enunciado'].toString()}${pregunta['required'] == true ? ' *' : ''}',
+          '${pregunta.enunciado}${pregunta.required ? ' *' : ''}',
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 20),
-        if (pregunta['tipo'] == 'seleccion_unica')
-          ...pregunta['opciones']
-              .map<Widget>((opcion) => RadioListTile(
-                    title: Text(opcion),
-                    value: opcion,
-                    groupValue: respuesta,
-                    onChanged: (value) => onChanged(value),
-                  ))
-              .toList(),
-        if (pregunta['tipo'] == 'seleccion_multiple')
-          ...pregunta['opciones']
-              .map<Widget>((opcion) => CheckboxListTile(
-                    title: Text(opcion),
-                    value: respuesta.contains(opcion),
-                    onChanged: (checked) {
-                      if (checked!) {
-                        onChanged([...respuesta, opcion]);
-                      } else {
-                        onChanged(respuesta..remove(opcion));
-                      }
-                    },
-                  ))
-              .toList(),
-        if (pregunta['tipo'] == 'desarrollo')
+        if (pregunta.tipo == 'seleccion_unica')
+          ...pregunta.opciones.map<Widget>((opcion) => RadioListTile(
+                title: Text(opcion),
+                value: opcion,
+                groupValue: respuesta,
+                onChanged: (value) => onChanged(value),
+              )),
+        if (pregunta.tipo == 'seleccion_multiple')
+          ...pregunta.opciones.map<Widget>((opcion) => CheckboxListTile(
+                title: Text(opcion),
+                value: respuesta.contains(opcion),
+                onChanged: (checked) {
+                  if (checked!) {
+                    onChanged([...respuesta, opcion]);
+                  } else {
+                    onChanged(respuesta..remove(opcion));
+                  }
+                },
+              )),
+        if (pregunta.tipo == 'desarrollo')
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextFormField(
                 maxLines: null,
-                maxLength: pregunta['max_length'] ?? 150,
+                maxLength: pregunta.maxLength ?? 150,
                 initialValue: respuesta,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
@@ -74,7 +71,7 @@ class PreguntaPage extends StatelessWidget {
               ),
             ],
           ),
-        if (pregunta['tipo'] == 'booleano')
+        if (pregunta.tipo == 'booleano')
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

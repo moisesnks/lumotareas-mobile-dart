@@ -6,7 +6,7 @@ import 'logic.dart';
 import 'package:lumotareas/widgets/box_label_widget.dart';
 import 'package:lumotareas/widgets/contenedor_widget.dart';
 import 'package:lumotareas/widgets/titulo_widget.dart';
-import 'package:lumotareas/widgets/welcome_title.dart';
+import 'package:lumotareas/widgets/welcome_widget.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});

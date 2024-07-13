@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:lumotareas/widgets/button_widget.dart';
 import 'package:lumotareas/widgets/contenedor_widget.dart';
-import 'package:lumotareas/widgets/header.dart';
+import 'package:lumotareas/widgets/header_widget.dart';
 import 'package:lumotareas/widgets/parrafo_widget.dart';
 import 'package:lumotareas/widgets/titulo_widget.dart';
 import 'package:lumotareas/widgets/box_label_widget.dart';

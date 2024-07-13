@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:lumotareas/viewmodels/login_viewmodel.dart';
 import 'package:lumotareas/services/preferences_service.dart';
-import 'package:lumotareas/widgets/header.dart';
+import 'package:lumotareas/widgets/header_widget.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});

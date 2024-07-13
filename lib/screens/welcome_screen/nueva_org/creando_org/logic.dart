@@ -1,31 +1,28 @@
 import 'package:lumotareas/models/organization.dart';
+import 'package:lumotareas/models/question.dart';
 
-List<Map<String, dynamic>> getPreguntas(String orgName) {
-  final preguntas = [
-    {
-      'titulo': 'Descripción',
-      'enunciado': 'Descripción',
-      'tipo': 'desarrollo',
-      'required': true,
-    },
-    {
-      'titulo': '¿Tiene vacantes?',
-      'enunciado': '¿Tiene vacantes?',
-      'tipo': 'booleano',
-      'required': false,
-    },
+List<Question> getPreguntas(String orgName) {
+  final List<Question> preguntas = [
+    Question(
+      enunciado: 'Descripción',
+      tipo: 'desarrollo',
+      required: true,
+    ),
+    Question(
+      enunciado: '¿Tiene vacantes?',
+      tipo: 'booleano',
+      required: false,
+    )
   ];
 
   if (orgName.isEmpty) {
     preguntas.insert(
       0,
-      {
-        'titulo': 'Nombre de la organización',
-        'enunciado': 'Nombre de la organización',
-        'tipo': 'desarrollo',
-        'required': true,
-        'max_length': 16,
-      },
+      Question(
+        enunciado: 'Nombre de la organización',
+        tipo: 'desarrollo',
+        required: true,
+      ),
     );
   }
 
