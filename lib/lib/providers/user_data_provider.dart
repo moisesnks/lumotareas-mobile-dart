@@ -3,12 +3,15 @@ import 'package:logger/logger.dart';
 import 'package:lumotareas/lib/models/user/usuario.dart';
 import 'package:lumotareas/lib/providers/auth_provider.dart';
 import 'package:lumotareas/lib/services/user_data_service.dart';
+import 'package:lumotareas/lib/services/access_service.dart';
 
 class UserDataProvider with ChangeNotifier {
   final AuthProvider _authProvider;
   final UserDataService _userDataService = UserDataService();
+
   final Logger _logger = Logger();
   Usuario? _currentUser;
+  bool _loadingHistory = false;
 
   UserDataProvider(this._authProvider) {
     _currentUser = _authProvider.currentUser;
@@ -16,6 +19,31 @@ class UserDataProvider with ChangeNotifier {
   }
 
   Usuario? get currentUser => _currentUser;
+
+  final List<Logs> _history = [];
+  List<Logs> get history => _history;
+
+  bool get loadingHistory => _loadingHistory;
+
+  Future<void> fetchHistory(String email) async {
+    if (_currentUser == null) {
+      return;
+    }
+
+    _loadingHistory = true;
+    notifyListeners();
+
+    try {
+      _history.clear();
+      _history.addAll(await AccessService.getLogs(email));
+      _logger.i('Registros de actividad obtenidos correctamente');
+    } catch (e) {
+      _logger.e('Error al obtener logs: $e');
+    } finally {
+      _loadingHistory = false;
+      notifyListeners();
+    }
+  }
 
   Future<void> updateUserData(BuildContext context, Usuario user) async {
     _logger.i('Actualizando datos del usuario: $user');

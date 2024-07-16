@@ -47,10 +47,9 @@ class AccessService {
   }
 
   // Método para obtener los registros de sesión
-  static Future<List<Map<String, dynamic>>> all(String email) async {
-    List<Map<String, dynamic>> logs = [];
+  static Future<List<Logs>> getLogs(String email) async {
+    _logger.i('Obteniendo registros de sesión');
     try {
-      _logger.d('Obteniendo registros de: $email');
       const String url = '$_baseUrl/v1/access/all';
 
       final response = await http.get(
@@ -60,13 +59,40 @@ class AccessService {
 
       _handleResponse(response);
 
-      if (response.statusCode == 200) {
-        logs = List<Map<String, dynamic>>.from(jsonDecode(response.body));
-      }
+      final List<dynamic> data = jsonDecode(response.body);
+      return data.map((e) => Logs.fromMap(e)).toList();
     } catch (error, stacktrace) {
       _logger.e(error.toString());
       _logger.e(stacktrace.toString());
+      return [];
     }
-    return logs;
+  }
+}
+
+class Logs {
+  final String email;
+  final String userAgent;
+  final String created;
+
+  Logs({
+    required this.email,
+    required this.userAgent,
+    required this.created,
+  });
+
+  factory Logs.fromMap(Map<String, dynamic> map) {
+    return Logs(
+      email: map['email'],
+      userAgent: map['userAgent'],
+      created: map['created'],
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'email': email,
+      'userAgent': userAgent,
+      'created': created,
+    };
   }
 }

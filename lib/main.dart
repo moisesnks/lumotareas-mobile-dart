@@ -3,11 +3,10 @@ import 'package:lumotareas/lib/providers/auth_provider.dart';
 import 'package:lumotareas/lib/providers/project_data_provider.dart';
 import 'package:lumotareas/lib/providers/user_data_provider.dart';
 import 'package:lumotareas/lib/providers/organization_data_provider.dart';
-import 'package:lumotareas/lib/screens/home/home_screen.dart';
+import 'package:lumotareas/lib/screens/layout/layout_screen.dart';
 import 'package:lumotareas/lib/screens/loading/loading_screen.dart';
 import 'package:lumotareas/lib/screens/login/login_screen.dart';
 import 'package:provider/provider.dart';
-import 'package:lumotareas/screens/main_screen/main_screen.dart';
 // import 'package:lumotareas/viewmodels/login_viewmodel.dart';
 
 import 'package:intl/date_symbol_data_local.dart';
@@ -83,8 +82,7 @@ class MyApp extends StatelessWidget {
         initialRoute: '/',
         routes: {
           '/': (context) => const LoginScreen(),
-          '/main': (context) => const MainScreen(),
-          '/home': (context) => HomeScreen(),
+          '/home': (context) => const LayoutScreen(),
           '/loading': (context) => const LoadingScreen(),
         },
       ),

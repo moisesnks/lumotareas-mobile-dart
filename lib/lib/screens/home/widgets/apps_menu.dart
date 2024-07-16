@@ -31,7 +31,7 @@ class AppsMenu extends StatelessWidget {
         //     currentUser: currentUser,
         //     miembros: currentOrg.miembros),
         OrgRequestsButton(solicitudes: currentOrg.solicitudes),
-        UserRequestsButton(solicitudes: currentUser.solicitudes)
+        UserRequestsButton(solicitudes: currentUser.solicitudes),
       ],
     );
   }
