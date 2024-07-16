@@ -5,17 +5,18 @@ import 'package:lumotareas/lib/screens/tarea/widgets/tarea_progress.dart';
 class TituloTask extends StatelessWidget {
   final TareaFirestore tarea;
   final Function onTap;
-  final bool isCurrentUserAssigned;
+  final String userId;
 
   const TituloTask({
     super.key,
     required this.tarea,
     required this.onTap,
-    required this.isCurrentUserAssigned,
+    required this.userId,
   });
 
   @override
   Widget build(BuildContext context) {
+    final isOwner = tarea.createdBy == userId;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Column(
@@ -42,7 +43,7 @@ class TituloTask extends StatelessWidget {
                 backgroundColor: tarea.private ? Colors.red : Colors.green,
               ),
               const SizedBox(width: 8),
-              isCurrentUserAssigned
+              isOwner
                   ? Container(
                       height: 40,
                       width: 40,

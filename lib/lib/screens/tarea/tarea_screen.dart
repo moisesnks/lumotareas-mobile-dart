@@ -130,7 +130,7 @@ class TareaScreenState extends State<TareaScreen> {
             TituloTask(
                 tarea: widget.tarea,
                 onTap: handleDeleteButton,
-                isCurrentUserAssigned: isCurrentUserAssigned),
+                userId: widget.currentUser.uid),
             Expanded(
               child: ListView.builder(
                 padding: EdgeInsets.zero,
