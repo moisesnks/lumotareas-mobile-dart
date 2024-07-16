@@ -7,6 +7,7 @@ class Solicitud {
   final Map<String, dynamic>
       solicitud; // Es un mapa de la solicitud que llegó, son las preguntas y respuestas
   final String uid; // El uid del usuario que hizo la solicitud
+  final String email; // El email del usuario que hizo la solicitud
 
   Solicitud({
     required this.id,
@@ -14,6 +15,7 @@ class Solicitud {
     required this.fecha,
     required this.solicitud,
     required this.uid,
+    required this.email,
   });
 
   factory Solicitud.fromMap(String id, Map<String, dynamic> map) {
@@ -27,6 +29,7 @@ class Solicitud {
       fecha: map['fecha'] ?? '',
       solicitud: map['solicitud'] ?? {},
       uid: map['uid'] ?? '',
+      email: map['email'] ?? '',
     );
   }
 
@@ -36,6 +39,7 @@ class Solicitud {
       'fecha': fecha,
       'solicitud': solicitud,
       'uid': uid,
+      'email': email,
     };
   }
 

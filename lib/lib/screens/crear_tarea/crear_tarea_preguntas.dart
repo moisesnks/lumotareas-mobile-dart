@@ -13,8 +13,9 @@ import 'package:provider/provider.dart';
 class CrearTareaPreguntas {
   final Usuario currentUser;
   List<Pregunta> preguntasCrearTarea = [];
-  final List<Usuario> miembros;
+  final List<Usuario> miembros; // la lista de los miembros de la organización
   final Sprint sprint;
+  final List<Usuario> asignados = [];
 
   CrearTareaPreguntas(
       {required this.sprint,
@@ -24,6 +25,14 @@ class CrearTareaPreguntas {
   }
 
   void _initPreguntasCrearSprint() {
+    // Buscar los miembros asignados en 'miembros' que son todos los miembros de la organización
+    // iterar sobre List<Usuario> miembros y filtrar los usuarios que están en miembrosIds
+    List<Usuario> asignados = miembros
+        .where(
+            (usuario) => sprint.sprintFirestore.members.contains(usuario.uid))
+        .toList();
+
+    // Inicializar las preguntas para crear una tarea
     preguntasCrearTarea = [
       Pregunta(
         enunciado: 'Nombre de la tarea',
@@ -51,7 +60,7 @@ class CrearTareaPreguntas {
         enunciado: 'Miembros asignados',
         tipo: 'seleccion_multiple',
         required: true,
-        opciones: miembros
+        opciones: asignados
             .map((usuario) => Opcion(
                   id: usuario.uid,
                   label: usuario.nombre,

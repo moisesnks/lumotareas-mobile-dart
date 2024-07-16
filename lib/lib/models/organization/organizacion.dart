@@ -1,6 +1,6 @@
 import '../user/usuario.dart';
 import '../firestore/proyecto.dart';
-import 'solicitud.dart';
+import '../firestore/solicitud.dart';
 import 'formulario.dart';
 
 class Organizacion {

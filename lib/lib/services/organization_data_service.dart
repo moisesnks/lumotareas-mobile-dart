@@ -1,5 +1,5 @@
 import 'package:lumotareas/lib/models/firestore/proyecto.dart';
-import 'package:lumotareas/lib/models/organization/solicitud.dart';
+import 'package:lumotareas/lib/models/firestore/solicitud.dart';
 import 'package:lumotareas/lib/models/response.dart';
 import 'package:lumotareas/lib/models/user/usuario.dart';
 import 'package:lumotareas/lib/services/database_service.dart';

@@ -61,9 +61,6 @@ class ProjectScreenState extends State<ProjectScreen> {
 
           Proyecto proyectoObj = projectProvider.proyecto!;
 
-          Usuario createdBy = widget.miembrosOrganizacion.firstWhere(
-              (miembro) => miembro.uid == proyectoObj.proyecto.createdBy);
-
           return SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -72,9 +69,6 @@ class ProjectScreenState extends State<ProjectScreen> {
                   title: proyectoObj.proyecto.nombre,
                   isPoppable: widget.isPoppable,
                 ),
-                Text(
-                  'Creado por ${createdBy.nombre}',
-                ),
                 Expanded(
                   child: SingleChildScrollView(
                     child: Column(
@@ -82,10 +76,14 @@ class ProjectScreenState extends State<ProjectScreen> {
                       children: [
                         ProjectTile(
                           index: 0,
-                          nombre: proyectoObj.proyecto.nombre,
-                          descripcion: proyectoObj.proyecto.descripcion,
+                          proyecto: proyectoObj.proyecto,
+                          currentUser: widget.currentUser,
+                          miembrosOrganizacion: widget.miembrosOrganizacion,
                         ),
                         MiembrosList(
+                          miembrosOrganizacion: widget.miembrosOrganizacion,
+                          userId: widget.currentUser.uid,
+                          proyecto: proyectoObj.proyecto,
                           usuariosAsignados: usuariosAsignados,
                         ),
                         SprintList(
@@ -119,6 +117,7 @@ class ProjectScreenState extends State<ProjectScreen> {
                   'label': 'Agregar sprint',
                   'icon': Icons.add,
                   'screen': CrearSprintScreen(
+                    usuariosAsignados: widget.proyecto.asignados,
                     currentUser: widget.currentUser,
                     miembros: usuariosAsignados,
                   ),

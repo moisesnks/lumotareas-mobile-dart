@@ -10,17 +10,27 @@ import 'package:provider/provider.dart';
 class CrearSprintPreguntas {
   List<Pregunta> preguntasCrearSprint = [];
   final List<Usuario> miembros;
+  final List<String> miembrosIds;
   final String currentOrg;
   final Usuario currentUser;
 
+  final miembrosAsignados = <String>[];
+
   CrearSprintPreguntas(
       {required this.currentOrg,
+      required this.miembrosIds,
       required this.miembros,
       required this.currentUser}) {
     _initPreguntasCrearSprint();
   }
 
   void _initPreguntasCrearSprint() {
+    // Buscar los miembros asignados en 'miembros' que son todos los miembros de la organización
+    // iterar sobre List<Usuario> miembros y filtrar los usuarios que están en miembrosIds
+    List<Usuario> asignados =
+        miembros.where((usuario) => miembrosIds.contains(usuario.uid)).toList();
+
+    // Inicializar las preguntas para crear un sprint
     preguntasCrearSprint = [
       Pregunta(
         enunciado: 'Nombre del sprint',
@@ -48,7 +58,7 @@ class CrearSprintPreguntas {
         enunciado: 'Miembros asignados',
         tipo: 'seleccion_multiple',
         required: true,
-        opciones: miembros
+        opciones: asignados
             .map((usuario) => Opcion(
                   id: usuario.uid,
                   label: usuario.nombre,

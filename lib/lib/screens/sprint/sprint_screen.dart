@@ -6,6 +6,7 @@ import 'package:lumotareas/lib/models/sprint/sprint.dart';
 import 'package:lumotareas/lib/models/user/usuario.dart';
 import 'package:lumotareas/lib/providers/project_data_provider.dart';
 import 'package:lumotareas/lib/screens/crear_tarea/crear_tarea_screen.dart';
+import 'package:lumotareas/lib/screens/proyecto/widgets/miembros_list.dart';
 import 'package:lumotareas/lib/screens/proyecto/widgets/sprint_tile.dart';
 import 'package:lumotareas/lib/screens/sprint/widgets/tareas_list.dart';
 import 'package:lumotareas/lib/widgets/floating_menu.dart';
@@ -51,6 +52,10 @@ class SprintScreen extends StatelessWidget {
     });
     Utils.formatTimestamp(sprint.sprintFirestore.startDate);
     Utils.formatTimestamp(sprint.sprintFirestore.endDate);
+
+    final List<Usuario> usuariosAsignados = miembros.where((miembro) {
+      return sprint.sprintFirestore.members.contains(miembro.uid);
+    }).toList();
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -60,16 +65,29 @@ class SprintScreen extends StatelessWidget {
               title: sprint.sprintFirestore.name,
               isPoppable: true,
             ),
-            SprintTile(
-              index: 1,
-              sprint: sprint,
-              onTap: () {
-                Logger().i('SprintTile tapped');
-              },
-            ),
-            TareasList(
-              tareas: sprint.tareas,
-              currentUser: currentUser,
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    SprintTile(
+                      index: 1,
+                      sprint: sprint,
+                      onTap: () {
+                        Logger().i('SprintTile tapped');
+                      },
+                    ),
+                    MiembrosList(
+                        miembrosOrganizacion: miembros,
+                        userId: currentUser.uid,
+                        proyecto: proyectoObj.proyecto,
+                        usuariosAsignados: usuariosAsignados),
+                    TareasList(
+                      tareas: sprint.tareas,
+                      currentUser: currentUser,
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),

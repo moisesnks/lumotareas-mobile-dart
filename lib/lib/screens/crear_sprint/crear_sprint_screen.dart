@@ -7,11 +7,13 @@ import 'package:lumotareas/lib/widgets/form_widget.dart';
 class CrearSprintScreen extends StatefulWidget {
   final List<Usuario> miembros;
   final Usuario currentUser;
+  final List<String> usuariosAsignados;
 
   const CrearSprintScreen({
     super.key,
     required this.currentUser,
     required this.miembros,
+    required this.usuariosAsignados,
   });
 
   @override
@@ -25,6 +27,7 @@ class CrearSprintScreenState extends State<CrearSprintScreen> {
   void initState() {
     super.initState();
     crearSprintPreguntas = CrearSprintPreguntas(
+        miembrosIds: widget.usuariosAsignados,
         currentOrg: widget.currentUser.currentOrg,
         miembros: widget.miembros,
         currentUser: widget.currentUser);
