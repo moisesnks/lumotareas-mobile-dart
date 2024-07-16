@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:lumotareas/lib/models/firestore/sprint.dart';
 import 'package:lumotareas/lib/models/firestore/tareas.dart';
-import 'package:lumotareas/lib/models/organization/proyectos.dart';
+import 'package:lumotareas/lib/models/firestore/proyecto.dart';
 import 'package:lumotareas/lib/models/proyecto/proyecto.dart';
 import 'package:lumotareas/lib/models/response.dart';
+import 'package:lumotareas/lib/models/user/usuario.dart';
 import 'package:lumotareas/lib/services/project_data_service.dart';
 
 class ProjectDataProvider extends ChangeNotifier {
@@ -38,12 +39,13 @@ class ProjectDataProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> addTarea(SprintFirestore sprint, TareaFirestore tarea) async {
+  Future<void> addTarea(
+      SprintFirestore sprint, TareaFirestore tarea, Usuario currentUser) async {
     if (_proyecto == null) {
       return;
     } else {
       Response<Proyecto> response = await _projectDataService.addTarea(
-          _proyecto!.proyecto, sprint, tarea);
+          _proyecto!.proyecto, sprint, tarea, currentUser.uid);
       if (response.success) {
         _proyecto = response.data;
         notifyListeners();
@@ -51,7 +53,8 @@ class ProjectDataProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> deleteTarea(BuildContext context, TareaFirestore tarea) async {
+  Future<void> deleteTarea(
+      BuildContext context, TareaFirestore tarea, Usuario currentUser) async {
     if (_proyecto == null) {
       return;
     } else {
@@ -68,7 +71,7 @@ class ProjectDataProvider extends ChangeNotifier {
       }
       Navigator.pushNamed(context, '/loading', arguments: 'Eliminando tarea');
       Response<Proyecto> response = await _projectDataService.removeTarea(
-          _proyecto!.proyecto, sprint, tarea);
+          _proyecto!.proyecto, sprint, tarea, currentUser.uid);
       if (response.success) {
         _proyecto = response.data;
         if (context.mounted) {

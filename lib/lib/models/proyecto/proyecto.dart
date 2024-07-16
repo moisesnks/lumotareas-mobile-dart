@@ -1,5 +1,5 @@
 import '../sprint/sprint.dart';
-import '../organization/proyectos.dart';
+import '../firestore/proyecto.dart';
 
 class Proyecto {
   ProyectoFirestore proyecto;

@@ -5,11 +5,13 @@ import 'package:lumotareas/lib/screens/tarea/widgets/tarea_progress.dart';
 class TituloTask extends StatelessWidget {
   final TareaFirestore tarea;
   final Function onTap;
+  final bool isCurrentUserAssigned;
 
   const TituloTask({
     super.key,
     required this.tarea,
     required this.onTap,
+    required this.isCurrentUserAssigned,
   });
 
   @override
@@ -40,22 +42,24 @@ class TituloTask extends StatelessWidget {
                 backgroundColor: tarea.private ? Colors.red : Colors.green,
               ),
               const SizedBox(width: 8),
-              Container(
-                height: 40,
-                width: 40,
-                decoration: const BoxDecoration(
-                  color: Colors.red,
-                  shape: BoxShape.rectangle,
-                  borderRadius: BorderRadius.all(Radius.circular(8)),
-                ),
-                padding: const EdgeInsets.all(4),
-                child: GestureDetector(
-                  onTap: () {
-                    onTap();
-                  },
-                  child: const Icon(Icons.delete),
-                ),
-              ),
+              isCurrentUserAssigned
+                  ? Container(
+                      height: 40,
+                      width: 40,
+                      decoration: const BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.rectangle,
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                      ),
+                      padding: const EdgeInsets.all(4),
+                      child: GestureDetector(
+                        onTap: () {
+                          onTap();
+                        },
+                        child: const Icon(Icons.delete),
+                      ),
+                    )
+                  : const SizedBox(width: 0),
             ],
           ),
           const SizedBox(height: 8),

@@ -1,5 +1,5 @@
 import '../user/usuario.dart';
-import './proyectos.dart';
+import '../firestore/proyecto.dart';
 import 'solicitud.dart';
 import 'formulario.dart';
 

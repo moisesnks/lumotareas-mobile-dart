@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lumotareas/lib/models/organization/proyectos.dart';
+import 'package:lumotareas/lib/models/firestore/proyecto.dart';
 import 'package:lumotareas/lib/screens/proyecto/widgets/sprint_list.dart';
 import 'package:provider/provider.dart';
 import 'package:lumotareas/lib/providers/project_data_provider.dart';
@@ -14,14 +14,14 @@ import 'package:lumotareas/lib/models/user/usuario.dart';
 
 class ProjectScreen extends StatefulWidget {
   final ProyectoFirestore proyecto;
-  final List<Usuario> usuariosAsignados;
+  final List<Usuario> miembrosOrganizacion;
   final bool isPoppable;
   final Usuario currentUser;
 
   const ProjectScreen({
     super.key,
     required this.proyecto,
-    required this.usuariosAsignados,
+    required this.miembrosOrganizacion,
     required this.currentUser,
     this.isPoppable = true,
   });
@@ -31,6 +31,7 @@ class ProjectScreen extends StatefulWidget {
 }
 
 class ProjectScreenState extends State<ProjectScreen> {
+  late List<Usuario> usuariosAsignados;
   @override
   void initState() {
     super.initState();
@@ -39,6 +40,12 @@ class ProjectScreenState extends State<ProjectScreen> {
       Provider.of<ProjectDataProvider>(context, listen: false)
           .loadProyecto(widget.proyecto);
     });
+
+    // Inicializar la lista de usuarios asignados
+    usuariosAsignados = widget.proyecto.asignados
+        .map((usuario) => widget.miembrosOrganizacion
+            .firstWhere((miembro) => miembro.uid == usuario))
+        .toList();
   }
 
   @override
@@ -54,6 +61,9 @@ class ProjectScreenState extends State<ProjectScreen> {
 
           Proyecto proyectoObj = projectProvider.proyecto!;
 
+          Usuario createdBy = widget.miembrosOrganizacion.firstWhere(
+              (miembro) => miembro.uid == proyectoObj.proyecto.createdBy);
+
           return SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,6 +71,9 @@ class ProjectScreenState extends State<ProjectScreen> {
                 Header(
                   title: proyectoObj.proyecto.nombre,
                   isPoppable: widget.isPoppable,
+                ),
+                Text(
+                  'Creado por ${createdBy.nombre}',
                 ),
                 Expanded(
                   child: SingleChildScrollView(
@@ -73,7 +86,7 @@ class ProjectScreenState extends State<ProjectScreen> {
                           descripcion: proyectoObj.proyecto.descripcion,
                         ),
                         MiembrosList(
-                          usuariosAsignados: widget.usuariosAsignados,
+                          usuariosAsignados: usuariosAsignados,
                         ),
                         SprintList(
                           sprints: proyectoObj.sprints,
@@ -83,7 +96,7 @@ class ProjectScreenState extends State<ProjectScreen> {
                                 builder: (context) => SprintScreen(
                                   sprintId: sprint.sprintFirestore.id,
                                   currentUser: widget.currentUser,
-                                  miembros: widget.usuariosAsignados,
+                                  miembros: usuariosAsignados,
                                 ),
                               ),
                             );
@@ -98,19 +111,21 @@ class ProjectScreenState extends State<ProjectScreen> {
           );
         },
       ),
-      floatingActionButton: MenuFlotante(
-        mainIcon: Icons.menu,
-        items: [
-          {
-            'label': 'Agregar sprint',
-            'icon': Icons.add,
-            'screen': CrearSprintScreen(
-              currentUser: widget.currentUser,
-              miembros: widget.usuariosAsignados,
-            ),
-          },
-        ],
-      ),
+      floatingActionButton: widget.currentUser.uid == widget.proyecto.createdBy
+          ? MenuFlotante(
+              mainIcon: Icons.menu,
+              items: [
+                {
+                  'label': 'Agregar sprint',
+                  'icon': Icons.add,
+                  'screen': CrearSprintScreen(
+                    currentUser: widget.currentUser,
+                    miembros: usuariosAsignados,
+                  ),
+                },
+              ],
+            )
+          : null,
     );
   }
 }

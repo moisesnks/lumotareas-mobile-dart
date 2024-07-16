@@ -5,7 +5,7 @@ import 'package:lumotareas/lib/models/user/usuario.dart';
 import 'package:lumotareas/lib/providers/project_data_provider.dart';
 import 'package:lumotareas/lib/screens/tarea/widgets/subtarea_checkbox.dart';
 import 'package:lumotareas/lib/screens/tarea/widgets/subtarea_submit_dialog.dart';
-import 'package:lumotareas/lib/screens/tarea/widgets/titulo_task.dart';
+import 'package:lumotareas/lib/screens/tarea/widgets/tarea_titulo.dart';
 import 'package:lumotareas/lib/widgets/secondary_header.dart';
 import 'package:provider/provider.dart';
 
@@ -68,6 +68,7 @@ class TareaScreenState extends State<TareaScreen> {
 
     // Crear una copia de la tarea actual y agregar el comentario
     TareaFirestore updatedTarea = TareaFirestore(
+      createdBy: widget.currentUser.uid,
       id: widget.tarea.id,
       name: widget.tarea.name,
       description: widget.tarea.description,
@@ -107,7 +108,7 @@ class TareaScreenState extends State<TareaScreen> {
           TextButton(
             onPressed: () {
               Provider.of<ProjectDataProvider>(context, listen: false)
-                  .deleteTarea(context, widget.tarea);
+                  .deleteTarea(context, widget.tarea, widget.currentUser);
             },
             child: const Text('Eliminar'),
           ),
@@ -126,7 +127,10 @@ class TareaScreenState extends State<TareaScreen> {
         child: Column(
           children: [
             const Header(title: 'Detalles de la tarea', isPoppable: true),
-            TituloTask(tarea: widget.tarea, onTap: handleDeleteButton),
+            TituloTask(
+                tarea: widget.tarea,
+                onTap: handleDeleteButton,
+                isCurrentUserAssigned: isCurrentUserAssigned),
             Expanded(
               child: ListView.builder(
                 padding: EdgeInsets.zero,
@@ -232,6 +236,7 @@ class TareaScreenState extends State<TareaScreen> {
     }).toList();
 
     TareaFirestore updatedTarea = TareaFirestore(
+      createdBy: widget.currentUser.uid,
       id: widget.tarea.id,
       name: widget.tarea.name,
       description: widget.tarea.description,

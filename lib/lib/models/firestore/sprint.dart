@@ -9,6 +9,7 @@ class SprintFirestore {
   final String projectId;
   final List<String> tasks;
   final List<String> members;
+  final String createdBy;
 
   SprintFirestore({
     required this.id,
@@ -19,6 +20,7 @@ class SprintFirestore {
     required this.projectId,
     required this.tasks,
     required this.members,
+    required this.createdBy,
   });
 
   factory SprintFirestore.fromMap(Map<String, dynamic> map) {
@@ -37,6 +39,7 @@ class SprintFirestore {
               ?.map((member) => member.toString())
               .toList() ??
           [],
+      createdBy: map['createdBy'] ?? '',
     );
   }
 
@@ -50,6 +53,7 @@ class SprintFirestore {
       'projectId': projectId,
       'tasks': tasks,
       'members': members,
+      'createdBy': createdBy,
     };
   }
 
@@ -69,6 +73,7 @@ class SprintFirestore {
       projectId: '',
       tasks: [],
       members: [],
+      createdBy: '',
     );
   }
 
@@ -82,6 +87,7 @@ class SprintFirestore {
       projectId: '',
       tasks: [],
       members: [],
+      createdBy: '',
     );
   }
 }

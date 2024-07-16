@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lumotareas/lib/models/organization/organizacion.dart';
 import 'package:lumotareas/lib/models/user/usuario.dart';
-import 'package:lumotareas/lib/screens/home/widgets/app_projects_user.dart';
+// import 'package:lumotareas/lib/screens/home/widgets/app_projects_user.dart';
 import 'package:lumotareas/lib/screens/home/widgets/app_requests_user.dart';
 import 'package:lumotareas/lib/widgets/flexible_wrap.dart';
 import 'app_members.dart';
@@ -26,8 +26,10 @@ class AppsMenu extends StatelessWidget {
             currentUser: currentUser,
             proyectos: currentOrg.proyectos,
             miembros: currentOrg.miembros),
-        ProjectsUserButton(
-            proyectos: currentOrg.proyectos, currentUser: currentUser),
+        // ProjectsUserButton(
+        //     proyectos: currentOrg.proyectos,
+        //     currentUser: currentUser,
+        //     miembros: currentOrg.miembros),
         OrgRequestsButton(solicitudes: currentOrg.solicitudes),
         UserRequestsButton(solicitudes: currentUser.solicitudes)
       ],

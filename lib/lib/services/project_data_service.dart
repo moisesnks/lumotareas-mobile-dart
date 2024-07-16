@@ -1,6 +1,6 @@
 import 'package:lumotareas/lib/models/firestore/sprint.dart';
 import 'package:lumotareas/lib/models/firestore/tareas.dart';
-import 'package:lumotareas/lib/models/organization/proyectos.dart';
+import 'package:lumotareas/lib/models/firestore/proyecto.dart';
 import 'package:lumotareas/lib/models/proyecto/proyecto.dart';
 import 'package:lumotareas/lib/models/response.dart';
 import 'package:lumotareas/lib/models/sprint/sprint.dart';
@@ -16,6 +16,7 @@ class ProjectDataService {
     try {
       String sprintId = sprint.id;
       ProyectoFirestore withoutSprint = ProyectoFirestore(
+        createdBy: proyecto.createdBy,
         id: proyecto.id,
         nombre: proyecto.nombre,
         orgName: proyecto.orgName,
@@ -80,6 +81,7 @@ class ProjectDataService {
           // Actualizar el proyectoFirestore
           // Crear un nuevo proyectoFirestore con el sprint agregado
           ProyectoFirestore proyectoFirestore = ProyectoFirestore(
+            createdBy: proyecto.createdBy,
             id: proyecto.id,
             nombre: proyecto.nombre,
             orgName: proyecto.orgName,
@@ -172,7 +174,7 @@ class ProjectDataService {
   }
 
   Future<Response<Proyecto>> removeTarea(ProyectoFirestore proyecto,
-      SprintFirestore sprint, TareaFirestore tarea) async {
+      SprintFirestore sprint, TareaFirestore tarea, String userId) async {
     try {
       // Eliminar la tarea
       Response response = await _databaseService.deleteDocument(
@@ -189,6 +191,7 @@ class ProjectDataService {
 
       // Crear un SprintFirestore con la tarea eliminada
       SprintFirestore sprintFirestore = SprintFirestore(
+        createdBy: userId,
         id: sprint.id,
         name: sprint.name,
         description: sprint.description,
@@ -244,7 +247,7 @@ class ProjectDataService {
   }
 
   Future<Response<Proyecto>> addTarea(ProyectoFirestore proyecto,
-      SprintFirestore sprint, TareaFirestore tarea) async {
+      SprintFirestore sprint, TareaFirestore tarea, String userId) async {
     try {
       Response response = await _databaseService.addDocument(
         'organizaciones/${proyecto.orgName}/proyectos/${proyecto.id}/sprints/${tarea.sprintId}/tareas',
@@ -255,6 +258,7 @@ class ProjectDataService {
         _logger.i('Tarea agregada correctamente');
         // Crear un SprintFirestore con la tarea agregada
         SprintFirestore sprintFirestore = SprintFirestore(
+          createdBy: userId,
           id: sprint.id,
           name: sprint.name,
           description: sprint.description,

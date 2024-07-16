@@ -1,4 +1,4 @@
-import 'package:lumotareas/lib/models/organization/proyectos.dart';
+import 'package:lumotareas/lib/models/firestore/proyecto.dart';
 import 'package:lumotareas/lib/models/organization/solicitud.dart';
 import 'package:lumotareas/lib/models/response.dart';
 import 'package:lumotareas/lib/models/user/usuario.dart';

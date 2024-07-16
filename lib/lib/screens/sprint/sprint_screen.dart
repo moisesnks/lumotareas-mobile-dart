@@ -80,7 +80,8 @@ class SprintScreen extends StatelessWidget {
           {
             'label': 'Agregar tarea',
             'icon': Icons.add,
-            'screen': CrearTareaScreen(miembros: miembros, sprint: sprint),
+            'screen': CrearTareaScreen(
+                currentUser: currentUser, miembros: miembros, sprint: sprint),
           },
           {
             'label': 'Borrar sprint',

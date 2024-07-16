@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lumotareas/lib/models/organization/proyectos.dart';
+import 'package:lumotareas/lib/models/firestore/proyecto.dart';
 import 'package:lumotareas/lib/models/user/usuario.dart';
 import 'package:lumotareas/lib/screens/proyecto/proyecto_screen.dart';
 import 'package:lumotareas/lib/widgets/icon_box.dart';
@@ -39,19 +39,13 @@ class ProjectsOrgButton extends StatelessWidget {
               title: Text(proyecto.nombre),
               subtitle: Text(proyecto.descripcion),
               onTap: () {
-                final List<Usuario> usuariosAsignados = proyecto.asignados
-                    .map((id) => miembros.firstWhere(
-                        (miembro) => miembro.uid == id,
-                        orElse: () => Usuario.empty()))
-                    .toList();
-
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => ProjectScreen(
                       currentUser: currentUser,
                       proyecto: proyecto,
-                      usuariosAsignados: usuariosAsignados,
+                      miembrosOrganizacion: miembros,
                     ),
                   ),
                 );

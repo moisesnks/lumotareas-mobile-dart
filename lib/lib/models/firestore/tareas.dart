@@ -153,6 +153,8 @@ class TareaFirestore {
   List<Logs> logs = [];
   final String sprintId;
   final String projectId;
+  final String createdBy;
+  final bool visible = false;
 
   TareaFirestore({
     required this.id,
@@ -167,6 +169,8 @@ class TareaFirestore {
     bool private = false,
     required this.sprintId,
     required this.projectId,
+    required this.createdBy,
+    bool visible = false,
   });
 
   factory TareaFirestore.fromMap(String id, Map<String, dynamic> map) {
@@ -195,6 +199,8 @@ class TareaFirestore {
       private: map['private'] ?? false,
       sprintId: map['sprintId'] ?? '',
       projectId: map['projectId'] ?? '',
+      createdBy: map['createdBy'] ?? '',
+      visible: map['visible'] ?? false,
     );
   }
 
@@ -212,6 +218,8 @@ class TareaFirestore {
       'private': private,
       'sprintId': sprintId,
       'projectId': projectId,
+      'createdBy': createdBy,
+      'visible': visible,
     };
   }
 

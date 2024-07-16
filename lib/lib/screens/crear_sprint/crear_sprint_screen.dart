@@ -25,7 +25,9 @@ class CrearSprintScreenState extends State<CrearSprintScreen> {
   void initState() {
     super.initState();
     crearSprintPreguntas = CrearSprintPreguntas(
-        currentOrg: widget.currentUser.currentOrg, miembros: widget.miembros);
+        currentOrg: widget.currentUser.currentOrg,
+        miembros: widget.miembros,
+        currentUser: widget.currentUser);
   }
 
   @override

@@ -11,11 +11,15 @@ import 'package:lumotareas/lib/providers/project_data_provider.dart';
 import 'package:provider/provider.dart';
 
 class CrearTareaPreguntas {
+  final Usuario currentUser;
   List<Pregunta> preguntasCrearTarea = [];
   final List<Usuario> miembros;
   final Sprint sprint;
 
-  CrearTareaPreguntas({required this.sprint, required this.miembros}) {
+  CrearTareaPreguntas(
+      {required this.sprint,
+      required this.miembros,
+      required this.currentUser}) {
     _initPreguntasCrearSprint();
   }
 
@@ -66,7 +70,7 @@ class CrearTareaPreguntas {
     Navigator.pushNamed(context, '/loading', arguments: 'Creando tarea...');
 
     await Provider.of<ProjectDataProvider>(context, listen: false)
-        .addTarea(sprint.sprintFirestore, tarea);
+        .addTarea(sprint.sprintFirestore, tarea, currentUser);
 
     if (context.mounted) {
       Navigator.pop(context);
@@ -99,6 +103,7 @@ class CrearTareaPreguntas {
     }
 
     TareaFirestore tarea = TareaFirestore(
+      createdBy: currentUser.uid,
       id: DateTime.now().millisecondsSinceEpoch.toString().replaceAllMapped(
           RegExp(r'.'),
           (match) =>

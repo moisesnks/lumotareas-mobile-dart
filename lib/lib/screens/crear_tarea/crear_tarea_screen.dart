@@ -6,6 +6,7 @@ import 'package:lumotareas/lib/widgets/form_widget.dart';
 import 'package:lumotareas/lib/widgets/secondary_header.dart';
 
 class CrearTareaScreen extends StatefulWidget {
+  final Usuario currentUser;
   final List<Usuario> miembros;
   final Sprint sprint;
 
@@ -13,6 +14,7 @@ class CrearTareaScreen extends StatefulWidget {
     super.key,
     required this.miembros,
     required this.sprint,
+    required this.currentUser,
   });
 
   @override
@@ -26,6 +28,7 @@ class CrearTareaScreenState extends State<CrearTareaScreen> {
   void initState() {
     super.initState();
     crearTareaPreguntas = CrearTareaPreguntas(
+      currentUser: widget.currentUser,
       sprint: widget.sprint,
       miembros: widget.miembros,
     );

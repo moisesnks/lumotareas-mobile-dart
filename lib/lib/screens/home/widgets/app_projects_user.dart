@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lumotareas/lib/models/organization/proyectos.dart';
+import 'package:lumotareas/lib/models/firestore/proyecto.dart';
 import 'package:lumotareas/lib/models/user/usuario.dart';
 import 'package:lumotareas/lib/screens/proyecto/proyecto_screen.dart';
 import 'package:lumotareas/lib/widgets/icon_box.dart';
@@ -7,12 +7,14 @@ import 'package:lumotareas/lib/widgets/styled_list_tile.dart';
 
 class ProjectsUserButton extends StatelessWidget {
   final List<ProyectoFirestore> proyectos;
-  final Usuario currentUser; // Usuario actual
+  final Usuario currentUser;
+  final List<Usuario> miembrosOrganizacion;
 
   const ProjectsUserButton({
     super.key,
     required this.proyectos,
     required this.currentUser,
+    required this.miembrosOrganizacion,
   });
 
   void showProjectsList(BuildContext context) {
@@ -47,9 +49,7 @@ class ProjectsUserButton extends StatelessWidget {
                       builder: (context) => ProjectScreen(
                         currentUser: currentUser,
                         proyecto: proyecto,
-                        usuariosAsignados: [
-                          currentUser
-                        ], // Solo el usuario actual
+                        miembrosOrganizacion: miembrosOrganizacion,
                       ),
                     ),
                   );

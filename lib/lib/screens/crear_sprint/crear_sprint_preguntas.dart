@@ -11,8 +11,12 @@ class CrearSprintPreguntas {
   List<Pregunta> preguntasCrearSprint = [];
   final List<Usuario> miembros;
   final String currentOrg;
+  final Usuario currentUser;
 
-  CrearSprintPreguntas({required this.currentOrg, required this.miembros}) {
+  CrearSprintPreguntas(
+      {required this.currentOrg,
+      required this.miembros,
+      required this.currentUser}) {
     _initPreguntasCrearSprint();
   }
 
@@ -75,6 +79,7 @@ class CrearSprintPreguntas {
     Logger().i('Respuestas: $respuestas');
     // Convertir las respuestas a un objeto Sprint
     SprintFirestore sprint = SprintFirestore(
+      createdBy: currentUser.uid,
       id: respuestas['Nombre del sprint'],
       name: respuestas['Nombre del sprint'],
       description: respuestas['Descripción del sprint'],

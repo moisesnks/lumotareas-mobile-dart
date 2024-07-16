@@ -5,6 +5,7 @@ class ProyectoFirestore {
   final List<String> asignados;
   final List<String> sprints;
   final String orgName;
+  final String createdBy;
 
   ProyectoFirestore({
     required this.id,
@@ -13,6 +14,7 @@ class ProyectoFirestore {
     required this.asignados,
     required this.sprints,
     required this.orgName,
+    required this.createdBy,
   });
 
   factory ProyectoFirestore.fromMap(String id, Map<String, dynamic> map) {
@@ -29,6 +31,7 @@ class ProyectoFirestore {
               .toList() ??
           [],
       orgName: map['orgName'] ?? '',
+      createdBy: map['createdBy'] ?? '',
     );
   }
 
@@ -39,6 +42,7 @@ class ProyectoFirestore {
       'asignados': asignados,
       'sprints': sprints,
       'orgName': orgName,
+      'createdBy': createdBy,
     };
   }
 
