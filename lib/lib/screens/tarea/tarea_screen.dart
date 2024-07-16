@@ -5,7 +5,6 @@ import 'package:lumotareas/lib/models/user/usuario.dart';
 import 'package:lumotareas/lib/providers/project_data_provider.dart';
 import 'package:lumotareas/lib/screens/tarea/widgets/subtarea_checkbox.dart';
 import 'package:lumotareas/lib/screens/tarea/widgets/subtarea_submit_dialog.dart';
-import 'package:lumotareas/lib/screens/tarea/widgets/tarea_progress.dart';
 import 'package:lumotareas/lib/screens/tarea/widgets/titulo_task.dart';
 import 'package:lumotareas/lib/widgets/secondary_header.dart';
 import 'package:provider/provider.dart';
@@ -92,6 +91,31 @@ class TareaScreenState extends State<TareaScreen> {
     });
   }
 
+  void handleDeleteButton() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Eliminar tarea'),
+        content: const Text('¿Estás seguro de que deseas eliminar esta tarea?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () {
+              Provider.of<ProjectDataProvider>(context, listen: false)
+                  .deleteTarea(context, widget.tarea);
+            },
+            child: const Text('Eliminar'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     bool isCurrentUserAssigned =
@@ -102,7 +126,7 @@ class TareaScreenState extends State<TareaScreen> {
         child: Column(
           children: [
             const Header(title: 'Detalles de la tarea', isPoppable: true),
-            TituloTask(tarea: widget.tarea),
+            TituloTask(tarea: widget.tarea, onTap: handleDeleteButton),
             Expanded(
               child: ListView.builder(
                 padding: EdgeInsets.zero,
@@ -123,7 +147,6 @@ class TareaScreenState extends State<TareaScreen> {
                 ),
               ),
             ),
-            TaskProgress(tarea: widget.tarea),
             ComentariosContainer(
               comentarios: _comentariosSorted,
               currentUser: widget.currentUser,

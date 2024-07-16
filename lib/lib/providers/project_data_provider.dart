@@ -51,6 +51,36 @@ class ProjectDataProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> deleteTarea(BuildContext context, TareaFirestore tarea) async {
+    if (_proyecto == null) {
+      return;
+    } else {
+      final String sprintId = tarea.sprintId;
+      SprintFirestore? sprint;
+      for (var s in _proyecto!.sprints) {
+        if (s.sprintFirestore.id == sprintId) {
+          sprint = s.sprintFirestore;
+          break;
+        }
+      }
+      if (sprint == null) {
+        return;
+      }
+      Navigator.pushNamed(context, '/loading', arguments: 'Eliminando tarea');
+      Response<Proyecto> response = await _projectDataService.removeTarea(
+          _proyecto!.proyecto, sprint, tarea);
+      if (response.success) {
+        _proyecto = response.data;
+        if (context.mounted) {
+          Navigator.pop(context);
+          Navigator.pop(context);
+          Navigator.pop(context);
+        }
+        notifyListeners();
+      }
+    }
+  }
+
   Future<void> deleteSprint(
       BuildContext context, SprintFirestore sprint) async {
     if (_proyecto == null) {

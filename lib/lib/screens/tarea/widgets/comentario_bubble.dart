@@ -20,7 +20,7 @@ class ComentarioBubble extends StatelessWidget {
     return Align(
       alignment: isCurrentUser ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 4.0),
+        margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 16),
         padding: const EdgeInsets.all(8.0),
         decoration: BoxDecoration(
           color: isCurrentUser ? Colors.blue : Colors.green[800],
@@ -42,15 +42,20 @@ class ComentarioBubble extends StatelessWidget {
                       const SizedBox(width: 8),
                       Row(
                         children: [
-                          Text(
-                            comentario.user.nombre,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          Container(
+                            constraints: const BoxConstraints(maxWidth: 200),
+                            child: Text(
+                              comentario.user.nombre,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold),
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                           const SizedBox(width: 8),
                           CircleAvatar(
                             backgroundImage:
                                 NetworkImage(comentario.user.photoUrl),
-                            radius: 12,
+                            radius: 10,
                           ),
                         ],
                       ),
@@ -64,9 +69,13 @@ class ComentarioBubble extends StatelessWidget {
                             radius: 12,
                           ),
                           const SizedBox(width: 8),
-                          Text(
-                            comentario.user.nombre,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          Container(
+                            constraints: const BoxConstraints(maxWidth: 200),
+                            child: Text(
+                              comentario.user.nombre,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold),
+                            ),
                           ),
                         ],
                       ),
@@ -74,7 +83,7 @@ class ComentarioBubble extends StatelessWidget {
                       Text(
                         '${Utils.formatTimestamp(comentario.fecha)}  ${Utils.formatTime(comentario.fecha)}',
                         style: const TextStyle(
-                            fontSize: 12, color: Colors.black54),
+                            fontSize: 10, color: Colors.black54),
                       ),
                     ],
             ),

@@ -35,8 +35,7 @@ class SprintTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SizedBox(
-                  width: 250,
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -58,6 +57,7 @@ class SprintTile extends StatelessWidget {
                     ],
                   ),
                 ),
+                const SizedBox(width: 8),
                 SprintProgress(sprint: sprint),
               ],
             ),
@@ -163,14 +163,9 @@ class SprintTile extends StatelessWidget {
         icon = Icons.check_circle;
         color = Colors.green;
         break;
-      case 'Pendiente':
-        icon = Icons.pending_actions;
-        color = Colors.blue;
-        break;
       default:
         icon = Icons.error;
         color = Colors.red;
-        break;
     }
 
     return Icon(icon, color: color);

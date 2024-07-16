@@ -79,6 +79,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Lumotareas',
         darkTheme: darkTheme,
+        themeMode: ThemeMode.dark,
         initialRoute: '/',
         routes: {
           '/': (context) => const LoginScreen(),

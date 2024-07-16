@@ -171,6 +171,78 @@ class ProjectDataService {
     }
   }
 
+  Future<Response<Proyecto>> removeTarea(ProyectoFirestore proyecto,
+      SprintFirestore sprint, TareaFirestore tarea) async {
+    try {
+      // Eliminar la tarea
+      Response response = await _databaseService.deleteDocument(
+        'organizaciones/${proyecto.orgName}/proyectos/${proyecto.id}/sprints/${sprint.id}/tareas',
+        tarea.id,
+      );
+      if (!response.success) {
+        _logger.w('Error al eliminar tarea: ${response.message}');
+        return Response(
+          success: false,
+          message: response.message,
+        );
+      }
+
+      // Crear un SprintFirestore con la tarea eliminada
+      SprintFirestore sprintFirestore = SprintFirestore(
+        id: sprint.id,
+        name: sprint.name,
+        description: sprint.description,
+        tasks: sprint.tasks..remove(tarea.id),
+        projectId: sprint.projectId,
+        startDate: sprint.startDate,
+        endDate: sprint.endDate,
+        members: sprint.members,
+      );
+
+      // Actualizar el sprint en el proyecto
+      Response sprintResponse = await _databaseService.updateDocument(
+        'organizaciones/${proyecto.orgName}/proyectos/${proyecto.id}/sprints',
+        sprint.id,
+        sprintFirestore.toMap(),
+      );
+
+      if (sprintResponse.success) {
+        _logger.i('Sprint actualizado correctamente después de eliminar tarea');
+
+        // Obtener el proyecto actualizado
+        Response<Proyecto> proyectoResponse = await getData(proyecto);
+        if (proyectoResponse.success) {
+          _logger
+              .i('Proyecto obtenido correctamente después de eliminar tarea');
+          return Response(
+            success: true,
+            data: proyectoResponse.data,
+            message: 'Tarea eliminada correctamente',
+          );
+        } else {
+          _logger.w(
+              'Error al obtener proyecto después de eliminar tarea: ${proyectoResponse.message}');
+          return Response(
+            success: false,
+            message: proyectoResponse.message,
+          );
+        }
+      } else {
+        _logger.w('Error al actualizar sprint: ${sprintResponse.message}');
+        return Response(
+          success: false,
+          message: sprintResponse.message,
+        );
+      }
+    } catch (e) {
+      _logger.e('Error al eliminar tarea: $e');
+      return Response(
+        success: false,
+        message: 'Error al eliminar tarea',
+      );
+    }
+  }
+
   Future<Response<Proyecto>> addTarea(ProyectoFirestore proyecto,
       SprintFirestore sprint, TareaFirestore tarea) async {
     try {
