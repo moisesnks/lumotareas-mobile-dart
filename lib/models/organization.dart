@@ -1,3 +1,6 @@
+import 'package:lumotareas/models/solicitud.dart';
+import 'package:lumotareas/models/user.dart';
+
 class OrganizacionUser {
   final String nombre;
   final String id;
@@ -134,5 +137,48 @@ class Organization {
   @override
   String toString() {
     return 'Organization: $nombre\nOwner: $owner\nMiembros: $miembros\nVacantes: $vacantes\nFormulario: $formulario\nDescripción: $descripcion\nImagen: $imageUrl';
+  }
+}
+
+class OrganizacionFull {
+  final Organization organization;
+  final List<SolicitudOrg> solicitudes;
+  final List<Usuario> miembros;
+  final Usuario owner;
+
+  OrganizacionFull({
+    required this.organization,
+    this.solicitudes = const [],
+    this.miembros = const [],
+    required this.owner,
+  });
+
+  factory OrganizacionFull.fromMap(Map<String, dynamic> map) {
+    return OrganizacionFull(
+      organization: Organization.fromMap(map['organization'] ?? {}),
+      solicitudes: (map['solicitudes'] as List<dynamic>?)
+              ?.map((sol) => SolicitudOrg.fromMap(sol['id'], sol))
+              .toList() ??
+          [],
+      miembros: (map['miembros'] as List<dynamic>?)
+              ?.map((user) => Usuario.fromMap(user['uid'], user))
+              .toList() ??
+          [],
+      owner: Usuario.fromMap(map['owner']['uid'], map['owner']),
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'organization': organization.toMap(),
+      'solicitudes': solicitudes.map((solicitud) => solicitud.toMap()).toList(),
+      'miembros': miembros.map((miembro) => miembro.toMap()).toList(),
+      'owner': owner.toMap(),
+    };
+  }
+
+  @override
+  String toString() {
+    return 'OrganizacionFull{organization: $organization, solicitudes: $solicitudes, miembros: $miembros, owner: $owner}';
   }
 }

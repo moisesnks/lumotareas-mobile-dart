@@ -25,6 +25,7 @@ dependencies:
   provider: ^6.1.2
   shared_preferences: ^2.2.3
   flutter_quill: ^9.5.15
+  emoji_picker_flutter: ^2.2.0
   
 
 dev_dependencies:

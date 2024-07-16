@@ -34,23 +34,26 @@ class PreguntaPage extends StatelessWidget {
         if (pregunta.tipo == 'seleccion_unica')
           ...pregunta.opciones.map<Widget>((opcion) => RadioListTile(
                 title: Text(opcion.label),
-                value: opcion.id, // Usar opcion.id como valor
+                value: pregunta.returnLabel ? opcion.label : opcion.id,
                 groupValue: respuesta,
                 onChanged: (value) => onChanged(value),
               )),
         if (pregunta.tipo == 'seleccion_multiple')
           ...pregunta.opciones.map<Widget>((opcion) => CheckboxListTile(
                 title: Text(opcion.label),
-                value: respuesta != null &&
-                    respuesta
-                        .contains(opcion.id), // Usar opcion.id para comparar
+                value: pregunta.returnLabel
+                    ? respuesta.contains(opcion.label)
+                    : respuesta.contains(opcion.id),
                 onChanged: (checked) {
                   List<String> newRespuesta = List.from(respuesta ?? []);
                   if (checked!) {
-                    newRespuesta.add(opcion.id); // Usar opcion.id correctamente
+                    pregunta.returnLabel
+                        ? newRespuesta.add(opcion.label)
+                        : newRespuesta.add(opcion.id);
                   } else {
-                    newRespuesta
-                        .remove(opcion.id); // Usar opcion.id correctamente
+                    pregunta.returnLabel
+                        ? newRespuesta.remove(opcion.label)
+                        : newRespuesta.remove(opcion.id);
                   }
                   onChanged(newRespuesta);
                 },

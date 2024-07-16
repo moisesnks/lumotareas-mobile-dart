@@ -7,7 +7,7 @@ class Usuario {
   final String email;
   final String birthdate;
   final List<OrganizacionUser>? organizaciones;
-  final List<SolicitudUser> solicitudes; // Ya no puede ser nulo
+  final List<SolicitudUser> solicitudes;
   final String photoURL;
 
   Usuario({
@@ -17,7 +17,7 @@ class Usuario {
     required this.birthdate,
     required this.photoURL,
     this.organizaciones,
-    this.solicitudes = const [], // Valor predeterminado
+    this.solicitudes = const [],
   });
 
   String get getUid => uid;

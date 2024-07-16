@@ -8,6 +8,7 @@ import 'package:logger/logger.dart';
 class OrganizationService {
   final FirestoreService _firestoreService = FirestoreService();
   final Logger _logger = Logger();
+
   Future<Map<String, dynamic>> likeOrganization(
       String orgName, String uid, bool addLike) async {
     try {
@@ -352,6 +353,62 @@ class OrganizationService {
         return {
           'success': true,
           'organization': organization,
+          'message': result['message'],
+        };
+      } else {
+        return {
+          'success': false,
+          'message': result['message'],
+        };
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Error al obtener la organización: $e',
+      };
+    }
+  }
+
+  Future<List<Usuario>?> getMiembros(List<String> miembros) async {
+    if (miembros.isEmpty) {
+      return null;
+    } else {
+      // Obtener los documentos de la colección 'users' para cada uid
+      List<Usuario> users = [];
+      for (var uid in miembros) {
+        // Obtener el documento del usuario
+        final result = await _firestoreService.getDocument('users', uid);
+        if (result['found']) {
+          users.add(Usuario.fromMap(uid, result['data']));
+        } else {
+          _logger.e('No se encontró el usuario con el uid: $uid');
+        }
+      } // Fin del bucle for
+      return users;
+    }
+  }
+
+  Future<Map<String, dynamic>> getFullOrg(String orgName, Usuario user) async {
+    try {
+      final result =
+          await _firestoreService.getDocument('organizaciones', orgName);
+
+      if (result['found']) {
+        Organization organization = Organization.fromMap(result['data']);
+        List<SolicitudOrg> solicitudes = await getSolicitudes(orgName, user);
+        List<Usuario>? miembros = [];
+        if (organization.miembros.isNotEmpty) {
+          miembros = await getMiembros(organization.miembros);
+        }
+        OrganizacionFull orgFull = OrganizacionFull(
+          organization: organization,
+          solicitudes: solicitudes,
+          miembros: miembros ?? [],
+          owner: user,
+        );
+        return {
+          'success': true,
+          'organization': orgFull,
           'message': result['message'],
         };
       } else {

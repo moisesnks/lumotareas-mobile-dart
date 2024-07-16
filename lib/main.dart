@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:lumotareas/lib/providers/auth_provider.dart';
+import 'package:lumotareas/lib/providers/project_data_provider.dart';
+import 'package:lumotareas/lib/providers/user_data_provider.dart';
+import 'package:lumotareas/lib/providers/organization_data_provider.dart';
+import 'package:lumotareas/lib/screens/home/home_screen.dart';
+import 'package:lumotareas/lib/screens/loading/loading_screen.dart';
+import 'package:lumotareas/lib/screens/login/login_screen.dart';
 import 'package:provider/provider.dart';
-import 'package:lumotareas/screens/welcome_screen/welcome_screen.dart';
 import 'package:lumotareas/screens/main_screen/main_screen.dart';
-import 'package:lumotareas/viewmodels/login_viewmodel.dart';
+// import 'package:lumotareas/viewmodels/login_viewmodel.dart';
 
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:logger/logger.dart';
@@ -13,6 +20,8 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  await initializeDateFormatting('es_CL', null);
 
   var logger = Logger(
     printer: PrettyPrinter(
@@ -41,43 +50,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData darkTheme = ThemeData(
       brightness: Brightness.dark,
-      primaryColor: const Color(0xFFC9B8F9),
-      hintColor: const Color(0xFFA193C7),
       scaffoldBackgroundColor: const Color(0xFF07081D),
-      textTheme: const TextTheme(
-        displayLarge: TextStyle(
-            fontFamily: 'Lexend',
-            fontWeight: FontWeight.bold,
-            color: Color(0xFFF1DDD9)),
-        displayMedium: TextStyle(
-            fontFamily: 'Lexend',
-            fontWeight: FontWeight.w600,
-            color: Color(0xFFF1DDD9)),
-        displaySmall: TextStyle(
-            fontFamily: 'Lexend',
-            fontWeight: FontWeight.w500,
-            color: Color(0xFFF1DDD9)),
-        headlineMedium: TextStyle(
-            fontFamily: 'Lexend',
-            fontWeight: FontWeight.w400,
-            color: Color(0xFFF1DDD9)),
-        bodyLarge: TextStyle(
-            fontFamily: 'Manrope',
-            fontWeight: FontWeight.bold,
-            color: Color(0xFFC9B8F9)),
-        bodyMedium: TextStyle(
-            fontFamily: 'Manrope',
-            fontWeight: FontWeight.w600,
-            color: Color(0xFFC9B8F9)),
-        titleMedium: TextStyle(
-            fontFamily: 'Manrope',
-            fontWeight: FontWeight.w500,
-            color: Color(0xFFC9B8F9)),
-        titleSmall: TextStyle(
-            fontFamily: 'Manrope',
-            fontWeight: FontWeight.w400,
-            color: Color(0xFFC9B8F9)),
-      ),
       appBarTheme: const AppBarTheme(
         backgroundColor: Color(0xFF07081D),
         titleTextStyle: TextStyle(
@@ -87,42 +60,31 @@ class MyApp extends StatelessWidget {
           color: Color(0xFFF1DDD9),
         ),
       ),
-      chipTheme: const ChipThemeData(
-        backgroundColor: Color(0xFF07081D),
-        labelStyle: TextStyle(
-          fontFamily: 'Manrope',
-          fontWeight: FontWeight.w400,
-          color: Color(0xFFF1DDD9),
-        ),
-        secondaryLabelStyle: TextStyle(
-          fontFamily: 'Manrope',
-          fontWeight: FontWeight.w400,
-          color: Color(0xFF07081D),
-        ),
-      ),
-      colorScheme: const ColorScheme.dark(
-        primary: Color(0xFFC9B8F9),
-        secondary: Color(0xFFA193C7),
-        surface: Color(0xFF191B5B),
-        onPrimary: Color(0xFF07081D),
-        onSecondary: Color(0xFF191B5B),
-        onSurface: Color(0xFFF1DDD9),
-      ),
     );
-
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => LoginViewModel()),
+        // ChangeNotifierProvider(create: (_) => LoginViewModel()),
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(
+          create: (context) => UserDataProvider(
+              Provider.of<AuthProvider>(context, listen: false)),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => OrganizationDataProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => ProjectDataProvider(),
+        ),
       ],
       child: MaterialApp(
         title: 'Lumotareas',
-        theme: ThemeData.light(),
         darkTheme: darkTheme,
-        themeMode: ThemeMode.dark,
         initialRoute: '/',
         routes: {
-          '/': (context) => const WelcomeScreen(),
+          '/': (context) => const LoginScreen(),
           '/main': (context) => const MainScreen(),
+          '/home': (context) => HomeScreen(),
+          '/loading': (context) => const LoadingScreen(),
         },
       ),
     );

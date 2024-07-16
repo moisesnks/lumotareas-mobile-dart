@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:lumotareas/viewmodels/login_viewmodel.dart';
-import 'package:lumotareas/utils/utils.dart';
+import 'package:lumotareas/lib/utils/time.dart';
 
 class HistoryList extends StatelessWidget {
   const HistoryList({super.key});

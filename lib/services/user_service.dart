@@ -64,9 +64,14 @@ class UserService {
             form.respuestas!,
             firebaseUser.uid,
           );
-          _logger.d('Solicitud enviada a la organización: ${form.orgName}');
-          _logger.i('Referencia de la solicitud: ${result['ref']}');
-          solicitudId = result['ref'];
+          if (result['success']) {
+            _logger
+                .d('Solicitud enviada a la organización correctamente $result');
+            solicitudId = result['documentId'];
+          } else {
+            _logger.e('Error al enviar la solicitud a la organización');
+            return null;
+          }
         } else if (form.orgName.isEmpty) {
           _logger.w('No se proporcionó el nombre de la organización');
         }

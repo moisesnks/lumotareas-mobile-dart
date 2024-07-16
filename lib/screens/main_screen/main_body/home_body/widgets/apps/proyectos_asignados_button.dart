@@ -7,10 +7,10 @@ class ProyectosAsignadosButton extends StatelessWidget {
   final List<Project> proyectos;
 
   const ProyectosAsignadosButton({
-    Key? key,
+    super.key,
     required this.userId,
     required this.proyectos,
-  }) : super(key: key);
+  });
 
   List<Project> getProyectosAsignados() {
     // Filtrar los proyectos asignados al usuario actual

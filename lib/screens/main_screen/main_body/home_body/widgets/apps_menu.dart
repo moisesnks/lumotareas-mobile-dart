@@ -4,10 +4,8 @@ import 'package:lumotareas/models/project.dart';
 import 'package:lumotareas/models/solicitud.dart';
 import 'package:lumotareas/services/preferences_service.dart';
 import 'package:lumotareas/widgets/list_items_widget.dart';
-import 'package:provider/provider.dart';
 import 'package:lumotareas/models/user.dart';
 import 'package:lumotareas/models/organization.dart';
-import 'package:lumotareas/viewmodels/login_viewmodel.dart';
 import 'package:lumotareas/services/organization_service.dart';
 import 'package:lumotareas/widgets/flexible_wrap_widget.dart';
 import 'package:lumotareas/widgets/contenedor_widget.dart';
@@ -22,12 +20,14 @@ class AppsMenu extends StatefulWidget {
   final String currentOrganizationId;
   final Logger logger;
   final OrganizationService organizationService;
+  final Usuario currentUser; // Añadir currentUser como parámetro
 
   const AppsMenu({
     super.key,
     required this.currentOrganizationId,
     required this.logger,
     required this.organizationService,
+    required this.currentUser, // Añadir currentUser como parámetro
   });
 
   @override
@@ -37,14 +37,13 @@ class AppsMenu extends StatefulWidget {
 class AppsMenuState extends State<AppsMenu> {
   late List<Project> _proyectos = [];
   bool _isLoading = true;
-
-  late Future<List<SolicitudOrg>> solicitudesOrgFuture;
+  List<SolicitudOrg>? _solicitudesOrg;
 
   @override
   void initState() {
     super.initState();
     _cargarProyectos();
-    solicitudesOrgFuture = _loadSolicitudes();
+    _cargarSolicitudesOrg();
   }
 
   Future<void> _cargarProyectos() async {
@@ -69,15 +68,14 @@ class AppsMenuState extends State<AppsMenu> {
     }
   }
 
-  Future<List<SolicitudOrg>> _loadSolicitudes() async {
-    final Usuario? currentUser =
-        Provider.of<LoginViewModel>(context, listen: false).currentUser;
-    if (currentUser != null) {
-      Future<List<SolicitudOrg>> solicitudes = widget.organizationService
-          .getSolicitudes(widget.currentOrganizationId, currentUser);
-      return solicitudes;
-    }
-    return [];
+  Future<void> _cargarSolicitudesOrg() async {
+    widget.logger.i('Cargando solicitudes de la organización...');
+    List<SolicitudOrg> solicitudes = await widget.organizationService
+        .getSolicitudes(widget.currentOrganizationId, widget.currentUser);
+    setState(() {
+      _solicitudesOrg = solicitudes;
+    });
+    widget.logger.i('Solicitudes de la organización: $_solicitudesOrg');
   }
 
   void _showProjectList() {
@@ -177,14 +175,7 @@ class AppsMenuState extends State<AppsMenu> {
 
   @override
   Widget build(BuildContext context) {
-    final Usuario? currentUser =
-        Provider.of<LoginViewModel>(context).currentUser;
-
-    if (currentUser == null) {
-      return const SizedBox.shrink();
-    }
-
-    return _buildOrganizationWidget(currentUser);
+    return _buildOrganizationWidget(widget.currentUser);
   }
 
   Widget _buildOrganizationWidget(Usuario currentUser) {
@@ -244,33 +235,20 @@ class AppsMenuState extends State<AppsMenu> {
                 proyectos: _proyectos,
                 userId: currentUser.uid,
               ),
-
               MiembrosButton(
                 miembros: organization.miembros,
                 orgName: organization.nombre,
               ),
               if (currentUser.isOwnerOfOrganization(organization.nombre))
-                FutureBuilder<List<SolicitudOrg>>(
-                  future: solicitudesOrgFuture,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const CircularProgressIndicator();
-                    }
-                    if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    }
-                    if (snapshot.hasData) {
-                      return SolicitudesOrgButton(
+                _solicitudesOrg == null
+                    ? const CircularProgressIndicator()
+                    : SolicitudesOrgButton(
                         orgName: organization.nombre,
-                        currentUser: currentUser,
-                        solicitudes: snapshot.data!,
-                      );
-                    }
-                    return const SizedBox.shrink();
-                  },
-                ),
+                        currentUser:
+                            currentUser, // Pasar currentUser como parámetro
+                        solicitudes: _solicitudesOrg!,
+                      ),
               SolicitudesButton(solicitudes: currentUser.solicitudes),
-              // TODO: Agregar un widget para ver la organización y poder editarla
             ],
           );
         }

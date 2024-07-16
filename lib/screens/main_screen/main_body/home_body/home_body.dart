@@ -48,6 +48,7 @@ class HomeBody extends StatelessWidget {
           _buildTitle(context, currentUser),
           const SizedBox(height: 16),
           AppsMenu(
+            currentUser: currentUser,
             currentOrganizationId: currentOrganizationId,
             logger: _logger,
             organizationService: _organizationService,

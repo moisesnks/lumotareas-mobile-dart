@@ -8,6 +8,7 @@ class Question {
   final bool required;
   final List<Opcion> opciones;
   final int? maxLength;
+  final bool returnLabel;
 
   /// Constructor para inicializar una pregunta con los atributos requeridos y opcionales.
   Question({
@@ -16,6 +17,7 @@ class Question {
     required this.required,
     this.opciones = const [],
     this.maxLength = 150,
+    this.returnLabel = false,
   });
 
   /// Constructor de fábrica que crea un objeto [Question] a partir de un mapa [Map<String, dynamic>].
@@ -32,6 +34,7 @@ class Question {
       required: map['required'] ?? false,
       opciones: parsedOpciones,
       maxLength: map['maxLength'] ?? 150,
+      returnLabel: map['returnLabel'] ?? false,
     );
   }
 
@@ -48,7 +51,13 @@ class Question {
       'required': required,
       'opciones': mappedOpciones,
       'maxLength': maxLength,
+      'returnLabel': returnLabel,
     };
+  }
+
+  @override
+  String toString() {
+    return 'Question{enunciado: $enunciado, tipo: $tipo, required: $required, opciones: $opciones, maxLength: $maxLength}';
   }
 }
 
@@ -80,5 +89,10 @@ class Opcion {
       'id': id,
       'label': label,
     };
+  }
+
+  @override
+  String toString() {
+    return 'Opcion{id: $id, label: $label}';
   }
 }
