@@ -14,15 +14,19 @@ class UserDataProvider with ChangeNotifier {
   bool _loadingUser = true; // Indicador de carga del usuario
   bool _loadingHistory = false;
 
+  UserDataProvider(this._authProvider) {
+    _initializeUser();
+  }
+
+  Future<void> initializeUser() async {
+    await _initializeUser();
+  }
+
   void reset() {
     _currentUser = null;
     _loadingUser = true;
     Logger().i('UserDataProvider reset.');
     notifyListeners();
-  }
-
-  UserDataProvider(this._authProvider) {
-    _initializeUser();
   }
 
   Future<void> _initializeUser() async {

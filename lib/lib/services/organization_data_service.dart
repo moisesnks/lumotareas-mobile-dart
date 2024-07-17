@@ -65,6 +65,63 @@ class OrganizationDataService {
     }
   }
 
+  Future<Response<Organizacion>> removeProyecto(
+      Organizacion organizacion, String projectId) async {
+    try {
+      final orgName = organizacion.nombre;
+      Response response = await _databaseService.deleteDocument(
+          'organizaciones/$orgName/proyectos', projectId);
+      if (response.success) {
+        // Crear una organización de Firestore
+        List<String> listProyectos = organizacion.proyectos
+            .map((proyecto) => proyecto.id)
+            .where((id) => id != projectId)
+            .toList();
+        OrganizacionFirestore orgFirestore = OrganizacionFirestore(
+          nombre: organizacion.nombre,
+          descripcion: organizacion.descripcion,
+          proyectos: listProyectos,
+          likes: organizacion.likes,
+          miembros:
+              organizacion.miembros.map((miembro) => miembro.uid).toList(),
+          owner: {
+            'uid': organizacion.owner.uid,
+            'nombre': organizacion.owner.nombre,
+          },
+          vacantes: organizacion.vacantes,
+          imageUrl: organizacion.imageUrl,
+          formulario: organizacion.formulario,
+        );
+
+        // Actualizar la organización
+        Response orgResponse = await updateOrganization(orgFirestore);
+        if (orgResponse.success) {
+          return Response(
+            success: true,
+            data: organizacion,
+            message: 'Proyecto eliminado correctamente',
+          );
+        } else {
+          return Response(
+            success: false,
+            message: 'Error al eliminar proyecto',
+          );
+        }
+      } else {
+        return Response(
+          success: false,
+          message: 'Error al eliminar proyecto',
+        );
+      }
+    } catch (e) {
+      _logger.e('Error al eliminar proyecto: $e');
+      return Response(
+        success: false,
+        message: 'Error al eliminar proyecto',
+      );
+    }
+  }
+
   Future<Response<Organizacion>> createProyecto(
       Organizacion organizacion, ProyectoFirestore proyecto) async {
     try {

@@ -20,6 +20,30 @@ class OrganizationDataProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> deleteProyecto(BuildContext context, String projectId) async {
+    if (currentOrganization == null) {
+      _logger.e('No se puede eliminar un proyecto sin una organización');
+      throw Exception('No se puede eliminar un proyecto sin una organización');
+    }
+    _logger.i('Eliminando proyecto con ID: $projectId');
+    Navigator.pushNamed(context, '/loading',
+        arguments: 'Eliminando proyecto...');
+    final response = await _organizationDataService.removeProyecto(
+        currentOrganization!, projectId);
+    if (response.success) {
+      _logger.i('Proyecto eliminado correctamente');
+      currentOrganization = response.data;
+      notifyListeners();
+      if (context.mounted) {
+        Navigator.pop(context);
+        Navigator.pop(context);
+      }
+    } else {
+      _logger.e('Error al eliminar proyecto: ${response.message}');
+      throw Exception('Error al eliminar proyecto: ${response.message}');
+    }
+  }
+
   Future<void> createProyecto(
       BuildContext context, ProyectoFirestore proyecto) async {
     if (currentOrganization == null) {

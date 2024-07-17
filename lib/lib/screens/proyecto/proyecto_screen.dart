@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lumotareas/lib/models/firestore/proyecto.dart';
+import 'package:lumotareas/lib/providers/organization_data_provider.dart';
 import 'package:lumotareas/lib/screens/proyecto/widgets/sprint_list.dart';
 import 'package:provider/provider.dart';
 import 'package:lumotareas/lib/providers/project_data_provider.dart';
@@ -122,9 +123,53 @@ class ProjectScreenState extends State<ProjectScreen> {
                     miembros: usuariosAsignados,
                   ),
                 },
+                {
+                  'label': 'Borrar proyecto',
+                  'icon': Icons.delete,
+                  'screen':
+                      ConfirmDeleteProjectScreen(proyecto: widget.proyecto),
+                }
               ],
             )
           : null,
+    );
+  }
+}
+
+class ConfirmDeleteProjectScreen extends StatelessWidget {
+  final ProyectoFirestore proyecto;
+
+  const ConfirmDeleteProjectScreen({super.key, required this.proyecto});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Eliminar proyecto'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const Text('¿Estás seguro de que quieres eliminar este proyecto?'),
+            ElevatedButton(
+              onPressed: () async {
+                await Provider.of<OrganizationDataProvider>(context,
+                        listen: false)
+                    .deleteProyecto(context, proyecto.id);
+
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  Provider.of<OrganizationDataProvider>(context, listen: false)
+                      .fetchOrganization(context, proyecto.orgName,
+                          forceFetch: true);
+                }
+              },
+              child: const Text('Eliminar proyecto'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

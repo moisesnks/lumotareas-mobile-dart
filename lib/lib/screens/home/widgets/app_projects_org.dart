@@ -39,6 +39,7 @@ class ProjectsOrgButton extends StatelessWidget {
                 title: Text(proyecto.nombre),
                 subtitle: Text(proyecto.descripcion),
                 onTap: () {
+                  Navigator.pop(context);
                   Navigator.push(
                     context,
                     MaterialPageRoute(
