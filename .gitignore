@@ -140,3 +140,5 @@ app.*.symbols
 # Firebase
 #firebase.json
 #google-services.json
+
+lib/old/
