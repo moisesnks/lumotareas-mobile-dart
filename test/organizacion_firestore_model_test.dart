@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lumotareas/lib/models/organization/formulario.dart';
-import 'package:lumotareas/lib/models/firestore/organizacion.dart';
-import 'package:lumotareas/lib/models/organization/pregunta.dart';
+import 'package:lumotareas/models/organization/formulario.dart';
+import 'package:lumotareas/models/firestore/organizacion.dart';
+import 'package:lumotareas/models/organization/pregunta.dart';
 
 void main() {
   group('OrganizacionFirestore', () {

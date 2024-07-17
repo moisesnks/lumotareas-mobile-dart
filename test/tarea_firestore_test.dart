@@ -2,11 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:lumotareas/lib/models/firestore/comentarios.dart';
-import 'package:lumotareas/lib/models/firestore/logs.dart';
-import 'package:lumotareas/lib/models/firestore/small_user.dart';
-import 'package:lumotareas/lib/models/firestore/subtarea.dart';
-import 'package:lumotareas/lib/models/firestore/tareas.dart';
+import 'package:lumotareas/models/firestore/comentarios.dart';
+import 'package:lumotareas/models/firestore/logs.dart';
+import 'package:lumotareas/models/firestore/small_user.dart';
+import 'package:lumotareas/models/firestore/subtarea.dart';
+import 'package:lumotareas/models/firestore/tareas.dart';
 
 void main() {
   group('TareaFirestore', () {

@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lumotareas/lib/models/user/usuario.dart';
-import 'package:lumotareas/lib/models/user/organizaciones.dart';
-import 'package:lumotareas/lib/models/user/solicitudes.dart';
+import 'package:lumotareas/models/user/usuario.dart';
+import 'package:lumotareas/models/user/organizaciones.dart';
+import 'package:lumotareas/models/user/solicitudes.dart';
 
 void main() {
   group('Usuario', () {

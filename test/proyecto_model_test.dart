@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lumotareas/lib/models/firestore/proyecto.dart';
+import 'package:lumotareas/models/firestore/proyecto.dart';
 
 void main() {
   group('ProyectoFirestore', () {

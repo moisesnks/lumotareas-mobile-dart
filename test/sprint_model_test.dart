@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:lumotareas/lib/models/firestore/sprint.dart';
+import 'package:lumotareas/models/firestore/sprint.dart';
 
 void main() {
   group('SprintFirestore', () {
