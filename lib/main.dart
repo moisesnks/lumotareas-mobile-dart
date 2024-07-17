@@ -1,13 +1,16 @@
 /// @nodoc
 library;
+
 import 'package:flutter/material.dart';
-import 'package:lumotareas/lib/providers/auth_provider.dart';
-import 'package:lumotareas/lib/providers/project_data_provider.dart';
-import 'package:lumotareas/lib/providers/user_data_provider.dart';
-import 'package:lumotareas/lib/providers/organization_data_provider.dart';
-import 'package:lumotareas/lib/screens/layout/layout_screen.dart';
-import 'package:lumotareas/lib/screens/loading/loading_screen.dart';
-import 'package:lumotareas/lib/screens/login/login_screen.dart';
+import 'package:lumotareas/providers/auth_provider.dart';
+import 'package:lumotareas/providers/descubrir_data_provider.dart';
+import 'package:lumotareas/providers/project_data_provider.dart';
+import 'package:lumotareas/providers/user_data_provider.dart';
+import 'package:lumotareas/providers/organization_data_provider.dart';
+import 'package:lumotareas/screens/index/index_screen.dart';
+import 'package:lumotareas/screens/layout/layout_screen.dart';
+import 'package:lumotareas/screens/loading/loading_screen.dart';
+import 'package:lumotareas/screens/login/login_screen.dart';
 import 'package:provider/provider.dart';
 // import 'package:lumotareas/viewmodels/login_viewmodel.dart';
 
@@ -15,6 +18,8 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:logger/logger.dart';
+
+import 'screens/welcome/welcome_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -76,6 +81,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => ProjectDataProvider(),
         ),
+        ChangeNotifierProvider(
+          create: (context) => DescubrirDataProvider(),
+        ),
       ],
       child: MaterialApp(
         title: 'Lumotareas',
@@ -83,7 +91,9 @@ class MyApp extends StatelessWidget {
         themeMode: ThemeMode.dark,
         initialRoute: '/',
         routes: {
-          '/': (context) => const LoginScreen(),
+          '/': (context) => const IndexScreen(),
+          '/login': (context) => const LoginScreen(),
+          '/welcome': (context) => const WelcomeScreen(),
           '/home': (context) => const LayoutScreen(),
           '/loading': (context) => const LoadingScreen(),
         },
