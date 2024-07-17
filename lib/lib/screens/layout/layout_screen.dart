@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:lumotareas/lib/screens/crear_organizacion/crear_organizacion_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'package:lumotareas/lib/models/user/usuario.dart';
@@ -69,13 +70,18 @@ class LayoutScreenState extends State<LayoutScreen> {
 
   MenuFlotante _buildFloatingHomeMenu() {
     return MenuFlotante(
-      mainIcon: Icons.add,
+      mainIcon: Icons.menu,
       items: const [
         {
           'icon': Icons.add,
           'label': 'Crear proyecto',
           'screen': CrearProyectoScreen()
         },
+        {
+          'label': 'Crear organización',
+          'screen': CrearOrganizacionScreen(),
+          'icon': Icons.business
+        }
       ],
     );
   }
