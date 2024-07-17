@@ -37,6 +37,7 @@ class ProyectoFirestore {
 
   Map<String, dynamic> toMap() {
     return {
+      'id': id,
       'nombre': nombre,
       'descripcion': descripcion,
       'asignados': asignados,

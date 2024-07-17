@@ -24,37 +24,38 @@ class ProjectsOrgButton extends StatelessWidget {
           content: Text('No hay proyectos en esta organización.'),
         ),
       );
-    }
-    showModalBottomSheet(
-      backgroundColor: const Color.fromARGB(155, 56, 45, 93),
-      context: context,
-      builder: (BuildContext context) {
-        return ListView.builder(
-          itemCount: proyectos.length,
-          itemBuilder: (BuildContext context, int index) {
-            final ProyectoFirestore proyecto = proyectos[index];
-            return StyledListTile(
-              index: index,
-              leading: const Icon(Icons.business),
-              title: Text(proyecto.nombre),
-              subtitle: Text(proyecto.descripcion),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ProjectScreen(
-                      currentUser: currentUser,
-                      proyecto: proyecto,
-                      miembrosOrganizacion: miembros,
+    } else {
+      showModalBottomSheet(
+        backgroundColor: const Color.fromARGB(155, 56, 45, 93),
+        context: context,
+        builder: (BuildContext context) {
+          return ListView.builder(
+            itemCount: proyectos.length,
+            itemBuilder: (BuildContext context, int index) {
+              final ProyectoFirestore proyecto = proyectos[index];
+              return StyledListTile(
+                index: index,
+                leading: const Icon(Icons.business),
+                title: Text(proyecto.nombre),
+                subtitle: Text(proyecto.descripcion),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProjectScreen(
+                        currentUser: currentUser,
+                        proyecto: proyecto,
+                        miembrosOrganizacion: miembros,
+                      ),
                     ),
-                  ),
-                );
-              },
-            );
-          },
-        );
-      },
-    );
+                  );
+                },
+              );
+            },
+          );
+        },
+      );
+    }
   }
 
   @override

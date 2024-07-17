@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lumotareas/lib/models/response.dart';
 import 'package:lumotareas/lib/models/user/usuario.dart';
+import 'package:lumotareas/lib/providers/organization_data_provider.dart';
 import 'package:lumotareas/lib/services/auth_service.dart';
+import 'package:provider/provider.dart';
 
 class AuthProvider with ChangeNotifier {
   final AuthService _authService = AuthService();
@@ -66,9 +68,14 @@ class AuthProvider with ChangeNotifier {
       await Future.delayed(const Duration(seconds: 1));
     }
     await _authService.logout();
-    currentUser = null; // Aquí usamos el setter para limpiar currentUser
+    currentUser = null;
     if (context.mounted) {
+      _resetAllProviders(context);
       Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
     }
+  }
+
+  void _resetAllProviders(BuildContext context) {
+    Provider.of<OrganizationDataProvider>(context, listen: false).reset();
   }
 }

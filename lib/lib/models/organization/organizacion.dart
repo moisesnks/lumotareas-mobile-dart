@@ -33,9 +33,9 @@ class Organizacion {
     return Organizacion(
       nombre: map['nombre'] ?? '',
       descripcion: map['descripcion'] ?? '',
-      proyectos: (map['proyectos'] as Map<String, dynamic>?)
-              ?.entries
-              .map((entry) => ProyectoFirestore.fromMap(entry.key, entry.value))
+      proyectos: (map['proyectos'] as List<dynamic>?)
+              ?.map((proyecto) =>
+                  ProyectoFirestore.fromMap(proyecto['id'], proyecto))
               .toList() ??
           [],
       solicitudes: (map['solicitudes'] as List<dynamic>?)
@@ -62,8 +62,7 @@ class Organizacion {
     return {
       'nombre': nombre,
       'descripcion': descripcion,
-      'proyectos':
-          proyectos.map((proyecto) => MapEntry(proyecto.id, proyecto.toMap())),
+      'proyectos': proyectos.map((proyecto) => proyecto.toMap()).toList(),
       'solicitudes': solicitudes.map((solicitud) => solicitud.toMap()).toList(),
       'formulario': formulario.toMap(),
       'likes': likes,

@@ -9,6 +9,7 @@ class OrganizacionFirestore {
   bool vacantes;
   String imageUrl;
   Formulario formulario;
+  List<String> proyectos;
 
   OrganizacionFirestore({
     required this.nombre,
@@ -17,6 +18,7 @@ class OrganizacionFirestore {
     required this.miembros,
     required this.owner,
     required this.vacantes,
+    required this.proyectos,
     required this.imageUrl,
     required this.formulario,
   });
@@ -40,6 +42,10 @@ class OrganizacionFirestore {
       vacantes: map['vacantes'] ?? false,
       imageUrl: map['imageUrl'] ?? '',
       formulario: Formulario.fromMap(map['formulario']),
+      proyectos: (map['proyectos'] as List<dynamic>?)
+              ?.map((proyecto) => proyecto.toString())
+              .toList() ??
+          [],
     );
   }
 
@@ -53,6 +59,7 @@ class OrganizacionFirestore {
       'vacantes': vacantes,
       'imageUrl': imageUrl,
       'formulario': formulario.toMap(),
+      'proyectos': proyectos,
     };
   }
 

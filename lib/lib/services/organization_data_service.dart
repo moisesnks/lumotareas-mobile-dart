@@ -65,6 +65,64 @@ class OrganizationDataService {
     }
   }
 
+  Future<Response<Organizacion>> createProyecto(
+      Organizacion organizacion, ProyectoFirestore proyecto) async {
+    try {
+      final orgName = organizacion.nombre;
+      Response response = await _databaseService.addDocument(
+          'organizaciones/$orgName/proyectos',
+          documentId: proyecto.id,
+          data: proyecto.toMap());
+      if (response.success) {
+        // Crear una organización de Firestore
+        List<String> listProyectos =
+            organizacion.proyectos.map((proyecto) => proyecto.id).toList();
+        listProyectos.add(proyecto.id);
+        OrganizacionFirestore orgFirestore = OrganizacionFirestore(
+          nombre: organizacion.nombre,
+          descripcion: organizacion.descripcion,
+          proyectos: listProyectos,
+          likes: organizacion.likes,
+          miembros:
+              organizacion.miembros.map((miembro) => miembro.uid).toList(),
+          owner: {
+            'uid': organizacion.owner.uid,
+            'nombre': organizacion.owner.nombre,
+          },
+          vacantes: organizacion.vacantes,
+          imageUrl: organizacion.imageUrl,
+          formulario: organizacion.formulario,
+        );
+
+        // Actualizar la organización
+        Response orgResponse = await updateOrganization(orgFirestore);
+        if (orgResponse.success) {
+          return Response(
+            success: true,
+            data: organizacion,
+            message: 'Proyecto creado correctamente',
+          );
+        } else {
+          return Response(
+            success: false,
+            message: 'Error al crear proyecto',
+          );
+        }
+      } else {
+        return Response(
+          success: false,
+          message: 'Error al crear proyecto',
+        );
+      }
+    } catch (e) {
+      _logger.e('Error al crear proyecto: $e');
+      return Response(
+        success: false,
+        message: 'Error al crear proyecto',
+      );
+    }
+  }
+
   Future<List<ProyectoFirestore>> getProjects(String orgName) async {
     try {
       final List<ProyectoFirestore> proyectos = [];
@@ -81,6 +139,32 @@ class OrganizationDataService {
     } catch (e) {
       _logger.e('Error al obtener proyectos de la organización: $e');
       return [];
+    }
+  }
+
+  Future<Response<Organizacion>> updateOrganization(
+      OrganizacionFirestore organizacion) async {
+    try {
+      final orgName = organizacion.nombre;
+      Response response = await _databaseService.updateDocument(
+          'organizaciones', orgName, organizacion.toMap());
+      if (response.success) {
+        return Response(
+          success: true,
+          message: 'Organización actualizada correctamente',
+        );
+      } else {
+        return Response(
+          success: false,
+          message: 'Error al actualizar organización',
+        );
+      }
+    } catch (e) {
+      _logger.e('Error al actualizar organización: $e');
+      return Response(
+        success: false,
+        message: 'Error al actualizar organización',
+      );
     }
   }
 
