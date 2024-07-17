@@ -1,3 +1,5 @@
+/// @nodoc
+library;
 class Solicitudes {
   final String id;
   final String orgName;

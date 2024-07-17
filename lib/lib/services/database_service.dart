@@ -1,11 +1,21 @@
+//Servicio para interactuar con la base de datos en Firestore
+library;
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:logger/logger.dart';
 import 'package:lumotareas/lib/models/response.dart';
 
+/// Servicio de base de datos para interactuar con Firestore.
 class DatabaseService {
   final Logger _logger = Logger();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  /// Añade un documento a una colección en Firestore.
+  ///
+  /// [collectionName] es el nombre de la colección a la que se añade el documento.
+  /// [documentId] es opcional y es el ID del documento. Si no se proporciona, se generará uno automáticamente.
+  /// [data] es el mapa de datos que se añadirá al documento.
+  /// Devuelve una [Response] con el ID del documento añadido o un mensaje de error.
   Future<Response<String>> addDocument(String collectionName,
       {String? documentId, required Map<String, dynamic> data}) async {
     try {
@@ -34,6 +44,13 @@ class DatabaseService {
     }
   }
 
+  /// Obtiene documentos de una colección en Firestore.
+  ///
+  /// [collectionName] es el nombre de la colección de la cual se obtendrán los documentos.
+  /// [limit] es el número máximo de documentos a obtener. Por defecto es 10.
+  /// [orderByField] es opcional y es el campo por el cual se ordenarán los documentos.
+  /// [descending] indica si el orden es descendente. Por defecto es `false`.
+  /// Devuelve una [Response] con una lista de mapas de datos de los documentos obtenidos o un mensaje de error.
   Future<Response<List<Map<String, dynamic>>>> getCollection(
       String collectionName,
       {int limit = 10,
@@ -77,6 +94,11 @@ class DatabaseService {
     }
   }
 
+  /// Obtiene un documento específico de una colección en Firestore.
+  ///
+  /// [collectionName] es el nombre de la colección que contiene el documento.
+  /// [documentId] es el ID del documento que se va a obtener.
+  /// Devuelve una [Response] con el mapa de datos del documento obtenido o un mensaje de error.
   Future<Response<Map<String, dynamic>?>> getDocument(
       String collectionName, String documentId) async {
     try {
@@ -108,6 +130,11 @@ class DatabaseService {
     }
   }
 
+  /// Obtiene documentos de una colección en Firestore que comienzan con un prefijo específico.
+  ///
+  /// [collectionName] es el nombre de la colección de la cual se obtendrán los documentos.
+  /// [prefix] es el prefijo de los IDs de los documentos que se van a obtener.
+  /// Devuelve una [Response] con una lista de mapas de datos de los documentos obtenidos o un mensaje de error.
   Future<Response<List<Map<String, dynamic>>>> getDocumentsByPrefix(
       String collectionName, String prefix) async {
     try {
@@ -140,6 +167,12 @@ class DatabaseService {
     }
   }
 
+  /// Actualiza un documento específico en una colección en Firestore.
+  ///
+  /// [collectionName] es el nombre de la colección que contiene el documento.
+  /// [documentId] es el ID del documento que se va a actualizar.
+  /// [data] es el mapa de datos que se usará para actualizar el documento.
+  /// Devuelve una [Response] indicando el éxito o fracaso de la operación.
   Future<Response<void>> updateDocument(String collectionName,
       String documentId, Map<String, dynamic> data) async {
     try {
@@ -160,6 +193,11 @@ class DatabaseService {
     }
   }
 
+  /// Elimina un documento específico de una colección en Firestore.
+  ///
+  /// [collectionName] es el nombre de la colección que contiene el documento.
+  /// [documentId] es el ID del documento que se va a eliminar.
+  /// Devuelve una [Response] indicando el éxito o fracaso de la operación.
   Future<Response<void>> deleteDocument(
       String collectionName, String documentId) async {
     try {

@@ -1,145 +1,12 @@
+//Modelos de Tareas
+library;
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'subtarea.dart';
+import 'comentarios.dart';
+import 'logs.dart';
 
-class Subtarea {
-  final String id;
-  final String name;
-  final String description;
-  bool done;
-  String completedBy;
-
-  Subtarea({
-    required this.id,
-    required this.name,
-    required this.description,
-    required this.done,
-    this.completedBy = '',
-  });
-
-  factory Subtarea.fromMap(Map<String, dynamic> map) {
-    return Subtarea(
-      id: map['id'] ?? '',
-      name: map['name'] ?? '',
-      description: map['description'] ?? '',
-      done: map['done'] ?? false,
-      completedBy: map['completedBy'] ?? '',
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'name': name,
-      'description': description,
-      'done': done,
-      'completedBy': completedBy,
-    };
-  }
-
-  @override
-  String toString() {
-    return 'Subtarea: Id: $id, Nombre: $name, Descripción: $description, Hecho: $done por $completedBy';
-  }
-}
-
-class Logs {
-  final String uid;
-  final String message;
-  final Timestamp timestamp;
-
-  Logs({
-    required this.uid,
-    required this.message,
-    required this.timestamp,
-  });
-
-  factory Logs.fromMap(Map<String, dynamic> map) {
-    return Logs(
-      uid: map['uid'] ?? '',
-      message: map['message'] ?? '',
-      timestamp: map['timestamp'] ?? Timestamp.now(),
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'uid': uid,
-      'message': message,
-      'timestamp': timestamp,
-    };
-  }
-
-  @override
-  String toString() {
-    return 'Log: UID: $uid, Mensaje: $message, Fecha: $timestamp';
-  }
-}
-
-class SmallUser {
-  final String uid;
-  final String nombre;
-  final String photoUrl;
-
-  SmallUser({
-    required this.uid,
-    required this.nombre,
-    required this.photoUrl,
-  });
-
-  factory SmallUser.fromMap(Map<String, dynamic> map) {
-    return SmallUser(
-      uid: map['uid'] ?? '',
-      nombre: map['nombre'] ?? '',
-      photoUrl: map['photoUrl'] ?? '',
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'uid': uid,
-      'nombre': nombre,
-      'photoUrl': photoUrl,
-    };
-  }
-
-  @override
-  String toString() {
-    return 'Usuario: UID: $uid, Nombre: $nombre, Foto: $photoUrl';
-  }
-}
-
-class Comentarios {
-  final String message;
-  final SmallUser user;
-  final Timestamp fecha;
-
-  Comentarios({
-    required this.message,
-    required this.user,
-    required this.fecha,
-  });
-
-  factory Comentarios.fromMap(Map<String, dynamic> map) {
-    return Comentarios(
-      message: map['message'] ?? '',
-      user: SmallUser.fromMap(map['user'] ?? {}),
-      fecha: map['fecha'] ?? '',
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'message': message,
-      'user': user.toMap(),
-      'fecha': fecha,
-    };
-  }
-
-  @override
-  String toString() {
-    return 'Comentario: Mensaje: $message, Usuario: $user , Fecha: $fecha';
-  }
-}
-
+/// Clase que representa una tarea almacenada en Firestore.
 class TareaFirestore {
   final String id;
   final String name;
@@ -156,6 +23,22 @@ class TareaFirestore {
   final String createdBy;
   final bool visible = false;
 
+  /// Constructor para crear una instancia de [TareaFirestore].
+  ///
+  /// [id] es el identificador único de la tarea.
+  /// [name] es el nombre de la tarea.
+  /// [description] es la descripción de la tarea.
+  /// [startDate] es la fecha de inicio de la tarea.
+  /// [endDate] es la fecha de finalización de la tarea.
+  /// [subtareas] es la lista de subtareas asociadas a la tarea.
+  /// [asignados] es la lista de identificadores de los usuarios asignados a la tarea.
+  /// [comentarios] es opcional y es la lista de comentarios en la tarea.
+  /// [logs] es opcional y es la lista de registros de actividad de la tarea.
+  /// [private] es opcional y indica si la tarea es privada.
+  /// [sprintId] es el identificador del sprint al que pertenece la tarea.
+  /// [projectId] es el identificador del proyecto al que pertenece la tarea.
+  /// [createdBy] es el identificador del usuario que creó la tarea.
+  /// [visible] es opcional y indica si la tarea es visible.
   TareaFirestore({
     required this.id,
     required this.name,
@@ -173,13 +56,17 @@ class TareaFirestore {
     bool visible = false,
   });
 
+  /// Crea una instancia de [TareaFirestore] a partir de un mapa.
+  ///
+  /// [id] es el identificador único de la tarea.
+  /// [map] es el mapa que contiene los datos de la tarea.
   factory TareaFirestore.fromMap(String id, Map<String, dynamic> map) {
     return TareaFirestore(
       id: id,
       name: map['name'] ?? '',
       description: map['description'] ?? '',
-      startDate: map['startDate'] ?? '',
-      endDate: map['endDate'] ?? '',
+      startDate: map['startDate'] ?? Timestamp.now(),
+      endDate: map['endDate'] ?? Timestamp.now(),
       subtareas: (map['subtareas'] as List<dynamic>?)
               ?.map((subtarea) => Subtarea.fromMap(subtarea))
               .toList() ??
@@ -204,6 +91,7 @@ class TareaFirestore {
     );
   }
 
+  /// Convierte una instancia de [TareaFirestore] a un mapa.
   Map<String, dynamic> toMap() {
     return {
       'name': name,
@@ -223,14 +111,21 @@ class TareaFirestore {
     };
   }
 
+  /// Obtiene el número total de subtareas.
   int get totalSubtareas => subtareas.length;
+
+  /// Obtiene el número de subtareas completadas.
   int get subtareasCompletadas => subtareas.where((s) => s.done).length;
+
+  /// Obtiene el número de subtareas pendientes.
   int get subtareasPendientes => totalSubtareas - subtareasCompletadas;
+
+  /// Calcula el progreso de la tarea basado en las subtareas completadas.
   double get progress =>
       (totalSubtareas == 0) ? 0 : (subtareasCompletadas / totalSubtareas);
 
   @override
   String toString() {
-    return 'Tarea: $id, Nombre: $name, Descripción: $description, Fecha de Inicio: $startDate, Fecha de Fin: $endDate, Asignados: $asignados Subtareas: $subtareas, Comentarios: $comentarios, Logs: $logs, Privada: $private, Sprint: $sprintId Proyecto: $projectId';
+    return 'Tarea: $id, Nombre: $name, Descripción: $description, Fecha de Inicio: $startDate, Fecha de Fin: $endDate, Asignados: $asignados, Subtareas: $subtareas, Comentarios: $comentarios, Logs: $logs, Privada: $private, Sprint: $sprintId, Proyecto: $projectId';
   }
 }

@@ -1,3 +1,5 @@
+/// @nodoc
+library;
 import 'package:flutter/material.dart';
 import 'package:lumotareas/lib/providers/auth_provider.dart';
 import 'package:lumotareas/lib/providers/project_data_provider.dart';

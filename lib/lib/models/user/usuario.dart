@@ -1,3 +1,5 @@
+/// @nodoc
+library;
 import 'package:lumotareas/lib/models/user/organizaciones.dart';
 import 'package:lumotareas/lib/models/user/solicitudes.dart';
 

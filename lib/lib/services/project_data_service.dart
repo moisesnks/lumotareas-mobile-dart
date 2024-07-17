@@ -1,3 +1,6 @@
+//Servicio de datos del proyecto.
+library;
+
 import 'package:lumotareas/lib/models/firestore/sprint.dart';
 import 'package:lumotareas/lib/models/firestore/tareas.dart';
 import 'package:lumotareas/lib/models/firestore/proyecto.dart';
@@ -7,10 +10,16 @@ import 'package:lumotareas/lib/models/sprint/sprint.dart';
 import 'package:lumotareas/lib/services/database_service.dart';
 import 'package:logger/logger.dart';
 
+/// Servicio de datos del proyecto.
 class ProjectDataService {
   final Logger _logger = Logger();
   final DatabaseService _databaseService = DatabaseService();
 
+  /// Elimina un sprint de un proyecto.
+  ///
+  /// [proyecto] es el proyecto del cual se va a eliminar el sprint.
+  /// [sprint] es el sprint que se va a eliminar.
+  /// Devuelve una [Response] indicando el éxito o fracaso de la operación.
   Future<Response<Proyecto>> removeSprint(
       ProyectoFirestore proyecto, SprintFirestore sprint) async {
     try {
@@ -65,6 +74,11 @@ class ProjectDataService {
     }
   }
 
+  /// Agrega un sprint a un proyecto.
+  ///
+  /// [proyecto] es el proyecto al cual se va a agregar el sprint.
+  /// [sprint] es el sprint que se va a agregar.
+  /// Devuelve una [Response] indicando el éxito o fracaso de la operación.
   Future<Response<Proyecto>> addSprint(
       ProyectoFirestore proyecto, SprintFirestore sprint) async {
     try {
@@ -79,7 +93,6 @@ class ProjectDataService {
         Response<Proyecto> proyectoResponse = await getData(proyecto);
         if (proyectoResponse.success) {
           // Actualizar el proyectoFirestore
-          // Crear un nuevo proyectoFirestore con el sprint agregado
           ProyectoFirestore proyectoFirestore = ProyectoFirestore(
             createdBy: proyecto.createdBy,
             id: proyecto.id,
@@ -131,6 +144,10 @@ class ProjectDataService {
     }
   }
 
+  /// Actualiza un proyecto.
+  ///
+  /// [proyecto] es el proyecto que se va a actualizar.
+  /// Devuelve una [Response] indicando el éxito o fracaso de la operación.
   Future<Response<Proyecto>> updateProyecto(ProyectoFirestore proyecto) async {
     try {
       Response response = await _databaseService.updateDocument(
@@ -173,6 +190,13 @@ class ProjectDataService {
     }
   }
 
+  /// Elimina una tarea de un sprint dentro de un proyecto.
+  ///
+  /// [proyecto] es el proyecto que contiene la tarea.
+  /// [sprint] es el sprint que contiene la tarea.
+  /// [tarea] es la tarea que se va a eliminar.
+  /// [userId] es el ID del usuario que está eliminando la tarea.
+  /// Devuelve una [Response] indicando el éxito o fracaso de la operación.
   Future<Response<Proyecto>> removeTarea(ProyectoFirestore proyecto,
       SprintFirestore sprint, TareaFirestore tarea, String userId) async {
     try {
@@ -246,6 +270,13 @@ class ProjectDataService {
     }
   }
 
+  /// Agrega una tarea a un sprint dentro de un proyecto.
+  ///
+  /// [proyecto] es el proyecto que contiene la tarea.
+  /// [sprint] es el sprint al cual se va a agregar la tarea.
+  /// [tarea] es la tarea que se va a agregar.
+  /// [userId] es el ID del usuario que está agregando la tarea.
+  /// Devuelve una [Response] indicando el éxito o fracaso de la operación.
   Future<Response<Proyecto>> addTarea(ProyectoFirestore proyecto,
       SprintFirestore sprint, TareaFirestore tarea, String userId) async {
     try {
@@ -321,6 +352,11 @@ class ProjectDataService {
     }
   }
 
+  /// Actualiza una tarea.
+  ///
+  /// [proyecto] es el proyecto que contiene la tarea.
+  /// [tarea] es la tarea que se va a actualizar.
+  /// Devuelve una [Response] indicando el éxito o fracaso de la operación.
   Future<Response<Proyecto>> updateTarea(
       ProyectoFirestore proyecto, TareaFirestore tarea) async {
     try {
@@ -366,6 +402,12 @@ class ProjectDataService {
     }
   }
 
+  /// Obtiene una tarea específica.
+  ///
+  /// [proyecto] es el proyecto que contiene la tarea.
+  /// [sprint] es el sprint que contiene la tarea.
+  /// [tareaId] es el ID de la tarea que se va a obtener.
+  /// Devuelve una [Response] con la tarea obtenida o un mensaje de error.
   Future<Response<TareaFirestore>> getTarea(ProyectoFirestore proyecto,
       SprintFirestore sprint, String tareaId) async {
     try {
@@ -396,6 +438,11 @@ class ProjectDataService {
     }
   }
 
+  /// Obtiene un sprint específico.
+  ///
+  /// [proyecto] es el proyecto que contiene el sprint.
+  /// [sprintId] es el ID del sprint que se va a obtener.
+  /// Devuelve una [Response] con el sprint obtenido o un mensaje de error.
   Future<Response<Sprint>> getSprint(
       ProyectoFirestore proyecto, String sprintId) async {
     try {
@@ -439,6 +486,10 @@ class ProjectDataService {
     }
   }
 
+  /// Obtiene un proyecto específico.
+  ///
+  /// [proyecto] es el proyecto que se va a obtener.
+  /// Devuelve una [Response] con el proyecto obtenido o un mensaje de error.
   Future<Response<Proyecto>> getData(ProyectoFirestore proyecto) async {
     _logger.i('Obteniendo proyecto');
     try {

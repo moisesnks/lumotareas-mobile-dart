@@ -1,5 +1,8 @@
+/// @nodoc
+library;
+
 import 'package:flutter/material.dart';
-import 'package:lumotareas/lib/models/firestore/tareas.dart';
+import 'package:lumotareas/lib/models/firestore/subtarea.dart';
 
 class SubtareaCheckbox extends StatelessWidget {
   final Subtarea subtarea;

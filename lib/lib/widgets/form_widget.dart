@@ -1,13 +1,22 @@
+//Widget de formulario que permite navegar a través de una lista de preguntas y recopilar respuestas.
+library;
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Importar Timestamp
 import 'package:logger/logger.dart';
 import 'package:lumotareas/lib/models/organization/pregunta.dart';
 import 'pregunta_page_widget.dart';
 
+/// Un widget de formulario que permite navegar a través de una lista de preguntas y recopilar respuestas.
 class FormWidget extends StatefulWidget {
-  final List<Pregunta> preguntas;
-  final void Function(Map<String, dynamic> respuestas) onSubmit;
+  final List<Pregunta> preguntas; // Lista de preguntas en el formulario
+  final void Function(Map<String, dynamic> respuestas)
+      onSubmit; // Función a llamar al enviar el formulario
 
+  /// Constructor para crear una instancia de [FormWidget].
+  ///
+  /// [preguntas] es la lista de preguntas en el formulario.
+  /// [onSubmit] es la función a llamar al enviar el formulario.
   const FormWidget({
     super.key,
     required this.preguntas,
@@ -52,6 +61,7 @@ class FormWidgetState extends State<FormWidget> {
     super.dispose();
   }
 
+  /// Verifica si la pregunta actual ha sido respondida.
   bool _isCurrentQuestionAnswered() {
     var preguntaActual = widget.preguntas[_currentIndex];
     if (preguntaActual.required == true) {
@@ -63,8 +73,8 @@ class FormWidgetState extends State<FormWidget> {
     return true;
   }
 
+  /// Verifica si todas las preguntas han sido respondidas.
   bool _allQuestionsAnswered() {
-    // Verificar si todas las respuestas han sido completadas
     for (var pregunta in widget.preguntas) {
       if (pregunta.required == true) {
         var respuesta = _respuestas[pregunta.enunciado.toString()];
@@ -76,28 +86,31 @@ class FormWidgetState extends State<FormWidget> {
     return true;
   }
 
+  /// Actualiza la respuesta para una pregunta específica.
+  ///
+  /// [key] es la clave de la pregunta.
+  /// [value] es la respuesta proporcionada.
   void _updateRespuesta(String key, dynamic value) {
     setState(() {
       if (widget.preguntas[_currentIndex].tipo == 'seleccion_multiple') {
-        _respuestas[key] =
-            value; // value es List<String> para selección múltiple
+        _respuestas[key] = value;
       } else if (widget.preguntas[_currentIndex].tipo == 'booleano') {
-        _respuestas[key] = value; // value es bool para booleano
+        _respuestas[key] = value;
       } else if (widget.preguntas[_currentIndex].tipo == 'fecha') {
         if (value is DateTime) {
-          _respuestas[key] =
-              Timestamp.fromDate(value); // Convertir DateTime a Timestamp
+          _respuestas[key] = Timestamp.fromDate(value);
         } else {
-          _respuestas[key] = value; // Mantener Timestamp si ya es Timestamp
+          _respuestas[key] = value;
         }
       } else if (widget.preguntas[_currentIndex].tipo == 'subtareas') {
-        _respuestas[key] = value; // value es List<Subtarea> para subtareas
+        _respuestas[key] = value;
       } else {
-        _respuestas[key] = value; // value es String para otros tipos
+        _respuestas[key] = value;
       }
     });
   }
 
+  /// Navega a la página siguiente del formulario.
   void _nextPage() {
     if (!_isCurrentQuestionAnswered()) {
       _showSnackbar(context, 'Debe responder la pregunta actual.');
@@ -118,6 +131,7 @@ class FormWidgetState extends State<FormWidget> {
     }
   }
 
+  /// Navega a la página anterior del formulario.
   void _previousPage() {
     if (_currentIndex > 0) {
       setState(() {
@@ -130,8 +144,11 @@ class FormWidgetState extends State<FormWidget> {
     }
   }
 
+  /// Muestra un Snackbar con un mensaje.
+  ///
+  /// [context] es el contexto de la aplicación.
+  /// [message] es el mensaje a mostrar.
   void _showSnackbar(BuildContext context, String message) {
-    // Mostrar snackbar con mensaje
     final snackBar = SnackBar(
       content: Text(message),
       backgroundColor: Colors.red,

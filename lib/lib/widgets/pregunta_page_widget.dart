@@ -1,14 +1,24 @@
+// Widget que muestra una página con preguntas y permite al usuario proporcionar respuestas.
+library;
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
-import 'package:lumotareas/lib/models/firestore/tareas.dart';
+import 'package:lumotareas/lib/models/firestore/subtarea.dart';
 import 'package:lumotareas/lib/models/organization/pregunta.dart';
 
+/// Widget que muestra una página con una pregunta específica y permite al usuario proporcionar una respuesta.
 class PreguntaPage extends StatefulWidget {
-  final Pregunta pregunta;
-  final dynamic respuesta;
-  final ValueChanged<dynamic> onChanged;
+  final Pregunta pregunta; // Pregunta a mostrar
+  final dynamic respuesta; // Respuesta inicial proporcionada por el usuario
+  final ValueChanged<dynamic>
+      onChanged; // Callback para manejar cambios en la respuesta
 
+  /// Constructor para crear una instancia de [PreguntaPage].
+  ///
+  /// [pregunta] es la pregunta a mostrar.
+  /// [respuesta] es la respuesta inicial proporcionada por el usuario.
+  /// [onChanged] es el callback para manejar cambios en la respuesta.
   const PreguntaPage({
     super.key,
     required this.pregunta,
@@ -30,8 +40,8 @@ class PreguntaPageState extends State<PreguntaPage> {
     initRespuestas();
   }
 
+  /// Inicializa las respuestas visuales y actuales basadas en el tipo de pregunta.
   void initRespuestas() {
-    // Inicializar respuesta visual
     switch (widget.pregunta.tipo) {
       case 'seleccion_unica':
       case 'seleccion_multiple':
@@ -60,10 +70,10 @@ class PreguntaPageState extends State<PreguntaPage> {
         respuestaVisual = widget.respuesta ?? '';
     }
 
-    // Inicializar respuesta actual (para el manejo interno)
     respuestaActual = widget.respuesta;
   }
 
+  /// Añade una nueva subtarea a la lista de respuestas visuales.
   void addSubtarea() {
     setState(() {
       respuestaVisual.add(Subtarea(
@@ -75,9 +85,12 @@ class PreguntaPageState extends State<PreguntaPage> {
     });
   }
 
+  /// Actualiza una subtarea específica en la lista de respuestas visuales.
+  ///
+  /// [subtarea] es la subtarea actualizada.
+  /// [index] es el índice de la subtarea en la lista.
   void updateSubtarea(Subtarea subtarea, int index) {
     setState(() {
-      // Verificar si el índice es válido antes de actualizar
       if (index >= 0 && index < respuestaVisual.length) {
         respuestaVisual[index] = subtarea;
         respuestaActual = List.from(respuestaVisual);
@@ -246,10 +259,16 @@ class PreguntaPageState extends State<PreguntaPage> {
   }
 }
 
+/// Widget que muestra una subtarea y permite al usuario proporcionar detalles de la subtarea.
 class SubtareaWidget extends StatelessWidget {
-  final Subtarea subtarea;
-  final ValueChanged<Subtarea> onChanged;
+  final Subtarea subtarea; // Subtarea a mostrar
+  final ValueChanged<Subtarea>
+      onChanged; // Callback para manejar cambios en la subtarea
 
+  /// Constructor para crear una instancia de [SubtareaWidget].
+  ///
+  /// [subtarea] es la subtarea a mostrar.
+  /// [onChanged] es el callback para manejar cambios en la subtarea.
   const SubtareaWidget({
     super.key,
     required this.subtarea,

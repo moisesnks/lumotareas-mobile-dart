@@ -1,5 +1,9 @@
+//Modelo de Sprint en Firestore
+library;
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+/// Clase que representa un sprint almacenado en Firestore.
 class SprintFirestore {
   final String id;
   final String name;
@@ -11,6 +15,17 @@ class SprintFirestore {
   final List<String> members;
   final String createdBy;
 
+  /// Constructor para crear una instancia de [SprintFirestore].
+  ///
+  /// [id] es el identificador único del sprint.
+  /// [name] es el nombre del sprint.
+  /// [description] es la descripción del sprint.
+  /// [startDate] es la fecha de inicio del sprint.
+  /// [endDate] es la fecha de finalización del sprint.
+  /// [projectId] es el identificador del proyecto al que pertenece el sprint.
+  /// [tasks] es una lista de identificadores de tareas asociadas al sprint.
+  /// [members] es una lista de identificadores de los miembros del sprint.
+  /// [createdBy] es el identificador del usuario que creó el sprint.
   SprintFirestore({
     required this.id,
     required this.name,
@@ -23,13 +38,16 @@ class SprintFirestore {
     required this.createdBy,
   });
 
+  /// Crea una instancia de [SprintFirestore] a partir de un mapa.
+  ///
+  /// [map] es el mapa que contiene los datos del sprint.
   factory SprintFirestore.fromMap(Map<String, dynamic> map) {
     return SprintFirestore(
       id: map['id'] ?? '',
       name: map['name'] ?? '',
       description: map['description'] ?? '',
-      startDate: map['startDate'] ?? '',
-      endDate: map['endDate'] ?? '',
+      startDate: map['startDate'] ?? Timestamp.now(),
+      endDate: map['endDate'] ?? Timestamp.now(),
       projectId: map['projectId'] ?? '',
       tasks: (map['tasks'] as List<dynamic>?)
               ?.map((task) => task.toString())
@@ -43,6 +61,7 @@ class SprintFirestore {
     );
   }
 
+  /// Convierte una instancia de [SprintFirestore] a un mapa.
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -57,12 +76,7 @@ class SprintFirestore {
     };
   }
 
-  @override
-  String toString() {
-    return 'SprintFirestore: $id, Name: $name, Description: $description, Start Date: $startDate, End Date: $endDate, Project ID: $projectId, Tasks: $tasks, Members: $members';
-  }
-
-  @override
+  /// Crea una instancia vacía de [SprintFirestore].
   factory SprintFirestore.empty() {
     return SprintFirestore(
       id: '',
@@ -77,6 +91,9 @@ class SprintFirestore {
     );
   }
 
+  /// Crea una instancia de [SprintFirestore] solo con el identificador.
+  ///
+  /// [id] es el identificador único del sprint.
   factory SprintFirestore.onlyId(String id) {
     return SprintFirestore(
       id: id,
@@ -89,5 +106,10 @@ class SprintFirestore {
       members: [],
       createdBy: '',
     );
+  }
+
+  @override
+  String toString() {
+    return 'SprintFirestore: $id, Name: $name, Description: $description, Start Date: $startDate, End Date: $endDate, Project ID: $projectId, Tasks: $tasks, Members: $members';
   }
 }

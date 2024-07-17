@@ -1,3 +1,6 @@
+/// @nodoc
+library;
+
 import 'package:flutter/material.dart';
 import 'package:lumotareas/lib/providers/user_data_provider.dart';
 import 'package:lumotareas/lib/utils/time.dart';

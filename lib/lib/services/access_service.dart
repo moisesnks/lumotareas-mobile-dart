@@ -1,7 +1,11 @@
+//Servicio que se encarga de manejar la autenticación y los registros de sesión.
+library;
+
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 
+/// Servicio de acceso para manejar autenticación y registros de sesión.
 class AccessService {
   static const String _mime = 'application/json';
   static const String _baseUrl = 'https://api.sebastian.cl/Auth';
@@ -14,7 +18,9 @@ class AccessService {
 
   static final Logger _logger = Logger();
 
-  // Método para manejar respuestas HTTP
+  /// Método para manejar respuestas HTTP.
+  ///
+  /// [response] es la respuesta HTTP a manejar.
   static void _handleResponse(http.Response response) {
     final int status = response.statusCode;
     final String jsonResponse = response.body;
@@ -27,7 +33,9 @@ class AccessService {
     }
   }
 
-  // Método de acceso POST para marcar la entrada
+  /// Método de acceso POST para marcar la entrada.
+  ///
+  /// [idToken] es el token de identificación del usuario.
   static Future<void> access(String idToken) async {
     _logger.i('Acceso con idToken: $idToken');
     try {
@@ -46,7 +54,10 @@ class AccessService {
     }
   }
 
-  // Método para obtener los registros de sesión
+  /// Método para obtener los registros de sesión.
+  ///
+  /// [email] es el correo electrónico del usuario para el cual se obtienen los registros.
+  /// Devuelve una lista de registros de sesión ([Logs]).
   static Future<List<Logs>> getLogs(String email) async {
     _logger.i('Obteniendo registros de sesión');
     try {
@@ -69,6 +80,7 @@ class AccessService {
   }
 }
 
+/// Modelo de datos para los registros de sesión.
 class Logs {
   final String email;
   final String userAgent;
@@ -80,6 +92,9 @@ class Logs {
     required this.created,
   });
 
+  /// Crea una instancia de [Logs] a partir de un mapa.
+  ///
+  /// [map] es el mapa que contiene los datos del registro.
   factory Logs.fromMap(Map<String, dynamic> map) {
     return Logs(
       email: map['email'],
@@ -88,6 +103,7 @@ class Logs {
     );
   }
 
+  /// Convierte una instancia de [Logs] a un mapa.
   Map<String, dynamic> toMap() {
     return {
       'email': email,

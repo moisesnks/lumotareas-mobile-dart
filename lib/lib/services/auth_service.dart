@@ -1,3 +1,6 @@
+//Servicio de autenticación con Google
+library;
+
 import 'package:logger/logger.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -6,12 +9,16 @@ import 'package:lumotareas/lib/models/user/usuario.dart';
 import 'package:lumotareas/lib/services/access_service.dart';
 import 'package:lumotareas/lib/services/user_data_service.dart';
 
+/// Servicio de autenticación que maneja el inicio y cierre de sesión con Google.
 class AuthService {
   final Logger _logger = Logger();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final UserDataService _userDataService = UserDataService();
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
+  /// Inicia sesión con Google y autentica al usuario en Firebase.
+  ///
+  /// Devuelve una [Response] con el usuario autenticado o un mensaje de error.
   Future<Response<Usuario>> loginWithGoogle() async {
     try {
       // Inicializa GoogleSignIn
@@ -85,6 +92,7 @@ class AuthService {
     }
   }
 
+  /// Cierra la sesión del usuario.
   Future<void> logout() async {
     await _auth.signOut();
     await _googleSignIn.signOut();

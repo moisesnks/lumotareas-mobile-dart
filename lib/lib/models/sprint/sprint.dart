@@ -1,3 +1,5 @@
+/// @nodoc
+library;
 import 'package:lumotareas/lib/models/firestore/tareas.dart';
 import 'package:lumotareas/lib/utils/time.dart';
 

@@ -1,3 +1,6 @@
+/// @nodoc
+library;
+
 import 'package:flutter/material.dart';
 import 'package:lumotareas/lib/services/preferences_service.dart';
 

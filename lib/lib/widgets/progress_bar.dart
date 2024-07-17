@@ -1,10 +1,20 @@
+// Widget que muestra una barra de progreso, ya sea circular o lineal.
+library;
+
 import 'package:flutter/material.dart';
 
+/// Un widget que muestra una barra de progreso, ya sea circular o lineal.
 class ProgressBar extends StatelessWidget {
-  final double porcentajeCompletado;
-  final bool esCircular;
-  final bool mostrarTexto;
+  final double porcentajeCompletado; // El porcentaje de progreso completado
+  final bool esCircular; // Indica si la barra de progreso es circular
+  final bool
+      mostrarTexto; // Indica si se debe mostrar el texto del porcentaje completado
 
+  /// Constructor para crear una instancia de [ProgressBar].
+  ///
+  /// [porcentajeCompletado] es el porcentaje de progreso completado.
+  /// [esCircular] indica si la barra de progreso es circular.
+  /// [mostrarTexto] indica si se debe mostrar el texto del porcentaje completado.
   const ProgressBar({
     super.key,
     required this.porcentajeCompletado,
@@ -22,6 +32,7 @@ class ProgressBar extends StatelessWidget {
     );
   }
 
+  /// Construye un indicador de progreso circular.
   Widget _buildCircularProgressIndicator() {
     return Stack(
       alignment: Alignment.center,
@@ -48,6 +59,7 @@ class ProgressBar extends StatelessWidget {
     );
   }
 
+  /// Construye un indicador de progreso lineal.
   Widget _buildLinearProgressIndicator() {
     return Row(
       children: [

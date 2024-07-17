@@ -1,3 +1,6 @@
+/// @nodoc
+library;
+
 import 'package:flutter/material.dart';
 import 'package:lumotareas/lib/models/firestore/solicitud.dart';
 import 'package:lumotareas/lib/widgets/secondary_header.dart';

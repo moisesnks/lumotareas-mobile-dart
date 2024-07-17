@@ -1,12 +1,23 @@
+// Widget que muestra un icono con una etiqueta y un contador opcional.
+library;
+
 import 'package:flutter/material.dart';
 
+/// Un widget que muestra un ícono con una etiqueta y un contador opcional.
 class IconBox extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final int? count;
-  final bool showCount;
-  final VoidCallback onTap;
+  final IconData icon; // Icono a mostrar
+  final String label; // Etiqueta a mostrar debajo del icono
+  final int? count; // Contador opcional a mostrar
+  final bool showCount; // Indica si se debe mostrar el contador
+  final VoidCallback onTap; // Función a ejecutar cuando se presiona el widget
 
+  /// Constructor para crear una instancia de [IconBox].
+  ///
+  /// [icon] es el icono a mostrar.
+  /// [label] es la etiqueta a mostrar debajo del icono.
+  /// [count] es el contador opcional a mostrar.
+  /// [showCount] indica si se debe mostrar el contador.
+  /// [onTap] es la función a ejecutar cuando se presiona el widget.
   const IconBox({
     super.key,
     required this.icon,

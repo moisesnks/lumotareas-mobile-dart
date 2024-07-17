@@ -1,11 +1,21 @@
+// Widget que muestra un encabezado con un título y un logotipo, y un botón opcional para cerrar la página.
+library;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
+/// Un widget que muestra un encabezado con un título, un logotipo y un botón opcional para cerrar la página.
 class Header extends StatelessWidget {
-  final VoidCallback? onTap;
-  final bool isPoppable;
-  final String title;
+  final VoidCallback? onTap; // Callback cuando se toca el logotipo
+  final bool
+      isPoppable; // Indica si se debe mostrar un botón para cerrar la página
+  final String title; // Título del encabezado
 
+  /// Constructor para crear una instancia de [Header].
+  ///
+  /// [onTap] es el callback cuando se toca el logotipo.
+  /// [isPoppable] indica si se debe mostrar un botón para cerrar la página.
+  /// [title] es el título del encabezado.
   const Header({
     super.key,
     this.onTap,
@@ -13,6 +23,7 @@ class Header extends StatelessWidget {
     this.title = 'Lumotareas',
   });
 
+  /// Renderiza el logotipo como un [GestureDetector].
   Widget renderLogo() {
     return GestureDetector(
       onTap: onTap,

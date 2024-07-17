@@ -1,8 +1,12 @@
+/// @nodoc
+library;
+
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:lumotareas/lib/models/firestore/subtarea.dart';
 import 'package:lumotareas/lib/models/firestore/tareas.dart';
 import 'package:lumotareas/lib/models/organization/pregunta.dart';
 import 'package:lumotareas/lib/models/sprint/sprint.dart';

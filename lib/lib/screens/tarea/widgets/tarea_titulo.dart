@@ -1,3 +1,6 @@
+/// @nodoc
+library;
+
 import 'package:flutter/material.dart';
 import 'package:lumotareas/lib/models/firestore/tareas.dart';
 import 'package:lumotareas/lib/screens/tarea/widgets/tarea_progress.dart';

@@ -1,3 +1,6 @@
+/// @nodoc
+library;
+
 import 'package:flutter/material.dart';
 import 'package:lumotareas/lib/models/user/solicitudes.dart';
 import 'package:lumotareas/lib/screens/solicitud/solicitud_user_screen.dart';

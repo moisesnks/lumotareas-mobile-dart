@@ -1,3 +1,6 @@
+/// @nodoc
+library;
+
 import '../sprint/sprint.dart';
 import '../firestore/proyecto.dart';
 

@@ -1,3 +1,6 @@
+/// @nodoc
+library;
+
 import 'package:flutter/material.dart';
 import 'package:lumotareas/lib/models/sprint/sprint.dart';
 import 'package:lumotareas/lib/models/user/usuario.dart';

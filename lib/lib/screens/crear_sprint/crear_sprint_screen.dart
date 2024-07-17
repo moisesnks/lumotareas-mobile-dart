@@ -1,3 +1,6 @@
+/// @nodoc
+library;
+
 import 'package:flutter/material.dart';
 import 'package:lumotareas/lib/models/user/usuario.dart';
 import 'package:lumotareas/lib/screens/crear_sprint/crear_sprint_preguntas.dart';

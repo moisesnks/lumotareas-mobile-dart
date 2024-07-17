@@ -1,3 +1,6 @@
+/// @nodoc
+library;
+
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:lumotareas/lib/models/firestore/tareas.dart';

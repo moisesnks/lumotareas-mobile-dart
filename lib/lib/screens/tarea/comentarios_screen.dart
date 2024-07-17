@@ -1,6 +1,10 @@
+/// @nodoc
+library;
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:lumotareas/lib/models/firestore/tareas.dart';
+import 'package:lumotareas/lib/models/firestore/comentarios.dart';
+import 'package:lumotareas/lib/models/firestore/small_user.dart';
 import 'package:lumotareas/lib/models/user/usuario.dart';
 import 'package:lumotareas/lib/screens/tarea/widgets/comentario_bubble.dart';
 import 'package:lumotareas/lib/widgets/secondary_header.dart';

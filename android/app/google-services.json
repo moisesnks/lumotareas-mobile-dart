@@ -1,0 +1,86 @@
+{
+  "project_info": {
+    "project_number": "293636913953",
+    "project_id": "lumotareas-858a3",
+    "storage_bucket": "lumotareas-858a3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:293636913953:android:666905316a498dbfea9c60",
+        "android_client_info": {
+          "package_name": "com.lumonidy.lumotareas"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "293636913953-a1ejr4cvl6qcif8d5b039k3cq5g5j3uc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lumonidy.lumotareas",
+            "certificate_hash": "6c936f4718747c16f51b9f62e57ad096018cee19"
+          }
+        },
+        {
+          "client_id": "293636913953-aetfl99dbs977fdb960vkjf1k41rdgmh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lumonidy.lumotareas",
+            "certificate_hash": "6c334ca7557771bae2633fa65335db2a2fdbc297"
+          }
+        },
+        {
+          "client_id": "293636913953-gg8ptti6ibo76ojjv5t88ljmtkt1ef17.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lumonidy.lumotareas",
+            "certificate_hash": "2a9bbd831bcb26b737b924f6b2172d916080b685"
+          }
+        },
+        {
+          "client_id": "293636913953-m9lep3robr1nb9d3psr7941mptal6cj3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lumonidy.lumotareas",
+            "certificate_hash": "b1fd7c240a1f3d79b34ab8afdfa6f79c6cac38c0"
+          }
+        },
+        {
+          "client_id": "293636913953-ttr7jisq31nqjia384mklr7nq2t0jvv3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lumonidy.lumotareas",
+            "certificate_hash": "d4fcf5444e56ad1e055d19875d784b3d28bf5ab7"
+          }
+        },
+        {
+          "client_id": "293636913953-gaa6bg5usshhj17bv6die00c6n54qnnf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDyu--_FOP_ncDoTN0SgXc9yAQWkEtO7Zg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "293636913953-gaa6bg5usshhj17bv6die00c6n54qnnf.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "293636913953-arqtaib911fbk0p2mbl5buqvc78g2s2r.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.lumonidy.lumotareas"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

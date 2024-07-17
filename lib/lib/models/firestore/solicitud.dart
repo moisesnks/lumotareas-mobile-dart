@@ -1,5 +1,10 @@
+//Modelo de Solicitud en Firebase
+library;
+
+/// Estado de una solicitud.
 enum EstadoSolicitud { pendiente, aceptada, rechazada }
 
+/// Clase que representa una solicitud en Firestore.
 class Solicitud {
   final String id; // El id de la solicitud
   final EstadoSolicitud estado; // El estado de la solicitud
@@ -9,6 +14,14 @@ class Solicitud {
   final String uid; // El uid del usuario que hizo la solicitud
   final String email; // El email del usuario que hizo la solicitud
 
+  /// Constructor para crear una instancia de [Solicitud].
+  ///
+  /// [id] es el identificador único de la solicitud.
+  /// [estado] es el estado de la solicitud.
+  /// [fecha] es la fecha en que se hizo la solicitud.
+  /// [solicitud] es un mapa con las preguntas y respuestas de la solicitud.
+  /// [uid] es el identificador del usuario que hizo la solicitud.
+  /// [email] es el correo electrónico del usuario que hizo la solicitud.
   Solicitud({
     required this.id,
     required this.estado,
@@ -18,6 +31,10 @@ class Solicitud {
     required this.email,
   });
 
+  /// Crea una instancia de [Solicitud] a partir de un mapa.
+  ///
+  /// [id] es el identificador único de la solicitud.
+  /// [map] es el mapa que contiene los datos de la solicitud.
   factory Solicitud.fromMap(String id, Map<String, dynamic> map) {
     return Solicitud(
       id: id,
@@ -33,6 +50,7 @@ class Solicitud {
     );
   }
 
+  /// Convierte una instancia de [Solicitud] a un mapa.
   Map<String, dynamic> toMap() {
     return {
       'estado': estado.toString().split('.').last,

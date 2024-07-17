@@ -1,3 +1,5 @@
+/// @nodoc
+library;
 class Response<T> {
   final bool success;
   final T? data;
