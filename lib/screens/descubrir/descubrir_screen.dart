@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lumotareas/screens/descubrir/widgets/buscar_organizacion.dart';
 import 'package:provider/provider.dart';
 import 'package:lumotareas/providers/descubrir_data_provider.dart';
 import 'package:lumotareas/models/organization/organizacion.dart';
@@ -45,6 +46,8 @@ class DescubrirScreenState extends State<DescubrirScreen> {
                   )
                 : ListView(
                     children: [
+                      const BuscarOrganizacion(),
+                      const SizedBox(height: 16.0),
                       CarouselBox<Organizacion>(
                         items: provider.organizacionesDestacadas,
                         itemBuilder: (context, index) => OrganizacionCard(

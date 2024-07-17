@@ -11,6 +11,7 @@ import 'package:lumotareas/screens/index/index_screen.dart';
 import 'package:lumotareas/screens/layout/layout_screen.dart';
 import 'package:lumotareas/screens/loading/loading_screen.dart';
 import 'package:lumotareas/screens/login/login_screen.dart';
+import 'package:lumotareas/screens/register/register_screen.dart';
 import 'package:provider/provider.dart';
 // import 'package:lumotareas/viewmodels/login_viewmodel.dart';
 
@@ -93,6 +94,7 @@ class MyApp extends StatelessWidget {
         routes: {
           '/': (context) => const IndexScreen(),
           '/login': (context) => const LoginScreen(),
+          '/register': (context) => const RegisterScreen(),
           '/welcome': (context) => const WelcomeScreen(),
           '/home': (context) => const LayoutScreen(),
           '/loading': (context) => const LoadingScreen(),

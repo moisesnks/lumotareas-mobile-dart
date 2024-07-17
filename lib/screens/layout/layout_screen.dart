@@ -5,7 +5,6 @@ import 'package:lumotareas/screens/descubrir/descubrir_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'package:lumotareas/models/user/usuario.dart';
-import 'package:lumotareas/models/organization/organizacion.dart';
 import 'package:lumotareas/providers/user_data_provider.dart';
 import 'package:lumotareas/providers/organization_data_provider.dart';
 import 'package:lumotareas/screens/crear_proyecto/crear_proyecto_screen.dart';
@@ -27,7 +26,6 @@ class LayoutScreen extends StatefulWidget {
 class LayoutScreenState extends State<LayoutScreen> {
   int _selectedIndex = 0; // Índice de la página seleccionada
   late PageController _pageController;
-  Organizacion? _currentOrganization;
 
   @override
   void initState() {
@@ -45,9 +43,6 @@ class LayoutScreenState extends State<LayoutScreen> {
     final Usuario? currentUser = userDataProvider.currentUser;
     if (currentUser != null && currentUser.currentOrg.isNotEmpty) {
       await orgDataProvider.fetchOrganization(context, currentUser.currentOrg);
-      setState(() {
-        _currentOrganization = orgDataProvider.organization;
-      });
     }
   }
 
@@ -69,22 +64,29 @@ class LayoutScreenState extends State<LayoutScreen> {
     });
   }
 
-  MenuFlotante _buildFloatingHomeMenu() {
+  MenuFlotante _buildFloatingHomeMenu(Usuario currentUser) {
     return MenuFlotante(
-      mainIcon: Icons.menu,
-      items: const [
-        {
-          'icon': Icons.add,
-          'label': 'Crear proyecto',
-          'screen': CrearProyectoScreen()
-        },
-        {
-          'label': 'Crear organización',
-          'screen': CrearOrganizacionScreen(),
-          'icon': Icons.business
-        }
-      ],
-    );
+        mainIcon: Icons.menu,
+        items: currentUser.currentOrg.isEmpty
+            ? [
+                {
+                  'icon': Icons.add,
+                  'label': 'Crear organización',
+                  'screen': const CrearOrganizacionScreen(),
+                },
+              ]
+            : [
+                {
+                  'icon': Icons.add,
+                  'label': 'Crear proyecto',
+                  'screen': const CrearProyectoScreen(),
+                },
+                {
+                  'icon': Icons.add,
+                  'label': 'Crear proyecto',
+                  'screen': const CrearProyectoScreen(),
+                },
+              ]);
   }
 
   MenuFlotante _buildFloatingProfileMenu(Usuario currentUser) {
@@ -109,7 +111,13 @@ class LayoutScreenState extends State<LayoutScreen> {
           return const Scaffold(
             body: SafeArea(
               child: Center(
-                child: CircularProgressIndicator(),
+                child: Column(
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 10),
+                    Text('Cargando usuario...'),
+                  ],
+                ),
               ),
             ),
           );
@@ -130,7 +138,13 @@ class LayoutScreenState extends State<LayoutScreen> {
             child: Column(
               children: [
                 Header(
-                  title: currentUser.currentOrg,
+                  title: _selectedIndex == 0
+                      ? currentUser.currentOrg.isNotEmpty
+                          ? currentUser.currentOrg
+                          : 'Inicio'
+                      : _selectedIndex == 1
+                          ? 'Descubrir'
+                          : 'Perfil',
                   onLogoTap: () {
                     Logger().i('Logo tapped!');
                   },
@@ -145,23 +159,19 @@ class LayoutScreenState extends State<LayoutScreen> {
                   },
                 ),
                 Expanded(
-                  child: _currentOrganization == null
-                      ? const Center(
-                          child: CircularProgressIndicator(),
-                        )
-                      : PageView(
-                          controller: _pageController,
-                          onPageChanged: (index) {
-                            setState(() {
-                              _selectedIndex = index;
-                            });
-                          },
-                          children: const [
-                            HomeScreen(),
-                            DescubrirScreen(),
-                            ProfileScreen(),
-                          ],
-                        ),
+                  child: PageView(
+                    controller: _pageController,
+                    onPageChanged: (index) {
+                      setState(() {
+                        _selectedIndex = index;
+                      });
+                    },
+                    children: const [
+                      HomeScreen(),
+                      DescubrirScreen(),
+                      ProfileScreen(),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -176,7 +186,7 @@ class LayoutScreenState extends State<LayoutScreen> {
             ],
           ),
           floatingActionButton: _selectedIndex == 0
-              ? _buildFloatingHomeMenu()
+              ? _buildFloatingHomeMenu(currentUser)
               : _selectedIndex == 2
                   ? _buildFloatingProfileMenu(currentUser)
                   : null,

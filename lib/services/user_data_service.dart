@@ -12,6 +12,60 @@ class UserDataService {
   final Logger _logger = Logger();
   final DatabaseService _databaseService = DatabaseService();
 
+  /// Crea un nuevo usuario en la base de datos.
+  ///
+  /// [user] es la instancia de [Usuario] que se va a crear.
+  /// Devuelve una [Response] indicando el éxito o fracaso de la operación.
+  ///
+  Future<Response<Usuario>> create(User firebaseUser,
+      {String birthDate = ''}) async {
+    try {
+      // Crear instancia de Usuario desde FirebaseUser
+      Usuario usuario = Usuario.fromFirebaseUser(firebaseUser);
+
+      // Aplicar copyWith solo si birthDate no está vacío
+      if (birthDate.isNotEmpty) {
+        usuario = usuario.copyWith(birthdate: birthDate);
+      }
+
+      // Agregar documento a Firestore
+      Response response = await _databaseService.addDocument(
+        'users',
+        documentId: firebaseUser.uid,
+        data: usuario.toMap(),
+      );
+
+      // Verificar la respuesta del servicio de base de datos
+      if (response.success) {
+        // Obtener los datos del usuario recién creado con el getData
+        Response<Usuario> userResponse = await getData(firebaseUser);
+        if (userResponse.success) {
+          return Response(
+            success: true,
+            data: userResponse.data,
+            message: response.message,
+          );
+        } else {
+          return Response(
+            success: false,
+            message: userResponse.message,
+          );
+        }
+      } else {
+        return Response(
+          success: false,
+          message: response.message,
+        );
+      }
+    } catch (e) {
+      _logger.e('Error al crear usuario: $e');
+      return Response(
+        success: false,
+        message: 'Error al crear usuario',
+      );
+    }
+  }
+
   /// Obtiene los datos de un usuario de Firebase.
   ///
   /// [firebaseUser] es la instancia de [User] de Firebase Authentication.

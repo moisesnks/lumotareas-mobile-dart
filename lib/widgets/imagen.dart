@@ -5,6 +5,7 @@ class Imagen extends StatelessWidget {
   final double width;
   final double height;
   final double borderRadius;
+  final String placeholder;
 
   const Imagen({
     super.key,
@@ -12,21 +13,38 @@ class Imagen extends StatelessWidget {
     this.width = 300,
     this.height = 200,
     this.borderRadius = 10,
+    this.placeholder = 'assets/images/placeholder_image.jpg',
   });
 
   @override
   Widget build(BuildContext context) {
+    if (imageUrl.isEmpty) {
+      // Si la URL de la imagen está vacía, muestra la imagen de placeholder
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(borderRadius),
+        child: Image.asset(
+          placeholder,
+          width: width,
+          height: height,
+          fit: BoxFit.cover,
+        ),
+      );
+    }
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(borderRadius),
-      child: Image.network(
-        imageUrl,
+      child: FadeInImage.assetNetwork(
+        placeholder: placeholder,
+        image: imageUrl,
         width: width,
         height: height,
         fit: BoxFit.cover,
-        errorBuilder:
-            (BuildContext context, Object exception, StackTrace? stackTrace) {
-          return Image.asset('assets/images/placeholder_image.jpg');
-        },
+        imageErrorBuilder: (context, error, stackTrace) => Image.asset(
+          placeholder,
+          width: width,
+          height: height,
+          fit: BoxFit.cover,
+        ),
       ),
     );
   }

@@ -50,7 +50,7 @@ class SettingsScreenState extends State<SettingsScreen> {
             final Organizaciones currentOrganization =
                 currentUser.organizaciones.firstWhere(
               (org) => org.id == currentUser.currentOrg,
-              orElse: () => currentUser.organizaciones.first,
+              orElse: () => Organizaciones.empty(),
             );
 
             return _buildSettingsScreen(
@@ -85,7 +85,6 @@ class SettingsScreenState extends State<SettingsScreen> {
                 switch (index) {
                   case 0:
                     return SelectCurrentOrg(
-                      currentOrganization: currentOrganization,
                       backgroundColor: backgroundColor,
                     );
                   case 1:

@@ -1,6 +1,7 @@
 /// @nodoc
 library;
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lumotareas/models/user/organizaciones.dart';
 import 'package:lumotareas/models/user/solicitudes.dart';
 
@@ -71,6 +72,17 @@ class Usuario {
   @override
   String toString() {
     return 'Usuario(uid: $uid, nombre: $nombre, email: $email, birthdate: $birthdate, organizaciones: $organizaciones, solicitudes: $solicitudes, photoURL: $photoURL)';
+  }
+
+  factory Usuario.fromFirebaseUser(User firebaseUser) {
+    return Usuario(
+      uid: firebaseUser.uid,
+      nombre: firebaseUser.displayName ?? '',
+      email: firebaseUser.email ?? '',
+      birthdate: '',
+      photoURL: firebaseUser.photoURL ?? '',
+      currentOrg: '',
+    );
   }
 
   factory Usuario.empty() {

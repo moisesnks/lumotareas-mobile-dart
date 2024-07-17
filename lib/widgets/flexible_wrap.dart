@@ -25,6 +25,7 @@ class FlexibleWrap extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: MediaQuery.of(context).size.width,
       color: color,
       padding: EdgeInsets.all(spacing),
       child: Wrap(

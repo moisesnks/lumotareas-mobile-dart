@@ -2,11 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:logger/logger.dart';
 import 'package:lumotareas/screens/login/login_titulo.dart';
+import 'package:lumotareas/widgets/birthdate_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:lumotareas/providers/auth_provider.dart';
 
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
+
+  @override
+  RegisterScreenState createState() => RegisterScreenState();
+}
+
+class RegisterScreenState extends State<RegisterScreen> {
+  late DateTime _selectedBirthDate;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedBirthDate = DateTime.now();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +28,7 @@ class LoginScreen extends StatelessWidget {
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/images/no-org.png'),
+            image: AssetImage('assets/images/new_org.png'),
             fit: BoxFit.cover,
           ),
         ),
@@ -27,7 +41,7 @@ class LoginScreen extends StatelessWidget {
                   children: [
                     CircularProgressIndicator(),
                     SizedBox(height: 20),
-                    Text('Iniciando sesión...'),
+                    Text('Registrando...'),
                   ],
                 )
               : Column(
@@ -35,11 +49,28 @@ class LoginScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const LoginTitulo(),
-                    SizedBox(height: MediaQuery.of(context).size.height * 0.2),
+                    const Text('Ingresa tu fecha de nacimiento'),
+                    BirthdatePicker(
+                      upperLimit: DateTime.now()
+                          .subtract(const Duration(days: 365 * 18)),
+                      lowerLimit: DateTime.now()
+                          .subtract(const Duration(days: 365 * 100)),
+                      dateChangedCallback: (date) {
+                        setState(() {
+                          _selectedBirthDate = date;
+                        });
+                        Logger().d('Fecha de nacimiento: $date');
+                      },
+                    ),
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.1),
                     ElevatedButton.icon(
                       onPressed: () {
-                        Logger().d('Iniciando sesión con Google...');
-                        authProvider.loginWithGoogle(context);
+                        Logger().d('Registrando con Google...');
+                        // Formatear la fecha seleccionada como string
+                        String birthDate =
+                            '${_selectedBirthDate.day}-${_selectedBirthDate.month}-${_selectedBirthDate.year}';
+                        authProvider.registerWithGoogle(context,
+                            birthDate: birthDate);
                       },
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 16),

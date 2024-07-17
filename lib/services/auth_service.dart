@@ -97,6 +97,88 @@ class AuthService {
     }
   }
 
+  Future<Response<Usuario>> registerWithGoogle({String birthDate = ''}) async {
+    GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
+
+    try {
+      // Intenta iniciar sesión con Google
+      GoogleSignInAccount? account = await googleSignIn.signIn();
+      if (account == null) {
+        return Response(
+          success: false,
+          message: 'Inicio de sesión cancelado',
+        );
+      }
+      GoogleSignInAuthentication auth = await account.authentication;
+      final String idToken = auth.idToken ?? '';
+      final String accessToken = auth.accessToken ?? '';
+
+      if (idToken.isEmpty || accessToken.isEmpty) {
+        return Response(
+          success: false,
+          message: 'Error al obtener tokens de Google',
+        );
+      }
+
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        idToken: idToken,
+        accessToken: accessToken,
+      );
+
+      // Intenta registrar al usuario en Firebase Auth
+      final UserCredential userCredential =
+          await _auth.signInWithCredential(credential);
+
+      final User? firebaseUser = userCredential.user;
+
+      if (firebaseUser == null) {
+        return Response(
+          success: false,
+          message: 'Error al iniciar sesión con Google',
+        );
+      }
+
+      _logger.d(
+          'Inicio de sesión con Google exitoso. Usuario: ${firebaseUser.email}');
+
+      // Verifica si el usuario existe en la base de datos
+      Response<Usuario> response = await _userDataService.getData(firebaseUser);
+
+      // si el usuario existe, retorna que ya existe
+      if (response.success) {
+        return Response(
+          success: false,
+          message: 'El usuario ya existe',
+        );
+      }
+
+      // si el usuario no existe, lo crea
+      response =
+          await _userDataService.create(firebaseUser, birthDate: birthDate);
+
+      if (response.success) {
+        return Response(
+          success: true,
+          data: response.data,
+          message: 'Usuario creado exitosamente',
+        );
+      } else {
+        return Response(
+          success: false,
+          message: 'Error al crear usuario',
+        );
+      }
+    } catch (e) {
+      _logger.e('Error al iniciar sesión con Google: $e');
+      _auth.signOut();
+      _googleSignIn.signOut();
+      return Response(
+        success: false,
+        message: 'Error al iniciar sesión con Google: $e',
+      );
+    }
+  }
+
   /// Cierra la sesión del usuario.
   Future<void> logout() async {
     await _auth.signOut();

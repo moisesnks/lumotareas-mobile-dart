@@ -32,4 +32,14 @@ class Organizaciones {
   String toString() {
     return 'Organizaciones{id: $id, nombre: $nombre} isOwner: $isOwner';
   }
+
+  factory Organizaciones.empty() {
+    return Organizaciones(
+      id: '',
+      nombre: '',
+    );
+  }
+
+  // isEmpty
+  bool get isEmpty => id.isEmpty && nombre.isEmpty;
 }

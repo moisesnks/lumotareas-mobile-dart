@@ -37,19 +37,6 @@ class HomeScreen extends StatelessWidget {
           );
         }
 
-        if (currentOrg == null) {
-          return const Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 16.0),
-                Text('Cargando organización...'),
-              ],
-            ),
-          );
-        }
-
         return Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(

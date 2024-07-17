@@ -1,6 +1,3 @@
-/// @nodoc
-library;
-
 import 'package:flutter/material.dart';
 import 'package:lumotareas/providers/organization_data_provider.dart';
 import 'package:provider/provider.dart';
@@ -15,7 +12,6 @@ class SelectCurrentOrg extends StatelessWidget {
   const SelectCurrentOrg({
     this.backgroundColor,
     super.key,
-    required Organizaciones currentOrganization,
   });
 
   @override
@@ -29,9 +25,21 @@ class SelectCurrentOrg extends StatelessWidget {
       return const SizedBox();
     }
 
+    // Verificar si el usuario tiene organizaciones
+    if (currentUser.organizaciones.isEmpty) {
+      return Container(
+        color: backgroundColor,
+        padding: const EdgeInsets.all(16.0),
+        child: const Text(
+          'No estás en ninguna organización actualmente',
+          style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+        ),
+      );
+    }
+
     final Organizaciones currentOrg = currentUser.organizaciones.firstWhere(
       (org) => org.id == currentUser.currentOrg,
-      orElse: () => currentUser.organizaciones.first,
+      orElse: () => Organizaciones.empty(),
     );
 
     return SelectionModal<Organizaciones>(

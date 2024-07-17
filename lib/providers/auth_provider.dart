@@ -31,6 +31,42 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> registerWithGoogle(BuildContext context,
+      {String birthDate = ''}) async {
+    setLoading(true);
+    setError(''); // Reset error
+
+    // Navega a la pantalla de carga
+    Navigator.pushNamed(context, '/loading',
+        arguments: 'Registrando con Google...');
+
+    Response<Usuario> response =
+        await _authService.registerWithGoogle(birthDate: birthDate);
+    setLoading(false);
+
+    if (response.success) {
+      currentUser =
+          response.data; // Aquí usamos el setter para actualizar currentUser
+      // Inicializa el UserDataProvider
+      if (context.mounted) {
+        Provider.of<UserDataProvider>(context, listen: false).initializeUser();
+        // Actualiza el usuario en el userDataProvider con un updateUser pasandole el birthDate
+        Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+      }
+    } else {
+      setError(response.message);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(response.message),
+            duration: const Duration(seconds: 5),
+          ),
+        );
+        Navigator.pop(context);
+      }
+    }
+  }
+
   Future<void> loginWithGoogle(BuildContext context) async {
     setLoading(true);
     setError(''); // Reset error
