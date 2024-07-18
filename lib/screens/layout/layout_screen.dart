@@ -77,9 +77,9 @@ class LayoutScreenState extends State<LayoutScreen> {
               ]
             : [
                 {
-                  'icon': Icons.add,
-                  'label': 'Crear proyecto',
-                  'screen': const CrearProyectoScreen(),
+                  'icon': Icons.business,
+                  'label': 'Crear organización',
+                  'screen': const CrearOrganizacionScreen(),
                 },
                 {
                   'icon': Icons.add,
