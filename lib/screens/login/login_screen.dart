@@ -61,6 +61,14 @@ class LoginScreen extends StatelessWidget {
                         ),
                       ),
                     ),
+                    const SizedBox(height: 20),
+                    TextButton(
+                      onPressed: () {
+                        Logger().d('Iniciando sesión con correo...');
+                        Navigator.pushNamed(context, '/register');
+                      },
+                      child: const Text('No tengo cuenta, crear una'),
+                    ),
                   ],
                 ),
         ),
