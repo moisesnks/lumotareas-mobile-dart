@@ -109,7 +109,8 @@ class OrganizationDataProvider with ChangeNotifier {
 
   Future<void> fetchOrganization(BuildContext context, String orgId,
       {bool forceFetch = false}) async {
-    _logger.i('Obteniendo datos de la organización con ID: $orgId');
+    _logger.i(
+        'Obteniendo datos de la organización con ID: $orgId, forceFetch: $forceFetch');
 
     if (!forceFetch &&
         currentOrganization != null &&

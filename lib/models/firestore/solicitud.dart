@@ -62,6 +62,7 @@ class Solicitud {
       'uid': uid,
       'email': email,
       'respuesta': respuesta,
+      'id': id,
     };
   }
 

@@ -24,13 +24,12 @@ class HomeScreen extends StatelessWidget {
       await userDataProvider.fetchUserData(context);
       // Fetch organization data if user has a current organization
       if (currentUser.currentOrg.isNotEmpty) {
-        if (context.mounted) {
-          await orgDataProvider.fetchOrganization(
-            context,
-            currentUser.currentOrg,
-            forceFetch: true,
-          );
-        }
+        await orgDataProvider.fetchOrganization(
+          // ignore: use_build_context_synchronously
+          context,
+          currentUser.currentOrg,
+          forceFetch: true,
+        );
       }
     }
   }
