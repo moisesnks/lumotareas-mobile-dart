@@ -13,6 +13,7 @@ class Solicitud {
       solicitud; // Es un mapa de la solicitud que llegó, son las preguntas y respuestas
   final String uid; // El uid del usuario que hizo la solicitud
   final String email; // El email del usuario que hizo la solicitud
+  final String respuesta; // La respuesta a la solicitud
 
   /// Constructor para crear una instancia de [Solicitud].
   ///
@@ -29,6 +30,7 @@ class Solicitud {
     required this.solicitud,
     required this.uid,
     required this.email,
+    this.respuesta = '',
   });
 
   /// Crea una instancia de [Solicitud] a partir de un mapa.
@@ -47,6 +49,7 @@ class Solicitud {
       solicitud: map['solicitud'] ?? {},
       uid: map['uid'] ?? '',
       email: map['email'] ?? '',
+      respuesta: map['respuesta'] ?? '',
     );
   }
 
@@ -58,6 +61,7 @@ class Solicitud {
       'solicitud': solicitud,
       'uid': uid,
       'email': email,
+      'respuesta': respuesta,
     };
   }
 

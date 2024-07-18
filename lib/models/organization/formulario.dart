@@ -42,4 +42,7 @@ class Formulario {
   String toString() {
     return 'Formulario: $titulo, Preguntas: $preguntas';
   }
+
+  // isEmpty
+  bool get isEmpty => preguntas.isEmpty;
 }

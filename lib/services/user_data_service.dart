@@ -12,6 +12,30 @@ class UserDataService {
   final Logger _logger = Logger();
   final DatabaseService _databaseService = DatabaseService();
 
+  Future<Response<Usuario>> getDataById(String userId) async {
+    try {
+      Response response = await _databaseService.getDocument('users', userId);
+      if (response.success) {
+        return Response(
+          success: true,
+          data: Usuario.fromMap(userId, response.data),
+          message: response.message,
+        );
+      } else {
+        return Response(
+          success: false,
+          message: response.message,
+        );
+      }
+    } catch (e) {
+      _logger.e('Error al obtener datos del usuario: $e');
+      return Response(
+        success: false,
+        message: 'Error al obtener datos del usuario',
+      );
+    }
+  }
+
   /// Crea un nuevo usuario en la base de datos.
   ///
   /// [user] es la instancia de [Usuario] que se va a crear.

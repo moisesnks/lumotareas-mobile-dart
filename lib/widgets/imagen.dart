@@ -6,6 +6,7 @@ class Imagen extends StatelessWidget {
   final double height;
   final double borderRadius;
   final String placeholder;
+  final BoxFit fit;
 
   const Imagen({
     super.key,
@@ -14,6 +15,7 @@ class Imagen extends StatelessWidget {
     this.height = 200,
     this.borderRadius = 10,
     this.placeholder = 'assets/images/placeholder_image.jpg',
+    this.fit = BoxFit.cover,
   });
 
   @override

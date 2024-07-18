@@ -64,77 +64,81 @@ class OrganizacionCardState extends State<OrganizacionCard> {
               ),
             );
           },
-          child: SizedBox(
-            height: MediaQuery.of(context).size.height * 0.25,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 100,
-                      height: 100,
-                      child: Imagen(imageUrl: imageUrl),
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 10.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  nombre,
-                                  style: const TextStyle(
-                                      fontSize: 20.0,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                Row(
-                                  children: [
-                                    LikeButton(
-                                      organization: widget.organizacion,
-                                      onCallback: (isLiked) {
-                                        handleLike(isLiked, currentUser);
-                                      },
-                                    ),
-                                    const SizedBox(width: 5),
-                                    Text(
-                                      '$likesCount',
-                                      style: const TextStyle(fontSize: 12.0),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            Text(
-                              'por ${owner.nombre}',
-                              style: const TextStyle(
-                                  fontSize: 12.0,
-                                  fontWeight: FontWeight.normal),
-                            ),
-                          ],
+          child: Container(
+            color: Colors.transparent,
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height * 0.25,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 100,
+                        height: 100,
+                        child: Imagen(imageUrl: imageUrl),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 10.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    nombre,
+                                    style: const TextStyle(
+                                        fontSize: 20.0,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Row(
+                                    children: [
+                                      LikeButton(
+                                        organization: widget.organizacion,
+                                        onCallback: (isLiked) {
+                                          handleLike(isLiked, currentUser);
+                                        },
+                                      ),
+                                      const SizedBox(width: 5),
+                                      Text(
+                                        '$likesCount',
+                                        style: const TextStyle(fontSize: 12.0),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              Text(
+                                'por ${owner.nombre}',
+                                style: const TextStyle(
+                                    fontSize: 12.0,
+                                    fontWeight: FontWeight.normal),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                Padding(
-                  padding:
-                      const EdgeInsets.only(top: 10.0, left: 10.0, right: 10.0),
-                  child: Text(
-                    descripcion,
-                    style: const TextStyle(
-                      fontSize: 14.0,
-                      fontWeight: FontWeight.normal,
-                      fontStyle: FontStyle.italic,
-                    ),
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
+                    ],
                   ),
-                ),
-              ],
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        top: 10.0, left: 10.0, right: 10.0),
+                    child: Text(
+                      descripcion,
+                      style: const TextStyle(
+                        fontSize: 14.0,
+                        fontWeight: FontWeight.normal,
+                        fontStyle: FontStyle.italic,
+                      ),
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         );

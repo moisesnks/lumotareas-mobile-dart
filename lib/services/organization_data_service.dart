@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:lumotareas/models/firestore/proyecto.dart';
 import 'package:lumotareas/models/firestore/solicitud.dart';
 import 'package:lumotareas/models/response.dart';
@@ -91,6 +92,69 @@ class OrganizationDataService {
     } catch (e) {
       _logger.e('Error al obtener miembros de la organización: $e');
       return [];
+    }
+  }
+
+  Future<Response<String>> addRequest(String orgName,
+      Map<String, dynamic> solicitud, Usuario currentUser) async {
+    try {
+      // Buscar si ya existe una solicitud
+      Response response = await _databaseService.getDocument(
+          'organizaciones/$orgName/solicitudes', currentUser.uid);
+      if (response.success) {
+        return Response(
+          success: false,
+          message: 'Ya has enviado una solicitud a esta organización',
+        );
+      }
+
+      // Buscar en string uid en la List<String> miembros de la organización
+      response = await _databaseService.getDocument('organizaciones', orgName);
+      if (!response.success) {
+        return Response(
+          success: false,
+          message: 'Organización no encontrada',
+        );
+      }
+      OrganizacionFirestore organizacion =
+          OrganizacionFirestore.fromMap(response.data);
+      if (organizacion.miembros.contains(currentUser.uid)) {
+        return Response(
+          success: false,
+          message: 'Ya eres miembro de esta organización',
+        );
+      }
+      Solicitud solicitudObj = Solicitud(
+        uid: currentUser.uid,
+        id: '${DateFormat('dd_MMMM_yyyy_HH_mm', 'es_CL').format(DateTime.now())}_${currentUser.uid}',
+        email: currentUser.email,
+        estado: EstadoSolicitud.pendiente,
+        fecha: DateTime.now().toIso8601String(),
+        solicitud: solicitud,
+      );
+
+      response = await _databaseService.addDocument(
+          'organizaciones/$orgName/solicitudes',
+          documentId: solicitudObj.id,
+          data: solicitudObj.toMap());
+      if (response.success) {
+        return Response(
+          success: true,
+          data: solicitudObj.id,
+          message: 'Solicitud enviada correctamente',
+        );
+      } else {
+        return Response(
+          success: false,
+          message: 'Error al enviar solicitud',
+        );
+      }
+    } catch (e) {
+      _logger.e('Error al enviar solicitud: $e');
+      return Response(
+        success: false,
+        message: 'Error al enviar solicitud',
+      );
     }
   }
 

@@ -108,14 +108,17 @@ class LayoutScreenState extends State<LayoutScreen> {
         final bool loadingUser = userDataProvider.loadingUser;
 
         if (loadingUser) {
-          return const Scaffold(
+          return Scaffold(
             body: SafeArea(
-              child: Center(
-                child: Column(
+              child: Container(
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                child: const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     CircularProgressIndicator(),
                     SizedBox(height: 10),
-                    Text('Cargando usuario...'),
+                    Text('Obteniendo información del usuario...'),
                   ],
                 ),
               ),
