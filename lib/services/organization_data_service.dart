@@ -2,11 +2,13 @@ import 'package:intl/intl.dart';
 import 'package:lumotareas/models/firestore/proyecto.dart';
 import 'package:lumotareas/models/firestore/solicitud.dart';
 import 'package:lumotareas/models/response.dart';
+import 'package:lumotareas/models/user/organizaciones.dart';
 import 'package:lumotareas/models/user/usuario.dart';
 import 'package:lumotareas/services/database_service.dart';
 import 'package:logger/logger.dart';
 import 'package:lumotareas/models/organization/organizacion.dart';
 import 'package:lumotareas/models/firestore/organizacion.dart';
+import 'package:lumotareas/services/user_data_service.dart';
 
 class OrganizationDataService {
   final Logger _logger = Logger();
@@ -95,6 +97,152 @@ class OrganizationDataService {
     }
   }
 
+  Future<Response<bool>> addMember(String orgName, String uid) async {
+    try {
+      Response<Organizacion> response = await getData(orgName);
+      if (response.success) {
+        Organizacion? organizacion = response.data;
+        if (organizacion == null) {
+          return Response(
+            success: false,
+            message: 'Organización no encontrada',
+          );
+        }
+        List<String> miembros =
+            organizacion.miembros.map((m) => m.uid).toList();
+        if (miembros.contains(uid)) {
+          return Response(
+            success: false,
+            message: 'El usuario ya es miembro de la organización',
+          );
+        }
+        miembros.add(uid);
+        OrganizacionFirestore orgFirestore = OrganizacionFirestore(
+          nombre: organizacion.nombre,
+          descripcion: organizacion.descripcion,
+          proyectos: organizacion.proyectos.map((p) => p.id).toList(),
+          likes: organizacion.likes,
+          miembros: miembros,
+          owner: {
+            'uid': organizacion.owner.uid,
+            'nombre': organizacion.owner.nombre,
+          },
+          vacantes: organizacion.vacantes,
+          imageUrl: organizacion.imageUrl,
+          formulario: organizacion.formulario,
+        );
+        Response orgResponse = await updateOrganization(orgFirestore);
+
+        if (!orgResponse.success) {
+          return Response(
+            success: false,
+            message: 'Error al actualizar organización con nuevo miembro',
+          );
+        }
+
+        // Actualizar al usuario afectado
+        Response<Usuario> userData = await UserDataService().getDataById(uid);
+
+        // Añadir en la lista de Organizaciones al usuario
+        Organizaciones org = Organizaciones(
+          id: orgName,
+          nombre: orgFirestore.nombre,
+        );
+
+        if (userData.success) {
+          Usuario user = userData.data!;
+          List<Organizaciones> organizaciones = user.organizaciones;
+          organizaciones.add(org);
+          user.organizaciones = organizaciones;
+
+          Response userResponse = await UserDataService().update(user);
+
+          if (userResponse.success) {
+            return Response(
+              success: true,
+              data: true,
+              message: 'Miembro agregado correctamente',
+            );
+          } else {
+            return Response(
+              success: false,
+              message: 'Error al actualizar usuario con nueva organización',
+            );
+          }
+        } else {
+          return Response(
+            success: false,
+            message: 'Error al obtener datos del usuario',
+          );
+        }
+      } else {
+        return Response(
+          success: false,
+          message: 'Error al obtener datos de la organización',
+        );
+      }
+    } catch (e) {
+      _logger.e('Error al agregar miembro a la organización: $e');
+      return Response(
+        success: false,
+        message: 'Error al agregar miembro',
+      );
+    }
+  }
+
+  Future<Response<Solicitud>> updateRequest(
+      Usuario currentUser, Solicitud solicitud) async {
+    try {
+      Response response = await _databaseService.updateDocument(
+          'organizaciones/${currentUser.currentOrg}/solicitudes',
+          solicitud.id,
+          solicitud.toMap());
+      if (response.success) {
+        // Obtener la nueva solicitud
+        Response newResponse = await _databaseService.getDocument(
+            'organizaciones/${currentUser.currentOrg}/solicitudes',
+            solicitud.id);
+        if (newResponse.success) {
+          Solicitud updatedSolicitud =
+              Solicitud.fromMap(solicitud.id, newResponse.data);
+
+          if (updatedSolicitud.estado == EstadoSolicitud.aceptada) {
+            // Agregar al usuario a la organización
+            Response orgResponse =
+                await addMember(currentUser.currentOrg, solicitud.uid);
+            if (!orgResponse.success) {
+              return Response(
+                success: false,
+                message: 'Error al actualizar solicitud',
+              );
+            }
+          }
+          return Response(
+            success: true,
+            data: updatedSolicitud,
+            message: 'Solicitud actualizada correctamente',
+          );
+        } else {
+          return Response(
+            success: false,
+            message: 'Error al actualizar solicitud',
+          );
+        }
+      } else {
+        return Response(
+          success: false,
+          message: 'Error al actualizar solicitud',
+        );
+      }
+    } catch (e) {
+      _logger.e('Error al actualizar solicitud: $e');
+      return Response(
+        success: false,
+        message: 'Error al actualizar solicitud',
+      );
+    }
+  }
+
   Future<Response<String>> addRequest(String orgName,
       Map<String, dynamic> solicitud, Usuario currentUser) async {
     try {
@@ -155,6 +303,21 @@ class OrganizationDataService {
         success: false,
         message: 'Error al enviar solicitud',
       );
+    }
+  }
+
+  Future<Solicitud?> getRequest(String orgName, String solicitudId) async {
+    try {
+      Response response = await _databaseService.getDocument(
+          'organizaciones/$orgName/solicitudes', solicitudId);
+      if (response.success) {
+        return Solicitud.fromMap(solicitudId, response.data);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      _logger.e('Error al obtener solicitud: $e');
+      return null;
     }
   }
 

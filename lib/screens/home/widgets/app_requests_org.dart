@@ -3,16 +3,19 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:lumotareas/models/firestore/solicitud.dart';
+import 'package:lumotareas/models/user/usuario.dart';
 import 'package:lumotareas/screens/solicitud/solicitud_org_screen.dart';
 import 'package:lumotareas/widgets/icon_box.dart';
 import 'package:lumotareas/widgets/styled_list_tile.dart';
 
 class OrgRequestsButton extends StatelessWidget {
   final List<Solicitud> solicitudes;
+  final Usuario currentUser;
 
   const OrgRequestsButton({
     super.key,
     required this.solicitudes,
+    required this.currentUser,
   });
 
   void showRequestsList(BuildContext context) {
@@ -43,8 +46,8 @@ class OrgRequestsButton extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => RequestOrgScreen(
-                        solicitud: solicitud,
-                        uid: uid,
+                        solicitudId: solicitud.id,
+                        orgName: currentUser.currentOrg,
                       ),
                     ),
                   );

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:lumotareas/providers/auth_provider.dart';
 import 'package:lumotareas/providers/descubrir_data_provider.dart';
 import 'package:lumotareas/providers/project_data_provider.dart';
+import 'package:lumotareas/providers/request_data_provider.dart';
 import 'package:lumotareas/providers/user_data_provider.dart';
 import 'package:lumotareas/providers/organization_data_provider.dart';
 import 'package:lumotareas/screens/index/index_screen.dart';
@@ -19,8 +20,6 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:logger/logger.dart';
-
-import 'screens/welcome/welcome_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -85,6 +84,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => DescubrirDataProvider(),
         ),
+        ChangeNotifierProvider(
+          create: (context) => RequestDataProvider(),
+        ),
       ],
       child: MaterialApp(
         title: 'Lumotareas',
@@ -95,7 +97,6 @@ class MyApp extends StatelessWidget {
           '/': (context) => const IndexScreen(),
           '/login': (context) => const LoginScreen(),
           '/register': (context) => const RegisterScreen(),
-          '/welcome': (context) => const WelcomeScreen(),
           '/home': (context) => const LayoutScreen(),
           '/loading': (context) => const LoadingScreen(),
         },

@@ -23,7 +23,7 @@ class IndexScreenState extends State<IndexScreen> {
     } else {
       // Redirigir a /welcome
       if (context.mounted) {
-        Navigator.of(context).pushReplacementNamed('/welcome');
+        Navigator.of(context).pushReplacementNamed('/register');
       }
     }
   }

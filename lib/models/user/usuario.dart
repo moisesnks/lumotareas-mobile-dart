@@ -10,7 +10,7 @@ class Usuario {
   final String nombre;
   final String email;
   final String birthdate;
-  final List<Organizaciones> organizaciones;
+  List<Organizaciones> organizaciones;
   final List<Solicitudes> solicitudes;
   final String photoURL;
   final String currentOrg;
