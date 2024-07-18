@@ -92,6 +92,13 @@ class RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ),
                     ),
+                    const SizedBox(height: 20),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/login');
+                      },
+                      child: const Text('Ya tengo cuenta, iniciar sesión'),
+                    ),
                   ],
                 ),
         ),
